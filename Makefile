@@ -22,7 +22,7 @@ ui/dist/index.css: ui/layout.css
 	$(call compose,ui/layout.css,make/css.map,ui/dist/index.css)
 	@echo "Built test version → ui/dist/index.css"
 
-ui/dist/index.js: ui/layout.js ui/comps/attributes.js ui/comps/att_groups.js
+ui/dist/index.js: ui/layout.js $(wildcard ui/comps/*.js)
 	@mkdir -p ui/dist
 	$(call compose,ui/layout.js,make/js.map,ui/dist/index.js)
 	@echo "Built test version → ui/dist/index.js"

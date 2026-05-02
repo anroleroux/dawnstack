@@ -1,9 +1,9 @@
-function attributeGroupsTemplate(state) {
+function criteriaTemplate(state) {
     const addFormTemplate = () => `
-        <form class="item-card item-card--detail" onsubmit="saveAttributeGroup(event)">
+        <form class="item-card item-card--detail" onsubmit="saveCriterion(event)">
             <div class="item-card__header">
-                <span class="item-card__category">New attribute group</span>
-                <button class="back-btn" type="button" onclick="attributeGroups.adding=false">&#8592; Cancel</button>
+                <span class="item-card__category">New criterion</span>
+                <button class="back-btn" type="button" onclick="criteria.adding=false">&#8592; Cancel</button>
             </div>
             <div class="add-form">
                 <div class="add-form__field">
@@ -22,10 +22,10 @@ function attributeGroupsTemplate(state) {
     `;
 
     const editFormTemplate = (c) => `
-        <form class="item-card item-card--detail" onsubmit="updateAttributeGroup(event)">
+        <form class="item-card item-card--detail" onsubmit="updateCriterion(event)">
             <div class="item-card__header">
-                <span class="item-card__category">Edit attribute group</span>
-                <button class="back-btn" type="button" onclick="attributeGroups.editing=null">&#8592; Cancel</button>
+                <span class="item-card__category">Edit criterion</span>
+                <button class="back-btn" type="button" onclick="criteria.editing=null">&#8592; Cancel</button>
             </div>
             <div class="add-form">
                 <div class="add-form__field">
@@ -50,8 +50,8 @@ function attributeGroupsTemplate(state) {
                 <span class="item-row__category">${c.description || ''}</span>
             </div>
             <div class="row-actions">
-                <button class="edit-btn" type="button" onclick="editAttributeGroup(${c.id})">Edit</button>
-                <button class="delete-btn" type="button" onclick="deleteAttributeGroup(${c.id})">Delete</button>
+                <button class="edit-btn" type="button" onclick="editCriterion(${c.id})">Edit</button>
+                <button class="delete-btn" type="button" onclick="deleteCriterion(${c.id})">Delete</button>
             </div>
         </div>
     `;
@@ -60,47 +60,47 @@ function attributeGroupsTemplate(state) {
     if (state.editing) return editFormTemplate(state.editing);
     return `
         <div class="items-toolbar">
-            <button class="start-btn" type="button" onclick="attributeGroups.adding=true">+ Add attribute group</button>
+            <button class="start-btn" type="button" onclick="criteria.adding=true">+ Add criterion</button>
         </div>
         ${state.list.map((c) => rowTemplate(c)).join("")}
     `;
 }
 
-var attributeGroups = mount(
-    document.getElementById("att_groups-list"),
+var criteria = mount(
+    document.getElementById("criteria-list"),
     {list: [], adding: false, editing: null},
-    attributeGroupsTemplate
+    criteriaTemplate
 );
 
-function editAttributeGroup(id) {
-    attributeGroups.editing = attributeGroups.list.find(c => c.id === id);
+function editCriterion(id) {
+    criteria.editing = criteria.list.find(c => c.id === id);
 }
 
-function attributeGroupName(id) {
-    const c = attributeGroups.list.find(c => c.id === id);
+function criterionName(id) {
+    const c = criteria.list.find(c => c.id === id);
     return c ? c.name : '—';
 }
 
-async function deleteAttributeGroup(id) {
+async function deleteCriterion(id) {
     if (!testing) {  //testing
     try {
         const userId = getCurrentUserId();
         const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/attribute-groups/${id}`, { method: "DELETE", headers });
-        if (!response.ok) throw new Error("Failed to delete attribute group");
-        const idx = attributeGroups.list.findIndex(c => c.id === id);
-        if (idx !== -1) attributeGroups.list.splice(idx, 1);
+        const response = await fetch(`/api/criteria/${id}`, { method: "DELETE", headers });
+        if (!response.ok) throw new Error("Failed to delete criterion");
+        const idx = criteria.list.findIndex(c => c.id === id);
+        if (idx !== -1) criteria.list.splice(idx, 1);
     } catch (err) {
-        alert("Could not delete attribute group.");
+        alert("Could not delete criterion.");
         return;
     }
     } else { //testing
-        const idx = attributeGroups.list.findIndex(c => c.id === id); //testing
-        if (idx !== -1) attributeGroups.list.splice(idx, 1); //testing
+        const idx = criteria.list.findIndex(c => c.id === id); //testing
+        if (idx !== -1) criteria.list.splice(idx, 1); //testing
     } //testing
 }
 
-async function saveAttributeGroup(e) {
+async function saveCriterion(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const data = {
@@ -113,29 +113,29 @@ async function saveAttributeGroup(e) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
         if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/attribute-groups", {
+        const response = await fetch("/api/criteria", {
             method: "POST",
             headers,
             body: JSON.stringify(data),
         });
-        if (!response.ok) throw new Error("Failed to save attribute group");
+        if (!response.ok) throw new Error("Failed to save criterion");
         const saved = await response.json();
-        attributeGroups.list.push(saved);
-        attributeGroups.adding = false;
+        criteria.list.push(saved);
+        criteria.adding = false;
     } catch (err) {
-        alert("Could not save attribute group.");
+        alert("Could not save criterion.");
     }
     } else { //testing
-        attributeGroups.list.push({...data, id: Date.now()}); //testing
-        attributeGroups.adding = false; //testing
+        criteria.list.push({...data, id: Date.now()}); //testing
+        criteria.adding = false; //testing
     } //testing
 }
 
-async function updateAttributeGroup(e) {
+async function updateCriterion(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const updated = {
-        id:          attributeGroups.editing.id,
+        id:          criteria.editing.id,
         name:        fd.get("name"),
         description: fd.get("description") || "",
     };
@@ -145,44 +145,46 @@ async function updateAttributeGroup(e) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
         if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch(`/api/attribute-groups/${updated.id}`, {
+        const response = await fetch(`/api/criteria/${updated.id}`, {
             method: "PUT",
             headers,
             body: JSON.stringify(updated),
         });
-        if (!response.ok) throw new Error("Failed to update attribute group");
+        if (!response.ok) throw new Error("Failed to update criterion");
         const saved = await response.json();
-        const idx = attributeGroups.list.findIndex(c => c.id === saved.id);
-        if (idx !== -1) attributeGroups.list[idx] = saved;
+        const idx = criteria.list.findIndex(c => c.id === saved.id);
+        if (idx !== -1) criteria.list[idx] = saved;
     } catch (err) {
-        alert("Could not update attribute group.");
+        alert("Could not update criterion.");
         return;
     }
     } else { //testing
-        const idx = attributeGroups.list.findIndex(c => c.id === updated.id); //testing
-        if (idx !== -1) attributeGroups.list[idx] = updated; //testing
+        const idx = criteria.list.findIndex(c => c.id === updated.id); //testing
+        if (idx !== -1) criteria.list[idx] = updated; //testing
     } //testing
-    attributeGroups.editing = null;
+    criteria.editing = null;
 }
 
-async function loadAttributeGroups() {
+async function loadCriteria() {
     if (!testing) {  //testing
     try {
         const userId = getCurrentUserId();
         const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/attribute-groups", { headers });
-        if (!response.ok) throw new Error("Failed to fetch attribute groups");
+        const response = await fetch("/api/criteria", { headers });
+        if (!response.ok) throw new Error("Failed to fetch criteria");
         const list = await response.json();
-        attributeGroups.list = [];
-        list.forEach(c => attributeGroups.list.push(c));
+        criteria.list = [];
+        list.forEach(c => criteria.list.push(c));
     } catch (error) {
-        document.getElementById("attribute-groups-list").innerHTML = "<p>Could not load attribute groups.</p>";
+        document.getElementById("criteria-list").innerHTML = "<p>Could not load criteria.</p>";
     }
     } else { //testing
-        attributeGroups.list.push( //testing
-            {id:1, name:"Strengths",  description:"Things you are particularly good at."}, //testing
-            {id:2, name:"Wins",       description:"Past successes and achievements."}, //testing
-            {id:3, name:"Weaknesses", description:"Areas you want to improve."} //testing
+        criteria.list.push( //testing
+            {id:1, name:"Impact",      description:"How significantly will this affect the target audience."}, //testing
+            {id:2, name:"Confidence",  description:"How confident are we in our estimates."}, //testing
+            {id:3, name:"Ease",        description:"How easy is it to implement."}, //testing
+            {id:4, name:"Reach",       description:"How many people will this affect in a given period."}, //testing
+            {id:5, name:"Feasibility", description:"Technical and financial feasibility."} //testing
         ); //testing
     } //testing
 }

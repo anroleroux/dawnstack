@@ -1,3 +1,11 @@
 {{reactivity-js}}:ui/reactivity.js
 {{attributes-js}}:ui/comps/attributes.js
 {{att_groups-js}}:ui/comps/att_groups.js
+{{ideas-js}}:ui/comps/ideas.js
+{{attribute-ratings-js}}:ui/comps/attribute_ratings.js
+{{criteria-js}}:ui/comps/criteria.js
+{{criteria-ratings-js}}:ui/comps/criteria_ratings.js
+{{portfolio-items-js}}:ui/comps/portfolio_items.js
+{{portfolio-item-ideas-js}}:ui/comps/portfolio_item_ideas.js
+{{milestones-js}}:ui/comps/milestones.js
+{{milestone-deps-js}}:ui/comps/milestone_deps.js

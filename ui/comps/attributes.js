@@ -1,29 +1,29 @@
-function attributesTemplate(state) {
+function attrItemsTemplate(state) {
     const attributeTemplate = (p) => {
-        const mr = 'attributes', api = '/api/attributes';
+        const mr = 'attrItems', api = '/api/attributes';
         return `
-        <div class="product-card product-card--detail">
-            <div class="product-card__header">
-                <span class="product-card__category">${attributeGroupName(p.att_group_id)}</span>
-                <button class="back-btn" type="button" onclick="attributes.selected=null;attributes.editing_field=null">&#8592; Back</button>
+        <div class="item-card item-card--detail">
+            <div class="item-card__header">
+                <span class="item-card__category">${attributeGroupName(p.att_group_id)}</span>
+                <button class="back-btn" type="button" onclick="attrItems.selected=null;attrItems.editing_field=null">&#8592; Back</button>
             </div>
-            <div class="product-card__fields">
+            <div class="item-card__fields">
                 ${editableField(mr, api, 'Name',            'name',        p.name,                           'text')}
                 ${editableField(mr, api, 'Attribute group', 'att_group_id', attributeGroupName(p.att_group_id), 'select', attributeGroups.list.map(c => ({value: c.id, label: c.name})))}
                 ${editableField(mr, api, 'Description',     'description', p.description,                   'text')}
             </div>
-            <div class="product-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteAttribute(attributes.selected)">Delete</button>
+            <div class="item-card__actions">
+                <button class="delete-btn" type="button" onclick="deleteAttribute(attrItems.selected)">Delete</button>
             </div>
         </div>
         `;
     };
 
     const addFormTemplate = () => `
-        <form class="product-card product-card--detail" onsubmit="saveAttribute(event)">
-            <div class="product-card__header">
-                <span class="product-card__category">New attribute</span>
-                <button class="back-btn" type="button" onclick="attributes.adding=false">&#8592; Cancel</button>
+        <form class="item-card item-card--detail" onsubmit="saveAttribute(event)">
+            <div class="item-card__header">
+                <span class="item-card__category">New attribute</span>
+                <button class="back-btn" type="button" onclick="attrItems.adding=false">&#8592; Cancel</button>
             </div>
             <div class="add-form">
                 <div class="add-form__field">
@@ -42,7 +42,7 @@ function attributesTemplate(state) {
                     <textarea name="description"></textarea>
                 </div>
             </div>
-            <div class="product-card__actions">
+            <div class="item-card__actions">
                 <button class="start-btn" type="submit">Save</button>
             </div>
         </form>
@@ -61,20 +61,21 @@ function attributesTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="start-btn" type="button" onclick="attributes.adding=true">+ Add attribute</button>
+            <button class="nav-btn" type="button" onclick="showPage('att_groups')" style="margin-right:auto">Attribute Groups</button>
+            <button class="start-btn" type="button" onclick="attrItems.adding=true">+ Add attribute</button>
         </div>
         ${state.list.map((p, pid) => rowTemplate(p, pid)).join("")}
     `;
 }
 
-var attributes = mount(
+var attrItems = mount(
     document.getElementById("attributes-list"),
     {list: [], selected: null, adding: false, editing_field: null},
-    attributesTemplate
+    attrItemsTemplate
 );
 
 function selectAttribute(pid) {
-    attributes.selected = attributes.list[pid];
+    attrItems.selected = attrItems.list[pid];
 }
 
 async function deleteAttribute(p) {
@@ -84,18 +85,18 @@ async function deleteAttribute(p) {
         const headers = userId ? { "X-User-Id": userId } : {};
         const response = await fetch(`/api/attributes/${p.id}`, { method: "DELETE", headers });
         if (!response.ok) throw new Error("Failed to delete attribute");
-        const idx = attributes.list.findIndex(item => item.id === p.id);
-        if (idx !== -1) attributes.list.splice(idx, 1);
+        const idx = attrItems.list.findIndex(item => item.id === p.id);
+        if (idx !== -1) attrItems.list.splice(idx, 1);
     } catch (err) {
         alert("Could not delete attribute.");
         return;
     }
     } else { //testing
-        const idx = attributes.list.findIndex(item => item.id === p.id); //testing
-        if (idx !== -1) attributes.list.splice(idx, 1); //testing
+        const idx = attrItems.list.findIndex(item => item.id === p.id); //testing
+        if (idx !== -1) attrItems.list.splice(idx, 1); //testing
     } //testing
-    attributes.editing_field = null;
-    attributes.selected = null;
+    attrItems.editing_field = null;
+    attrItems.selected = null;
 }
 
 async function saveAttribute(e) {
@@ -119,14 +120,14 @@ async function saveAttribute(e) {
         });
         if (!response.ok) throw new Error("Failed to save attribute");
         const saved = await response.json();
-        attributes.list.push(saved);
-        attributes.adding = false;
+        attrItems.list.push(saved);
+        attrItems.adding = false;
     } catch (err) {
         alert("Could not save attribute.");
     }
     } else { //testing
-        attributes.list.push({...data, id: Date.now()}); //testing
-        attributes.adding = false; //testing
+        attrItems.list.push({...data, id: Date.now()}); //testing
+        attrItems.adding = false; //testing
     } //testing
 }
 
@@ -150,17 +151,17 @@ async function loadAttributes() {
         }
 
         list.innerHTML = "";
-        attributes.list = [];
-        attributes.selected = null;
+        attrItems.list = [];
+        attrItems.selected = null;
         searchAttributes.forEach((p) => {
-        attributes.list.push(p);
+        attrItems.list.push(p);
         });
 
     } catch (error) {
         list.innerHTML = "<li>Could not load attributes.</li>";
     }
     } else { //testing
-        attributes.list.push( //testing
+        attrItems.list.push( //testing
             {id:1, name:"Problem solving",  att_group_id:1, description:"Ability to break down and work through complex problems."}, //testing
             {id:2, name:"Communication",    att_group_id:1, description:"Clear and effective written and verbal communication."}, //testing
             {id:3, name:"Launched side project", att_group_id:2, description:"Built and shipped a web app independently."}, //testing

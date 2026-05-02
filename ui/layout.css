@@ -98,23 +98,23 @@ header {
 
 /* ── Detail card ──────────────────────────────── */
 
-.product-card--detail {
+.item-card--detail {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 1.5rem;
   max-width: 720px;
-  margin: 1.5rem auto;
+  margin: 1.5rem 0;
 }
 
-.product-card__header {
+.item-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
 }
 
-.product-card__category {
+.item-card__category {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -132,25 +132,25 @@ header {
 
 .back-btn:hover { color: #111; }
 
-.product-card--detail h2 {
+.item-card--detail h2 {
   margin: 0 0 0.5rem;
   font-size: 1.4rem;
 }
 
-.product-card__desc {
+.item-card__desc {
   color: #555;
   line-height: 1.5;
   margin: 0 0 1rem;
 }
 
-.product-card__meta {
+.item-card__meta {
   display: flex;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1.25rem;
 }
 
-.product-card__price {
+.item-card__price {
   font-size: 1.25rem;
   font-weight: 700;
 }
@@ -291,10 +291,30 @@ header {
 
 /* ── Editable fields ──────────────────────────── */
 
-.product-card__fields {
+.item-card__fields {
   display: flex;
   flex-direction: column;
   margin-bottom: 1.25rem;
+}
+
+.item-card__section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.item-card__section-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 0.25rem;
+}
+
+.item-card__empty {
+  font-size: 0.85rem;
+  color: #bbb;
+  margin: 0.25rem 0;
 }
 
 .editable-field {
