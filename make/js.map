@@ -1,0 +1,3 @@
+{{reactivity-js}}:ui/reactivity.js
+{{attributes-js}}:ui/comps/attributes.js
+{{att_groups-js}}:ui/comps/att_groups.js

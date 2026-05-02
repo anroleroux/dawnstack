@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolium</title>
+    <style>
+        /*{{layout-css}}*/
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="main-nav">
+        <button class="nav-btn nav-btn--active" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
+        <button class="nav-btn" id="nav-att_groups" onclick="showPage('att_groups')">Attribute Groups</button>
+      </nav>
+    </header>
+    <main>
+      <section id="page-attributes">
+        <h1>Attributes</h1>
+        <div id="attributes-list" class="items-list">
+          <p>Loading attributes...</p>
+        </div>
+      </section>
+      <section id="page-att_groups" hidden>
+        <h1>Attribute Groups</h1>
+        <div id="att_groups-list" class="items-list">
+          <p>Loading attribute groups...</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+        // {{layout-js}}
+    </script>
+  </body>
+</html>
