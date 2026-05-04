@@ -173,7 +173,7 @@ async function saveRatingEdit(kind, refId, ideaId) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
         if (userId) headers["X-User-Id"] = userId;
-        if (existing) {
+        if (existing && existing.id) {
             const res = await fetch(`${api}/${existing.id}`, {
                 method: "PATCH", headers, body: JSON.stringify({score}),
             });
@@ -185,14 +185,22 @@ async function saveRatingEdit(kind, refId, ideaId) {
                 body: JSON.stringify({idea_id: ideaId, [fkKey]: refId, score}),
             });
             if (!res.ok) throw new Error("Failed to create rating");
-            list.list.push(await res.json());
+            const created = await res.json();
+            if (existing) {
+                Object.assign(existing, created);
+            } else {
+                list.list.push(created);
+            }
         }
     } catch (err) {
         alert("Could not save rating.");
         return;
     }
     } else { //testing
-        if (existing) { //testing
+        if (existing && existing.id) { //testing
+            existing.score = score; //testing
+        } else if (existing) { //testing
+            existing.id = Date.now(); //testing
             existing.score = score; //testing
         } else { //testing
             list.list.push({id: Date.now(), idea_id: ideaId, [fkKey]: refId, score}); //testing
@@ -258,6 +266,8 @@ async function loadIdeas() {
         fetched.forEach((p) => {
         ideas.list.push(p);
         });
+        ensureAttributeRatings();
+        ensureCriteriaRatings();
 
     } catch (error) {
         list.innerHTML = "<li>Could not load ideas.</li>";
@@ -270,5 +280,7 @@ async function loadIdeas() {
             {id:4, name:"Freelance consulting",       description:"Offer expertise to small businesses on a project basis."}, //testing
             {id:5, name:"Open-source a side project", description:"Release internal tooling publicly to grow reputation."} //testing
         ); //testing
+        ensureAttributeRatings(); //testing
+        ensureCriteriaRatings(); //testing
     } //testing
 }

@@ -146,6 +146,16 @@ async function saveAttributeRating(e) {
     } //testing
 }
 
+function ensureAttributeRatings() {
+    for (const idea of ideas.list) {
+        for (const attr of attrItems.list) {
+            if (!attributeRatings.list.some(r => r.idea_id === idea.id && r.att_id === attr.id)) {
+                attributeRatings.list.push({id: null, idea_id: idea.id, att_id: attr.id, score: 5});
+            }
+        }
+    }
+}
+
 async function loadAttributeRatings() {
     const list = document.getElementById("attribute-ratings-list");
     list.innerHTML = "<li>Loading attribute ratings...</li>";
@@ -171,11 +181,13 @@ async function loadAttributeRatings() {
         fetched.forEach((r) => {
         attributeRatings.list.push(r);
         });
+        ensureAttributeRatings();
 
     } catch (error) {
         list.innerHTML = "<li>Could not load attribute ratings.</li>";
     }
     } else { //testing
+        attributeRatings.list = []; //testing
         attributeRatings.list.push( //testing
             {id:1, idea_id:1, att_id:1, score:7}, //testing
             {id:2, idea_id:1, att_id:2, score:9}, //testing
@@ -185,6 +197,7 @@ async function loadAttributeRatings() {
             {id:6, idea_id:5, att_id:1, score:9}  //testing
         ); //testing
     } //testing
+    ensureAttributeRatings();
     ideas._lv++;
     portfolioItems._lv++;
 }

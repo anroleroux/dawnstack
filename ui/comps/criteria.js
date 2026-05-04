@@ -175,6 +175,7 @@ async function loadCriteria() {
         const list = await response.json();
         criteria.list = [];
         list.forEach(c => criteria.list.push(c));
+        ensureCriteriaRatings();
     } catch (error) {
         document.getElementById("criteria-list").innerHTML = "<p>Could not load criteria.</p>";
     }
@@ -186,5 +187,6 @@ async function loadCriteria() {
             {id:4, name:"Reach",       description:"How many people will this affect in a given period."}, //testing
             {id:5, name:"Feasibility", description:"Technical and financial feasibility."} //testing
         ); //testing
+        ensureCriteriaRatings(); //testing
     } //testing
 }

@@ -156,6 +156,7 @@ async function loadAttributes() {
         searchAttributes.forEach((p) => {
         attrItems.list.push(p);
         });
+        ensureAttributeRatings();
 
     } catch (error) {
         list.innerHTML = "<li>Could not load attributes.</li>";
@@ -169,5 +170,6 @@ async function loadAttributes() {
             {id:5, name:"Time management",  att_group_id:3, description:"Struggles with prioritising competing tasks."}, //testing
             {id:6, name:"Public speaking",  att_group_id:3, description:"Nervous when presenting to large audiences."} //testing
         ); //testing
+        ensureAttributeRatings(); //testing
     } //testing
 }

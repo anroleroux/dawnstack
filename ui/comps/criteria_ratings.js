@@ -136,6 +136,16 @@ async function saveCriteriaRating(e) {
     } //testing
 }
 
+function ensureCriteriaRatings() {
+    for (const idea of ideas.list) {
+        for (const crit of criteria.list) {
+            if (!criteriaRatings.list.some(r => r.idea_id === idea.id && r.crit_id === crit.id)) {
+                criteriaRatings.list.push({id: null, idea_id: idea.id, crit_id: crit.id, score: 5});
+            }
+        }
+    }
+}
+
 async function loadCriteriaRatings() {
     const list = document.getElementById("criteria-ratings-list");
     list.innerHTML = "<li>Loading criteria ratings...</li>";
@@ -161,11 +171,13 @@ async function loadCriteriaRatings() {
         fetched.forEach((r) => {
         criteriaRatings.list.push(r);
         });
+        ensureCriteriaRatings();
 
     } catch (error) {
         list.innerHTML = "<li>Could not load criteria ratings.</li>";
     }
     } else { //testing
+        criteriaRatings.list = []; //testing
         criteriaRatings.list.push( //testing
             {id:1, idea_id:1, crit_id:1, score:8}, //testing
             {id:2, idea_id:1, crit_id:2, score:7}, //testing
@@ -175,6 +187,7 @@ async function loadCriteriaRatings() {
             {id:6, idea_id:4, crit_id:5, score:8}  //testing
         ); //testing
     } //testing
+    ensureCriteriaRatings();
     ideas._lv++;
     portfolioItems._lv++;
 }
