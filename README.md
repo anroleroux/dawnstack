@@ -1,4 +1,4 @@
-# Life Portfolio App
+# Portfolium
 
 Determine what you should work on, how to prioritize it
 and how to plan it.

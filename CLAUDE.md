@@ -122,22 +122,54 @@ make run          # builds ui/dist with testing=false, then go run .
 go run .          # run server only (expects ui/dist already built)
 ```
 
-Endpoints:
-
-| Method | Path                  | Handler                        |
-| ------ | --------------------- | ------------------------------ |
-| GET    | /api/categories       | listCategories                 |
-| POST   | /api/categories       | createCategory                 |
-| PUT    | /api/categories/{id}  | updateCategory                 |
-| DELETE | /api/categories/{id}  | deleteCategory                 |
-| GET    | /api/products         | listProducts                   |
-| POST   | /api/products         | createProduct                  |
-| PATCH  | /api/products/{id}    | patchProduct (field allowlist) |
-| DELETE | /api/products/{id}    | deleteProduct                  |
-
 All other routes fall through to `http.FileServer` serving `ui/dist/`.
 
-Database connection defaults to `postgres://ffa:ffa@localhost:5432/ffa?sslmode=disable`; override with `DATABASE_URL`.
+Endpoints:
+
+| Method | Path                           | Notes                            |
+| ------ | ------------------------------ | -------------------------------- |
+| GET    | /api/attribute-groups          |                                  |
+| POST   | /api/attribute-groups          |                                  |
+| PUT    | /api/attribute-groups/{id}     | full update                      |
+| DELETE | /api/attribute-groups/{id}     |                                  |
+| GET    | /api/attributes                |                                  |
+| POST   | /api/attributes                |                                  |
+| PATCH  | /api/attributes/{id}           | field allowlist                  |
+| DELETE | /api/attributes/{id}           |                                  |
+| GET    | /api/ideas                     |                                  |
+| POST   | /api/ideas                     |                                  |
+| PATCH  | /api/ideas/{id}                | field allowlist                  |
+| DELETE | /api/ideas/{id}                |                                  |
+| GET    | /api/attribute-ratings         |                                  |
+| POST   | /api/attribute-ratings         |                                  |
+| PATCH  | /api/attribute-ratings/{id}    | field allowlist                  |
+| DELETE | /api/attribute-ratings/{id}    |                                  |
+| GET    | /api/criteria                  |                                  |
+| POST   | /api/criteria                  |                                  |
+| PUT    | /api/criteria/{id}             | full update                      |
+| DELETE | /api/criteria/{id}             |                                  |
+| GET    | /api/criteria-ratings          |                                  |
+| POST   | /api/criteria-ratings          |                                  |
+| PATCH  | /api/criteria-ratings/{id}     | field allowlist                  |
+| DELETE | /api/criteria-ratings/{id}     |                                  |
+| GET    | /api/portfolio-items           |                                  |
+| POST   | /api/portfolio-items           |                                  |
+| PATCH  | /api/portfolio-items/{id}      | field allowlist                  |
+| DELETE | /api/portfolio-items/{id}      |                                  |
+| GET    | /api/portfolio-item-ideas      |                                  |
+| POST   | /api/portfolio-item-ideas      |                                  |
+| PATCH  | /api/portfolio-item-ideas/{id} | field allowlist                  |
+| DELETE | /api/portfolio-item-ideas/{id} |                                  |
+| GET    | /api/milestones                |                                  |
+| POST   | /api/milestones                |                                  |
+| PATCH  | /api/milestones/{id}           | field allowlist; date YYYY-MM-DD |
+| DELETE | /api/milestones/{id}           |                                  |
+| GET    | /api/milestone-deps            |                                  |
+| POST   | /api/milestone-deps            |                                  |
+| PATCH  | /api/milestone-deps/{id}       | field allowlist                  |
+| DELETE | /api/milestone-deps/{id}       |                                  |
+
+Database connection defaults to `postgres://lp:lp@localhost:5432/lp?sslmode=disable`; override with `DATABASE_URL`.
 
 ## Database
 
