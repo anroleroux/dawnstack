@@ -215,6 +215,7 @@ To add a new model, three files need to be touched:
   ```js
   /* {{model-name-js}} */
   ```
+  
 - Call `load<Model>s()` inside the `DOMContentLoaded` listener
 
 ## Testing flag
