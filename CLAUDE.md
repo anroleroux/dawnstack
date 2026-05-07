@@ -1,4 +1,4 @@
-# Life Portfolio App
+# Dawnstack
 
 A minimal flat-file web app with a custom Make-based template composition
 build system. It helps the user determine what to work on, how to prioritize it
