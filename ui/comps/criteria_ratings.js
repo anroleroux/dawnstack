@@ -86,9 +86,14 @@ function selectCriteriaRating(rid) {
 async function deleteCriteriaRating(r) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/criteria-ratings/${r.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/criteria-ratings/${r.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/criteria-ratings')}?id=eq.${r.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete criteria rating");
         const idx = criteriaRatings.list.findIndex(item => item.id === r.id);
         if (idx !== -1) criteriaRatings.list.splice(idx, 1);
@@ -115,16 +120,19 @@ async function saveCriteriaRating(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/criteria-ratings", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save criteria rating");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/criteria-ratings", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save criteria rating");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/criteria-ratings'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save criteria rating");
+            saved = (await response.json())[0];
+        }
         criteriaRatings.list.push(saved);
         criteriaRatings.adding = false;
     } catch (err) {
@@ -152,25 +160,28 @@ async function loadCriteriaRatings() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/criteria-ratings", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch criteria ratings");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/criteria-ratings", { headers });
+            if (!response.ok) throw new Error("Failed to fetch criteria ratings");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/criteria-ratings')}?order=idea_id,crit_id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch criteria ratings");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No criteria ratings found.</li>";
-        return;
+            list.innerHTML = "<li>No criteria ratings found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         criteriaRatings.list = [];
         criteriaRatings.selected = null;
-        fetched.forEach((r) => {
-        criteriaRatings.list.push(r);
-        });
+        fetched.forEach(r => criteriaRatings.list.push(r));
         ensureCriteriaRatings();
 
     } catch (error) {

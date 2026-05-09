@@ -123,9 +123,14 @@ function selectPortfolioItem(pid) {
 async function deletePortfolioItem(p) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/portfolio-items/${p.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/portfolio-items/${p.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/portfolio-items')}?id=eq.${p.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete portfolio item");
         const idx = portfolioItems.list.findIndex(item => item.id === p.id);
         if (idx !== -1) portfolioItems.list.splice(idx, 1);
@@ -152,16 +157,19 @@ async function savePortfolioItem(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/portfolio-items", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save portfolio item");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/portfolio-items", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save portfolio item");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/portfolio-items'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save portfolio item");
+            saved = (await response.json())[0];
+        }
         portfolioItems.list.push(saved);
         portfolioItems.adding = false;
     } catch (err) {
@@ -179,25 +187,28 @@ async function loadPortfolioItems() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/portfolio-items", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch portfolio items");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/portfolio-items", { headers });
+            if (!response.ok) throw new Error("Failed to fetch portfolio items");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/portfolio-items')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch portfolio items");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No portfolio items found.</li>";
-        return;
+            list.innerHTML = "<li>No portfolio items found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         portfolioItems.list = [];
         portfolioItems.selected = null;
-        fetched.forEach((p) => {
-        portfolioItems.list.push(p);
-        });
+        fetched.forEach(p => portfolioItems.list.push(p));
 
     } catch (error) {
         list.innerHTML = "<li>Could not load portfolio items.</li>";

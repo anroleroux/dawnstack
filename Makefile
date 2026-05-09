@@ -14,8 +14,11 @@ fsdev: ui/layout.html ui/dist/index.css ui/dist/index.js
 build: ui/layout.html ui/dist/index.css ui/dist/index.js
 	@mkdir -p ui/dist
 	sed -i '/\/\/testing$$/d' ui/dist/index.js
+	sed -i 's/const supabase = false/const supabase = true/' ui/dist/index.js
+	sed -i 's|__SUPABASE_URL__|$(SUPABASE_URL)|g' ui/dist/index.js
+	sed -i 's|__SUPABASE_PUBLISHABLE_KEY__|$(SUPABASE_PUBLISHABLE_KEY)|g' ui/dist/index.js
 	$(call compose,ui/layout.html,make/html.map,ui/dist/index.html)
-	@echo "Built test version → ui/dist/index.html"
+	@echo "Built production version → ui/dist/index.html"
 
 ui/dist/index.css: ui/layout.css
 	@mkdir -p ui/dist

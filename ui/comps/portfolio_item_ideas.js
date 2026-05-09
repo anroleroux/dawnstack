@@ -83,9 +83,14 @@ function selectPortfolioItemIdea(rid) {
 async function deletePortfolioItemIdea(r) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/portfolio-item-ideas/${r.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/portfolio-item-ideas/${r.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/portfolio-item-ideas')}?id=eq.${r.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete item idea link");
         const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id);
         if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1);
@@ -109,14 +114,20 @@ async function addIdeaToPortfolioItem(e, portfolioItemId) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/portfolio-item-ideas", {
-            method: "POST", headers, body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to add idea link");
-        portfolioItemIdeas.list.push(await response.json());
+        let link;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/portfolio-item-ideas", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to add idea link");
+            link = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/portfolio-item-ideas'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to add idea link");
+            link = (await response.json())[0];
+        }
+        portfolioItemIdeas.list.push(link);
     } catch (err) {
         alert("Could not add idea.");
         return;
@@ -133,9 +144,14 @@ async function removeIdeaFromPortfolioItem(portfolioItemId, ideaId) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/portfolio-item-ideas/${r.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/portfolio-item-ideas/${r.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/portfolio-item-ideas')}?id=eq.${r.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to remove idea link");
         const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id);
         if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1);
@@ -160,16 +176,19 @@ async function savePortfolioItemIdea(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/portfolio-item-ideas", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save item idea link");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/portfolio-item-ideas", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save item idea link");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/portfolio-item-ideas'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save item idea link");
+            saved = (await response.json())[0];
+        }
         portfolioItemIdeas.list.push(saved);
         portfolioItemIdeas.adding = false;
     } catch (err) {
@@ -187,25 +206,28 @@ async function loadPortfolioItemIdeas() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/portfolio-item-ideas", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch item idea links");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/portfolio-item-ideas", { headers });
+            if (!response.ok) throw new Error("Failed to fetch item idea links");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/portfolio-item-ideas')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch item idea links");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No item idea links found.</li>";
-        return;
+            list.innerHTML = "<li>No item idea links found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         portfolioItemIdeas.list = [];
         portfolioItemIdeas.selected = null;
-        fetched.forEach((r) => {
-        portfolioItemIdeas.list.push(r);
-        });
+        fetched.forEach(r => portfolioItemIdeas.list.push(r));
 
     } catch (error) {
         list.innerHTML = "<li>Could not load item idea links.</li>";

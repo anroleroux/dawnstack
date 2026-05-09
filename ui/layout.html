@@ -9,12 +9,15 @@
     </style>
   </head>
   <body>
+    <div id="auth-section" hidden></div>
+    <div id="app-section" hidden>
     <header>
       <nav class="main-nav">
         <button class="nav-btn nav-btn--active" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
         <button class="nav-btn" id="nav-ideas" onclick="showPage('ideas')">Ideas</button>
         <button class="nav-btn" id="nav-portfolio-items" onclick="showPage('portfolio-items')">Portfolio</button>
         <button class="nav-btn" id="nav-milestones" onclick="showPage('milestones')">Milestones</button>
+        <button class="sign-out-btn" id="sign-out-btn" onclick="signOut()" hidden>Sign out</button>
       </nav>
     </header>
     <main>
@@ -79,6 +82,7 @@
         </div>
       </section>
     </main>
+    </div>
 
     <script>
         // {{layout-js}}

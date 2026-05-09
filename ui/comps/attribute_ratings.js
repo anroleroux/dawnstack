@@ -96,9 +96,14 @@ function selectAttributeRating(rid) {
 async function deleteAttributeRating(r) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/attribute-ratings/${r.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/attribute-ratings/${r.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/attribute-ratings')}?id=eq.${r.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete attribute rating");
         const idx = attributeRatings.list.findIndex(item => item.id === r.id);
         if (idx !== -1) attributeRatings.list.splice(idx, 1);
@@ -125,16 +130,19 @@ async function saveAttributeRating(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/attribute-ratings", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save attribute rating");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/attribute-ratings", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute rating");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/attribute-ratings'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute rating");
+            saved = (await response.json())[0];
+        }
         attributeRatings.list.push(saved);
         attributeRatings.adding = false;
     } catch (err) {
@@ -162,25 +170,28 @@ async function loadAttributeRatings() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/attribute-ratings", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch attribute ratings");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/attribute-ratings", { headers });
+            if (!response.ok) throw new Error("Failed to fetch attribute ratings");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/attribute-ratings')}?order=idea_id,att_id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch attribute ratings");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No attribute ratings found.</li>";
-        return;
+            list.innerHTML = "<li>No attribute ratings found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         attributeRatings.list = [];
         attributeRatings.selected = null;
-        fetched.forEach((r) => {
-        attributeRatings.list.push(r);
-        });
+        fetched.forEach(r => attributeRatings.list.push(r));
         ensureAttributeRatings();
 
     } catch (error) {

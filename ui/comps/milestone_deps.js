@@ -84,9 +84,14 @@ function selectMilestoneDep(did) {
 async function deleteMilestoneDep(d) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/milestone-deps/${d.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/milestone-deps/${d.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/milestone-deps')}?id=eq.${d.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete dependency");
         const idx = milestoneDeps.list.findIndex(item => item.id === d.id);
         if (idx !== -1) milestoneDeps.list.splice(idx, 1);
@@ -113,16 +118,19 @@ async function saveMilestoneDep(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/milestone-deps", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save dependency");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/milestone-deps", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save dependency");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/milestone-deps'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save dependency");
+            saved = (await response.json())[0];
+        }
         milestoneDeps.list.push(saved);
         milestoneDeps.adding = false;
     } catch (err) {
@@ -143,14 +151,20 @@ async function addMilestoneDep(e, milestoneId) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/milestone-deps", {
-            method: "POST", headers, body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to add dependency");
-        milestoneDeps.list.push(await response.json());
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/milestone-deps", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to add dependency");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/milestone-deps'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to add dependency");
+            saved = (await response.json())[0];
+        }
+        milestoneDeps.list.push(saved);
     } catch (err) {
         alert("Could not add dependency.");
         return;
@@ -167,9 +181,14 @@ async function removeMilestoneDep(milestoneId, dependsOnId) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/milestone-deps/${d.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/milestone-deps/${d.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/milestone-deps')}?id=eq.${d.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to remove dependency");
         const idx = milestoneDeps.list.findIndex(item => item.id === d.id);
         if (idx !== -1) milestoneDeps.list.splice(idx, 1);
@@ -190,25 +209,28 @@ async function loadMilestoneDeps() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/milestone-deps", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch dependencies");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/milestone-deps", { headers });
+            if (!response.ok) throw new Error("Failed to fetch dependencies");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/milestone-deps')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch dependencies");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No dependencies found.</li>";
-        return;
+            list.innerHTML = "<li>No dependencies found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         milestoneDeps.list = [];
         milestoneDeps.selected = null;
-        fetched.forEach((d) => {
-        milestoneDeps.list.push(d);
-        });
+        fetched.forEach(d => milestoneDeps.list.push(d));
 
     } catch (error) {
         list.innerHTML = "<li>Could not load dependencies.</li>";

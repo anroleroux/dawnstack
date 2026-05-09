@@ -81,9 +81,14 @@ function selectAttribute(pid) {
 async function deleteAttribute(p) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/attributes/${p.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/attributes/${p.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/attributes')}?id=eq.${p.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete attribute");
         const idx = attrItems.list.findIndex(item => item.id === p.id);
         if (idx !== -1) attrItems.list.splice(idx, 1);
@@ -110,16 +115,19 @@ async function saveAttribute(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/attributes", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save attribute");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/attributes", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/attributes'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute");
+            saved = (await response.json())[0];
+        }
         attrItems.list.push(saved);
         attrItems.adding = false;
     } catch (err) {
@@ -137,25 +145,28 @@ async function loadAttributes() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/attributes", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch attributes");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/attributes", { headers });
+            if (!response.ok) throw new Error("Failed to fetch attributes");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/attributes')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch attributes");
+            fetched = await response.json();
         }
-        const searchAttributes = await response.json();
 
-        if (!searchAttributes.length) {
-        list.innerHTML = "<li>No attributes found.</li>";
-        return;
+        if (!fetched.length) {
+            list.innerHTML = "<li>No attributes found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         attrItems.list = [];
         attrItems.selected = null;
-        searchAttributes.forEach((p) => {
-        attrItems.list.push(p);
-        });
+        fetched.forEach(p => attrItems.list.push(p));
         ensureAttributeRatings();
 
     } catch (error) {

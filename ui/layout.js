@@ -1,4 +1,7 @@
-const testing = true; //testing
+const testing  = true; //testing
+const supabase = false;
+const SUPABASE_URL      = '__SUPABASE_URL__';
+const SUPABASE_ANON_KEY = '__SUPABASE_PUBLISHABLE_KEY__';
 const debug = false; //testing
 
 const USER_STORAGE_KEY = "currentUserId";
@@ -25,6 +28,8 @@ showPage('milestones');
 
 /* {{reactivity-js}} */
 
+/* {{auth-js}} */
+
 /* {{attributes-js}} */
 
 /* {{att_groups-js}} */
@@ -45,16 +50,22 @@ showPage('milestones');
 
 /* {{milestone-deps-js}} */
 
+function loadAll() {
+    loadAttributeGroups(); loadAttributes(); loadIdeas(); loadAttributeRatings();
+    loadCriteria(); loadCriteriaRatings(); loadPortfolioItems();
+    loadPortfolioItemIdeas(); loadMilestones(); loadMilestoneDeps();
+}
+
+function maybeAuth() {
+    if (!supabase) { setCurrentUserId(1); loadAll(); return; }
+    initAuth();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  setCurrentUserId(1);
-  loadAttributeGroups();
-  loadAttributes();
-  loadIdeas();
-  loadAttributeRatings();
-  loadCriteria();
-  loadCriteriaRatings();
-  loadPortfolioItems();
-  loadPortfolioItemIdeas();
-  loadMilestones();
-  loadMilestoneDeps();
+    if (testing) {  //testing
+        document.getElementById('app-section').hidden = false; //testing
+        loadAll();  //testing
+        return;     //testing
+    }               //testing
+    maybeAuth();
 });

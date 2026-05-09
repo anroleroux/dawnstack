@@ -1,3 +1,18 @@
+function sbUrl(path) {
+    const table = path === '/api/milestone-deps'
+        ? 'milestone_dependencies'
+        : path.slice(5).replace(/-/g, '_');
+    return `${SUPABASE_URL}/rest/v1/${table}`;
+}
+
+function sbHeaders(write) {
+    const token = (typeof authSession !== 'undefined' && authSession)
+        ? authSession.access_token : SUPABASE_ANON_KEY;
+    const h = { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${token}` };
+    if (write) { h['Content-Type'] = 'application/json'; h.Prefer = 'return=representation'; }
+    return h;
+}
+
 function reactive(obj, onChange) {
     return new Proxy(obj, {
         get(target, prop, receiver) {
@@ -112,11 +127,19 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
     if (inputType === 'select') val = parseInt(val, 10);
 
     if (!testing) {  //testing
-    fetch(`${apiPath}/${mount.selected.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [fieldKey]: val }),
-    }).catch(() => alert("Could not save changes."));
+    if (!supabase) {
+        fetch(`${apiPath}/${mount.selected.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ [fieldKey]: val }),
+        }).catch(() => alert("Could not save changes."));
+    } else {
+        fetch(`${sbUrl(apiPath)}?id=eq.${mount.selected.id}`, {
+            method: "PATCH",
+            headers: sbHeaders(true),
+            body: JSON.stringify({ [fieldKey]: val }),
+        }).catch(() => alert("Could not save changes."));
+    }
     } //testing
 
     mount.selected[fieldKey] = val;

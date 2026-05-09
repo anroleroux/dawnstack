@@ -84,9 +84,14 @@ function attributeGroupName(id) {
 async function deleteAttributeGroup(id) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/attribute-groups/${id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/attribute-groups/${id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/attribute-groups')}?id=eq.${id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete attribute group");
         const idx = attributeGroups.list.findIndex(c => c.id === id);
         if (idx !== -1) attributeGroups.list.splice(idx, 1);
@@ -110,16 +115,19 @@ async function saveAttributeGroup(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/attribute-groups", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save attribute group");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/attribute-groups", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute group");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/attribute-groups'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save attribute group");
+            saved = (await response.json())[0];
+        }
         attributeGroups.list.push(saved);
         attributeGroups.adding = false;
     } catch (err) {
@@ -142,16 +150,22 @@ async function updateAttributeGroup(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch(`/api/attribute-groups/${updated.id}`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify(updated),
-        });
-        if (!response.ok) throw new Error("Failed to update attribute group");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch(`/api/attribute-groups/${updated.id}`, { method: "PUT", headers, body: JSON.stringify(updated) });
+            if (!response.ok) throw new Error("Failed to update attribute group");
+            saved = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/attribute-groups')}?id=eq.${updated.id}`, {
+                method: "PATCH", headers: sbHeaders(true),
+                body: JSON.stringify({ name: updated.name, description: updated.description }),
+            });
+            if (!response.ok) throw new Error("Failed to update attribute group");
+            saved = (await response.json())[0];
+        }
         const idx = attributeGroups.list.findIndex(c => c.id === saved.id);
         if (idx !== -1) attributeGroups.list[idx] = saved;
     } catch (err) {
@@ -168,13 +182,20 @@ async function updateAttributeGroup(e) {
 async function loadAttributeGroups() {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/attribute-groups", { headers });
-        if (!response.ok) throw new Error("Failed to fetch attribute groups");
-        const list = await response.json();
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/attribute-groups", { headers });
+            if (!response.ok) throw new Error("Failed to fetch attribute groups");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/attribute-groups')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch attribute groups");
+            fetched = await response.json();
+        }
         attributeGroups.list = [];
-        list.forEach(c => attributeGroups.list.push(c));
+        fetched.forEach(c => attributeGroups.list.push(c));
     } catch (error) {
         document.getElementById("attribute-groups-list").innerHTML = "<p>Could not load attribute groups.</p>";
     }

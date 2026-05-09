@@ -216,9 +216,14 @@ function selectMilestone(pid) {
 async function deleteMilestone(p) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/milestones/${p.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/milestones/${p.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/milestones')}?id=eq.${p.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete milestone");
         const idx = milestones.list.findIndex(item => item.id === p.id);
         if (idx !== -1) milestones.list.splice(idx, 1);
@@ -245,16 +250,19 @@ async function saveMilestone(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/milestones", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save milestone");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/milestones", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save milestone");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/milestones'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save milestone");
+            saved = (await response.json())[0];
+        }
         milestones.list.push(saved);
         milestones.adding = false;
     } catch (err) {
@@ -272,25 +280,28 @@ async function loadMilestones() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/milestones", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch milestones");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/milestones", { headers });
+            if (!response.ok) throw new Error("Failed to fetch milestones");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/milestones')}?order=date,id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch milestones");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No milestones found.</li>";
-        return;
+            list.innerHTML = "<li>No milestones found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         milestones.list = [];
         milestones.selected = null;
-        fetched.forEach((p) => {
-        milestones.list.push(p);
-        });
+        fetched.forEach(p => milestones.list.push(p));
 
     } catch (error) {
         list.innerHTML = "<li>Could not load milestones.</li>";

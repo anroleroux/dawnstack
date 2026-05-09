@@ -133,9 +133,14 @@ function selectIdea(pid) {
 async function deleteIdea(p) {
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch(`/api/ideas/${p.id}`, { method: "DELETE", headers });
+        let response;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            response = await fetch(`/api/ideas/${p.id}`, { method: "DELETE", headers });
+        } else {
+            response = await fetch(`${sbUrl('/api/ideas')}?id=eq.${p.id}`, { method: "DELETE", headers: sbHeaders() });
+        }
         if (!response.ok) throw new Error("Failed to delete idea");
         const idx = ideas.list.findIndex(item => item.id === p.id);
         if (idx !== -1) ideas.list.splice(idx, 1);
@@ -170,26 +175,42 @@ async function saveRatingEdit(kind, refId, ideaId) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        if (existing && existing.id) {
-            const res = await fetch(`${api}/${existing.id}`, {
-                method: "PATCH", headers, body: JSON.stringify({score}),
-            });
-            if (!res.ok) throw new Error("Failed to update rating");
-            existing.score = score;
-        } else {
-            const res = await fetch(api, {
-                method: "POST", headers,
-                body: JSON.stringify({idea_id: ideaId, [fkKey]: refId, score}),
-            });
-            if (!res.ok) throw new Error("Failed to create rating");
-            const created = await res.json();
-            if (existing) {
-                Object.assign(existing, created);
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            if (existing && existing.id) {
+                const res = await fetch(`${api}/${existing.id}`, {
+                    method: "PATCH", headers, body: JSON.stringify({score}),
+                });
+                if (!res.ok) throw new Error("Failed to update rating");
+                existing.score = score;
             } else {
-                list.list.push(created);
+                const res = await fetch(api, {
+                    method: "POST", headers,
+                    body: JSON.stringify({idea_id: ideaId, [fkKey]: refId, score}),
+                });
+                if (!res.ok) throw new Error("Failed to create rating");
+                const created = await res.json();
+                if (existing) Object.assign(existing, created);
+                else list.list.push(created);
+            }
+        } else {
+            if (existing && existing.id) {
+                const res = await fetch(`${sbUrl(api)}?id=eq.${existing.id}`, {
+                    method: "PATCH", headers: sbHeaders(true), body: JSON.stringify({score}),
+                });
+                if (!res.ok) throw new Error("Failed to update rating");
+                existing.score = score;
+            } else {
+                const res = await fetch(sbUrl(api), {
+                    method: "POST", headers: sbHeaders(true),
+                    body: JSON.stringify({idea_id: ideaId, [fkKey]: refId, score}),
+                });
+                if (!res.ok) throw new Error("Failed to create rating");
+                const created = (await res.json())[0];
+                if (existing) Object.assign(existing, created);
+                else list.list.push(created);
             }
         }
     } catch (err) {
@@ -220,16 +241,19 @@ async function saveIdea(e) {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = { "Content-Type": "application/json" };
-        if (userId) headers["X-User-Id"] = userId;
-        const response = await fetch("/api/ideas", {
-            method: "POST",
-            headers,
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error("Failed to save idea");
-        const saved = await response.json();
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = { "Content-Type": "application/json" };
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/ideas", { method: "POST", headers, body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save idea");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/ideas'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+            if (!response.ok) throw new Error("Failed to save idea");
+            saved = (await response.json())[0];
+        }
         ideas.list.push(saved);
         ideas.adding = false;
     } catch (err) {
@@ -247,25 +271,28 @@ async function loadIdeas() {
 
     if (!testing) {  //testing
     try {
-        const userId = getCurrentUserId();
-        const headers = userId ? { "X-User-Id": userId } : {};
-        const response = await fetch("/api/ideas", { headers });
-        if (!response.ok) {
-        throw new Error("Failed to fetch ideas");
+        let fetched;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = userId ? { "X-User-Id": userId } : {};
+            const response = await fetch("/api/ideas", { headers });
+            if (!response.ok) throw new Error("Failed to fetch ideas");
+            fetched = await response.json();
+        } else {
+            const response = await fetch(`${sbUrl('/api/ideas')}?order=id`, { headers: sbHeaders() });
+            if (!response.ok) throw new Error("Failed to fetch ideas");
+            fetched = await response.json();
         }
-        const fetched = await response.json();
 
         if (!fetched.length) {
-        list.innerHTML = "<li>No ideas found.</li>";
-        return;
+            list.innerHTML = "<li>No ideas found.</li>";
+            return;
         }
 
         list.innerHTML = "";
         ideas.list = [];
         ideas.selected = null;
-        fetched.forEach((p) => {
-        ideas.list.push(p);
-        });
+        fetched.forEach(p => ideas.list.push(p));
         ensureAttributeRatings();
         ensureCriteriaRatings();
 
