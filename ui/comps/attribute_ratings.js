@@ -183,10 +183,6 @@ async function loadAttributeRatings() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No attribute ratings found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         attributeRatings.list = [];

@@ -158,10 +158,6 @@ async function loadAttributes() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No attributes found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         attrItems.list = [];

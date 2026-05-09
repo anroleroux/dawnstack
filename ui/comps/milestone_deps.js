@@ -222,10 +222,6 @@ async function loadMilestoneDeps() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No dependencies found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         milestoneDeps.list = [];

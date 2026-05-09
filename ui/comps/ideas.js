@@ -284,10 +284,6 @@ async function loadIdeas() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No ideas found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         ideas.list = [];

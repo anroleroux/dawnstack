@@ -173,10 +173,6 @@ async function loadCriteriaRatings() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No criteria ratings found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         criteriaRatings.list = [];

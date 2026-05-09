@@ -219,10 +219,6 @@ async function loadPortfolioItemIdeas() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No item idea links found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         portfolioItemIdeas.list = [];

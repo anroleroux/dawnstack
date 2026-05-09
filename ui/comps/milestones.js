@@ -293,10 +293,6 @@ async function loadMilestones() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No milestones found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         milestones.list = [];

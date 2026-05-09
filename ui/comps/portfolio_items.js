@@ -200,10 +200,6 @@ async function loadPortfolioItems() {
             fetched = await response.json();
         }
 
-        if (!fetched.length) {
-            list.innerHTML = "<li>No portfolio items found.</li>";
-            return;
-        }
 
         list.innerHTML = "";
         portfolioItems.list = [];
