@@ -596,3 +596,49 @@ main section h1 {
   border-bottom: 2px solid #e0e0e0;
   letter-spacing: -0.01em;
 }
+
+/* ── Page explain pane ────────────────────────── */
+
+.page-layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+.page-explain {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  border-right: 1px solid #ebebeb;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.page-explain__text {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.8;
+  color: #777;
+  font-style: italic;
+}
+
+.page-explain__cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 0.9em;
+  background: #bbb;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.page-main {
+  flex: 1;
+  min-width: 0;
+}

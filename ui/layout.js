@@ -17,11 +17,37 @@ function setCurrentUserId(userId) {
   localStorage.setItem(USER_STORAGE_KEY, userId);
 }
 
+var _typingTimer = null;
+var pageExplains = {
+    attributes: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here."
+};
+
+function typeExplain(el, text) {
+    if (_typingTimer) { clearTimeout(_typingTimer); _typingTimer = null; }
+    var cursor = document.createElement('span');
+    cursor.className = 'page-explain__cursor';
+    el.innerHTML = '';
+    el.appendChild(cursor);
+    var i = 0;
+    function tick() {
+        if (i < text.length) {
+            el.insertBefore(document.createTextNode(text[i]), cursor);
+            i++;
+            _typingTimer = setTimeout(tick, 30);
+        }
+    }
+    setTimeout(tick, 400);
+}
+
 function showPage(name) {
     document.querySelectorAll('main > section').forEach(s => s.hidden = true);
     document.getElementById('page-' + name).hidden = false;
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-btn--active'));
     document.getElementById('nav-' + name)?.classList.add('nav-btn--active');
+    var explainEl = document.getElementById(name + '-explain');
+    if (explainEl && pageExplains[name]) {
+        typeExplain(explainEl.querySelector('.page-explain__text'), pageExplains[name]);
+    }
 }
 
 showPage('milestones');
