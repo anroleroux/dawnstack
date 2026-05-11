@@ -82,13 +82,36 @@ create table milestone_dependencies (
     unique (user_id, milestone_id, depends_on_id)
 );
 
+create type task_status as enum ('pending', 'busy', 'done');
+
 create table tasks (
-    id            serial  primary key,
-    user_id       uuid    not null references auth.users(id) default auth.uid(),
-    milestone_id  integer not null references milestones(id),
-    description   text    not null,
-    depends_on_id integer          references tasks(id)
+    id            serial      primary key,
+    user_id       uuid        not null references auth.users(id) default auth.uid(),
+    milestone_id  integer     not null references milestones(id),
+    description   text        not null,
+    depends_on_id integer              references tasks(id),
+    status        task_status not null default 'pending',
+    created_at    timestamptz not null default now(),
+    started_at    timestamptz,
+    completed_at  timestamptz
 );
+
+create or replace function tasks_set_timestamps()
+returns trigger language plpgsql as $$
+begin
+    if new.status = 'busy' and old.status <> 'busy' and new.started_at is null then
+        new.started_at = now();
+    end if;
+    if new.status = 'done' and old.status <> 'done' and new.completed_at is null then
+        new.completed_at = now();
+    end if;
+    return new;
+end;
+$$;
+
+create trigger tasks_timestamps
+before update on tasks
+for each row execute function tasks_set_timestamps();
 
 -- Row Level Security
 

@@ -80,6 +80,17 @@ type MilestoneDep struct {
 	DependsOnID int `json:"depends_on_id"`
 }
 
+type Task struct {
+	ID          int     `json:"id"`
+	MilestoneID int     `json:"milestone_id"`
+	Description string  `json:"description"`
+	DependsOnID *int    `json:"depends_on_id"`
+	Status      string  `json:"status"`
+	CreatedAt   string  `json:"created_at"`
+	StartedAt   *string `json:"started_at"`
+	CompletedAt *string `json:"completed_at"`
+}
+
 var db *sql.DB
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -230,6 +241,11 @@ func main() {
 	mux.HandleFunc("POST /api/milestone-deps", createMilestoneDep)
 	mux.HandleFunc("PATCH /api/milestone-deps/{id}", patchMilestoneDep)
 	mux.HandleFunc("DELETE /api/milestone-deps/{id}", deleteMilestoneDep)
+
+	mux.HandleFunc("GET /api/tasks",          listTasks)
+	mux.HandleFunc("POST /api/tasks",         createTask)
+	mux.HandleFunc("PATCH /api/tasks/{id}",   patchTask)
+	mux.HandleFunc("DELETE /api/tasks/{id}",  deleteTask)
 
 	addr := ":8080"
 	log.Printf("listening on %s", addr)
@@ -851,4 +867,90 @@ func patchMilestoneDep(w http.ResponseWriter, r *http.Request) {
 
 func deleteMilestoneDep(w http.ResponseWriter, r *http.Request) {
 	deleteRow(w, r, "milestone_dependencies")
+}
+
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+
+const taskCols = `id, milestone_id, description, depends_on_id, status,
+	to_char(created_at,  'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+	to_char(started_at,  'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+	to_char(completed_at,'YYYY-MM-DD"T"HH24:MI:SS"Z"')`
+
+func scanTask(t *Task, dep *sql.NullInt64, sta, com *sql.NullString) {
+	if dep.Valid { v := int(dep.Int64); t.DependsOnID = &v }
+	if sta.Valid { t.StartedAt   = &sta.String }
+	if com.Valid { t.CompletedAt = &com.String }
+}
+
+func listTasks(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.QueryContext(r.Context(),
+		`select `+taskCols+` from tasks order by milestone_id, id`)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+	out := make([]Task, 0)
+	for rows.Next() {
+		var t Task
+		var dep     sql.NullInt64
+		var sta,com sql.NullString
+		if err := rows.Scan(&t.ID, &t.MilestoneID, &t.Description, &dep,
+			&t.Status, &t.CreatedAt, &sta, &com); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		scanTask(&t, &dep, &sta, &com)
+		out = append(out, t)
+	}
+	writeJSON(w, out)
+}
+
+func createTask(w http.ResponseWriter, r *http.Request) {
+	var t Task
+	if err := json.NewDecoder(r.Body).Decode(&t); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	var dep sql.NullInt64
+	if t.DependsOnID != nil { dep = sql.NullInt64{Int64: int64(*t.DependsOnID), Valid: true} }
+
+	var depOut     sql.NullInt64
+	var sta, com   sql.NullString
+	err := db.QueryRowContext(r.Context(),
+		`insert into tasks (milestone_id, description, depends_on_id)
+		 values ($1, $2, $3)
+		 returning `+taskCols,
+		t.MilestoneID, t.Description, dep,
+	).Scan(&t.ID, &t.MilestoneID, &t.Description, &depOut,
+		&t.Status, &t.CreatedAt, &sta, &com)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	scanTask(&t, &depOut, &sta, &com)
+	w.WriteHeader(http.StatusCreated)
+	writeJSON(w, t)
+}
+
+func patchTask(w http.ResponseWriter, r *http.Request) {
+	patchRow(w, r, "tasks",
+		[]string{"milestone_id", "description", "depends_on_id", "status"},
+		taskCols,
+		func(row *sql.Row) error {
+			var t Task
+			var dep     sql.NullInt64
+			var sta,com sql.NullString
+			if err := row.Scan(&t.ID, &t.MilestoneID, &t.Description, &dep,
+				&t.Status, &t.CreatedAt, &sta, &com); err != nil {
+				return err
+			}
+			scanTask(&t, &dep, &sta, &com)
+			writeJSON(w, t)
+			return nil
+		})
+}
+
+func deleteTask(w http.ResponseWriter, r *http.Request) {
+	deleteRow(w, r, "tasks")
 }

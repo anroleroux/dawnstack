@@ -284,6 +284,7 @@ function milestonesTemplate(state) {
     return `
         <div class="items-toolbar">
             <button class="nav-btn" type="button" onclick="showPage('milestone-deps')" style="margin-right:auto">Dependencies</button>
+            <button class="nav-btn" type="button" onclick="showPage('tasks')">Tasks</button>
             <button class="nav-btn" type="button" onclick="milestones.view='chart'">Chart</button>
             <button class="start-btn" type="button" onclick="milestones.adding=true">+ Add milestone</button>
         </div>

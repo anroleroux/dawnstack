@@ -69,12 +69,35 @@ create table milestone_dependencies (
     unique (milestone_id, depends_on_id)
 );
 
+create type task_status as enum ('pending', 'busy', 'done');
+
 create table tasks (
-    id            serial  primary key,
-    milestone_id  integer not null references milestones(id),
-    description   text    not null,
-    depends_on_id integer          references tasks(id)
+    id            serial      primary key,
+    milestone_id  integer     not null references milestones(id),
+    description   text        not null,
+    depends_on_id integer              references tasks(id),
+    status        task_status not null default 'pending',
+    created_at    timestamptz not null default now(),
+    started_at    timestamptz,
+    completed_at  timestamptz
 );
+
+create or replace function tasks_set_timestamps()
+returns trigger language plpgsql as $$
+begin
+    if new.status = 'busy' and old.status <> 'busy' and new.started_at is null then
+        new.started_at = now();
+    end if;
+    if new.status = 'done' and old.status <> 'done' and new.completed_at is null then
+        new.completed_at = now();
+    end if;
+    return new;
+end;
+$$;
+
+create trigger tasks_timestamps
+before update on tasks
+for each row execute function tasks_set_timestamps();
 
 -- Seed data
 
@@ -166,3 +189,13 @@ insert into milestone_dependencies (id, milestone_id, depends_on_id) values
     (3, 5, 1);
 
 select setval('milestone_dependencies_id_seq', (select max(id) from milestone_dependencies));
+
+insert into tasks (id, milestone_id, description, depends_on_id, status, created_at) values
+    (1, 1, 'Set up hosting and domain',  null, 'done',    now() - interval '10 days'),
+    (2, 1, 'Build landing page',          1,   'busy',    now() - interval '8 days'),
+    (3, 1, 'Write first blog post',       null, 'pending', now() - interval '5 days'),
+    (4, 2, 'Draft post schedule',         null, 'pending', now() - interval '3 days'),
+    (5, 3, 'Build CSV import parser',     null, 'busy',    now() - interval '6 days'),
+    (6, 4, 'Write module 1 script',       null, 'pending', now() - interval '2 days');
+
+select setval('tasks_id_seq', (select max(id) from tasks));

@@ -104,6 +104,8 @@ function showPage(name) {
 
 /* {{milestone-deps-js}} */
 
+/* {{tasks-js}} */
+
 //testing-start
 /* {{gantt-tests-js}} */
 //testing-end
@@ -111,7 +113,7 @@ function showPage(name) {
 function loadAll() {
     loadAttributeGroups(); loadAttributes(); loadIdeas(); loadAttributeRatings();
     loadCriteria(); loadCriteriaRatings(); loadPortfolioItems();
-    loadPortfolioItemIdeas(); loadMilestones(); loadMilestoneDeps();
+    loadPortfolioItemIdeas(); loadMilestones(); loadMilestoneDeps(); loadTasks();
 }
 
 function maybeAuth() {

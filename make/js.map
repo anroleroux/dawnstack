@@ -10,4 +10,5 @@
 {{portfolio-item-ideas-js}}:ui/comps/portfolio_item_ideas.js
 {{milestones-js}}:ui/comps/milestones.js
 {{milestone-deps-js}}:ui/comps/milestone_deps.js
+{{tasks-js}}:ui/comps/tasks.js
 {{gantt-tests-js}}:ui/comps/gantt_tests.js
