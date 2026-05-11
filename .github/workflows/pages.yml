@@ -2,8 +2,6 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
@@ -38,3 +36,21 @@ jobs:
       - uses: actions/deploy-pages@v4
         id: deployment
 
+  deploy-preview:
+    if: github.ref != 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build UI (dev)
+        run: make uidev
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ui/dist
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
