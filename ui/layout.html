@@ -13,7 +13,8 @@
     <div id="app-section" hidden>
     <header>
       <nav class="main-nav">
-        <button class="nav-btn nav-btn--active" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
+        <button class="nav-btn nav-btn--active" id="nav-home" onclick="showPage('home')">Home</button>
+        <button class="nav-btn" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
         <button class="nav-btn" id="nav-ideas" onclick="showPage('ideas')">Ideas</button>
         <button class="nav-btn" id="nav-portfolio-items" onclick="showPage('portfolio-items')">Portfolio</button>
         <button class="nav-btn" id="nav-milestones" onclick="showPage('milestones')">Milestones</button>
@@ -21,10 +22,26 @@
       </nav>
     </header>
     <main>
-      <section id="page-attributes">
-        <h1>Attributes</h1>
-        <div id="attributes-list" class="items-list">
-          <p>Loading attributes...</p>
+      <section id="page-home">
+        <div class="home-layout">
+          <div id="home-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </div>
+        </div>
+      </section>
+      <section id="page-attributes" hidden>
+        <div class="page-layout">
+          <aside id="attributes-explain" class="page-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </aside>
+          <div class="page-main">
+            <h1>Attributes</h1>
+            <div id="attributes-list" class="items-list">
+              <p>Loading attributes...</p>
+            </div>
+          </div>
         </div>
       </section>
       <section id="page-att_groups" hidden>
@@ -58,9 +75,17 @@
         </div>
       </section>
       <section id="page-portfolio-items" hidden>
-        <h1>Portfolio</h1>
-        <div id="portfolio-items-list" class="items-list">
-          <p>Loading portfolio items...</p>
+        <div class="page-layout">
+          <aside id="portfolio-items-explain" class="page-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </aside>
+          <div class="page-main">
+            <h1>Portfolio</h1>
+            <div id="portfolio-items-list" class="items-list">
+              <p>Loading portfolio items...</p>
+            </div>
+          </div>
         </div>
       </section>
       <section id="page-milestone-deps" hidden>
@@ -70,15 +95,31 @@
         </div>
       </section>
       <section id="page-milestones" hidden>
-        <h1>Milestones</h1>
-        <div id="milestones-list" class="items-list">
-          <p>Loading milestones...</p>
+        <div class="page-layout">
+          <aside id="milestones-explain" class="page-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </aside>
+          <div class="page-main">
+            <h1>Milestones</h1>
+            <div id="milestones-list" class="items-list">
+              <p>Loading milestones...</p>
+            </div>
+          </div>
         </div>
       </section>
       <section id="page-ideas" hidden>
-        <h1>Ideas</h1>
-        <div id="ideas-list" class="items-list">
-          <p>Loading ideas...</p>
+        <div class="page-layout">
+          <aside id="ideas-explain" class="page-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </aside>
+          <div class="page-main">
+            <h1>Ideas</h1>
+            <div id="ideas-list" class="items-list">
+              <p>Loading ideas...</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

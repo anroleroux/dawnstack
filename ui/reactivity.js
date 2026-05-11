@@ -78,7 +78,7 @@ function editableField(mountRef, apiPath, label, fieldKey, display, inputType, o
             ? `<select class="editable-field__input" onchange="${mountRef}._draft=this.value">
                    ${options.map(o => `<option value="${o.value}"${o.value == mount._draft ? ' selected' : ''}>${o.label}</option>`).join('')}
                </select>`
-            : `<input class="editable-field__input" type="number" value="${mount._draft ?? ''}" oninput="${mountRef}._draft=this.value"${inputType === 'number' ? ' step="any" min="0"' : ' step="1" min="0" max="10"'}>`;
+            : `<input class="editable-field__input" type="${inputType === 'score' ? 'number' : inputType}" value="${mount._draft ?? ''}" oninput="${mountRef}._draft=this.value"${inputType === 'number' ? ' step="any" min="0"' : inputType === 'score' ? ' step="1" min="0" max="10"' : ''}>`;
         return `
             <div class="editable-field editable-field--editing">
                 <label class="editable-field__label">${label}</label>

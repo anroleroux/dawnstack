@@ -596,3 +596,85 @@ main section h1 {
   border-bottom: 2px solid #e0e0e0;
   letter-spacing: -0.01em;
 }
+
+/* ── Page explain pane ────────────────────────── */
+
+.page-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.page-explain {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 3rem 2rem 2.5rem 2rem;
+  border-right: 2px solid #e0e0e0;
+  background: #fafafa;
+}
+
+.page-explain__text {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: #444;
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+.page-explain__word {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.page-explain__word--visible {
+  opacity: 1;
+}
+
+.page-explain__hint {
+  margin: 1.75rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #bbb;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.page-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Home page ────────────────────────────────── */
+
+.home-layout {
+  display: flex;
+  justify-content: center;
+  padding: 9rem 2rem 4rem;
+  min-height: 100vh;
+}
+
+#home-explain {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+
+#home-explain .page-explain__text {
+  font-size: 1.2rem;
+  line-height: 2;
+  color: #2a2a2a;
+  font-style: normal;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+#home-explain .page-explain__hint {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid #eee;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #bbb;
+  font-style: italic;
+}
