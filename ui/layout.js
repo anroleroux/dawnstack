@@ -82,7 +82,7 @@ function loadAll() {
 }
 
 function maybeAuth() {
-    if (!supabase) { setCurrentUserId(1); loadAll(); return; }
+    if (!supabase) { setCurrentUserId(1); loadAll(); showPage('attributes'); return; }
     initAuth();
 }
 
@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (testing) {  //testing
         document.getElementById('app-section').hidden = false; //testing
         loadAll();  //testing
+        showPage('attributes'); //testing
         return;     //testing
     }               //testing
     maybeAuth();

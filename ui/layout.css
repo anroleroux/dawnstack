@@ -601,7 +601,7 @@ main section h1 {
 
 .page-layout {
   display: flex;
-  align-items: flex-start;
+  min-height: 100vh;
 }
 
 .page-explain {
@@ -609,10 +609,6 @@ main section h1 {
   flex-shrink: 0;
   padding: 3rem 2rem 2.5rem 2rem;
   border-right: 2px solid #e0e0e0;
-  position: sticky;
-  top: 0;
-  max-height: 100vh;
-  overflow-y: auto;
   background: #fafafa;
 }
 
