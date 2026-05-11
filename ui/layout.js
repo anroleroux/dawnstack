@@ -58,7 +58,7 @@ function showPage(name) {
     document.getElementById('nav-' + name)?.classList.add('nav-btn--active');
     var explainEl = document.getElementById(name + '-explain');
     if (explainEl && pageExplains[name]) {
-        typeExplain(explainEl.querySelector('.page-explain__text'), pageExplains[name]);
+        typeExplain(explainEl, pageExplains[name]);
     }
 }
 
