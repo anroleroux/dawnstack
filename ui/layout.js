@@ -30,6 +30,10 @@ var pageExplains = {
     "portfolio-items": {
         main: "This is where ideas become real things. Your portfolio is the collection of products, services, and projects you are committing to — the tangible bets you are placing on yourself and your vision.",
         hint: "Add a portfolio item with the + button and link the ideas behind it. Each item can be a product, service, or project. From here you will break it down into milestones."
+    },
+    milestones: {
+        main: "A vision without a timeline is just a wish. Milestones turn your portfolio into a plan — concrete goals with dates that pull you forward, one step at a time.",
+        hint: "Add a milestone for a portfolio item, give it a clear goal, and set a target date. Milestones can depend on each other across portfolio items, so you can map the full shape of your work."
     }
 };
 
