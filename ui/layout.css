@@ -623,19 +623,13 @@ main section h1 {
   font-style: italic;
 }
 
-.page-explain__cursor {
-  display: inline-block;
-  width: 1.5px;
-  height: 0.9em;
-  background: #bbb;
-  margin-left: 1px;
-  vertical-align: text-bottom;
-  animation: blink 0.75s step-end infinite;
+.page-explain__word {
+  opacity: 0;
+  transition: opacity 0.6s ease;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+.page-explain__word--visible {
+  opacity: 1;
 }
 
 .page-main {

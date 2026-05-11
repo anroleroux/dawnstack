@@ -17,26 +17,25 @@ function setCurrentUserId(userId) {
   localStorage.setItem(USER_STORAGE_KEY, userId);
 }
 
-var _typingTimer = null;
+var _explainTimers = [];
 var pageExplains = {
     attributes: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here."
 };
 
 function typeExplain(el, text) {
-    if (_typingTimer) { clearTimeout(_typingTimer); _typingTimer = null; }
-    var cursor = document.createElement('span');
-    cursor.className = 'page-explain__cursor';
+    _explainTimers.forEach(clearTimeout);
+    _explainTimers = [];
+    var words = text.split(' ');
     el.innerHTML = '';
-    el.appendChild(cursor);
-    var i = 0;
-    function tick() {
-        if (i < text.length) {
-            el.insertBefore(document.createTextNode(text[i]), cursor);
-            i++;
-            _typingTimer = setTimeout(tick, 30);
-        }
-    }
-    setTimeout(tick, 400);
+    words.forEach(function(word, i) {
+        var span = document.createElement('span');
+        span.textContent = (i === 0 ? '' : ' ') + word;
+        span.className = 'page-explain__word';
+        el.appendChild(span);
+        _explainTimers.push(setTimeout(function() {
+            span.classList.add('page-explain__word--visible');
+        }, 300 + i * 75));
+    });
 }
 
 function showPage(name) {
