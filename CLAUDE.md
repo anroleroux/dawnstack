@@ -220,4 +220,26 @@ To add a new model, three files need to be touched:
 
 ## Testing flag
 
-`ui/layout.js` sets `const testing = true;` for local dev. `make fsdev` flips it to `false` via sed before composing. Lines marked `//testing` are stripped in production builds.
+`ui/layout.js` sets `const testing = true;` for local dev. `make fsdev` flips it to `false` via sed before composing. `make build` strips testing code from `ui/dist/index.js` in two passes:
+
+- **Per-line:** any line ending with `//testing` is deleted.
+- **Block:** a range from a line ending with `//testing-start` to a line ending with `//testing-end` (both inclusive) is deleted. Use this when only the boundary lines need to be marked:
+
+  ```js
+  } else { //testing-start
+      const mock = getMockData();
+      milestones.list.push(...mock);
+  } //testing-end
+  ```
+
+## Scheduling rules
+
+These rules govern how `buildGanttSchedule()` in `ui/comps/milestones.js` models time.
+
+1. **Milestone date is a deadline (BY date).** The date field is the latest the milestone must be complete — not a target start or exact placement. It is a constraint, not a position. Higher-priority work is scheduled first; lower-priority work fills slack inside the deadline window of higher-priority work.
+2. **Schedule by portfolio item priority.** Milestones belonging to the highest-priority portfolio item are scheduled first. Portfolio item priority is the highest idea score among all ideas linked to that item (`portfolioItemTopPriority`).
+3. **Dependencies inherit the priority of their dependents.** If a lower-priority milestone is a dependency (direct or transitive) of a higher-priority milestone, it is elevated to that higher priority for scheduling purposes. A milestone's effective priority is the maximum of its own priority and all milestones that depend on it.
+4. **Milestones require work time before their deadline.** Each milestone has an associated work duration (in days) that must fit between the preceding milestone and the deadline. Currently a fixed placeholder value `x`; later driven by the sum of task estimates. There must be enough calendar gap between milestones for this work to be completed — scheduling must not place two milestones so close together that the work window collapses.
+5. **Infeasible schedules are surfaced visually.** When required work cannot fit between deadlines (work blocks overlap), the affected milestones are highlighted in red on the Gantt chart. The schedule is never silently compressed.
+6. **Milestone WIP limit.** At most N milestones may be actively in progress at the same time. Work toward multiple milestones is interleaved (tasks from different milestones are interspersed in the schedule), not sequential. Milestones beyond the WIP limit queue behind completing ones.
+7. **Task WIP limit.** At most M tasks may be scheduled concurrently at any point in time. The scheduler fills available WIP slots as fully as possible (bin-packing) rather than placing tasks sequentially. Tasks from different in-progress milestones compete for the same slots, subject to their milestone's priority and deadline.

@@ -50,6 +50,10 @@ showPage('milestones');
 
 /* {{milestone-deps-js}} */
 
+//testing-start
+/* {{gantt-tests-js}} */
+//testing-end
+
 function loadAll() {
     loadAttributeGroups(); loadAttributes(); loadIdeas(); loadAttributeRatings();
     loadCriteria(); loadCriteriaRatings(); loadPortfolioItems();
@@ -62,10 +66,11 @@ function maybeAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (testing) {  //testing
-        document.getElementById('app-section').hidden = false; //testing
-        loadAll();  //testing
-        return;     //testing
-    }               //testing
+    if (testing) {  //testing-start
+        document.getElementById('app-section').hidden = false;
+        loadAll();
+        runGanttTests();
+        return;
+    } //testing-end
     maybeAuth();
 });
