@@ -19,23 +19,36 @@ function setCurrentUserId(userId) {
 
 var _explainTimers = [];
 var pageExplains = {
-    attributes: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here."
+    attributes: {
+        main: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here.",
+        hint: "Start by adding attribute groups — these are your categories, like Strengths, Wins, or Weaknesses. Find them in the nav under Attribute Groups. Then come back here to add individual attributes and assign each one to a group."
+    }
 };
 
-function typeExplain(el, text) {
+function typeExplain(aside, explain) {
     _explainTimers.forEach(clearTimeout);
     _explainTimers = [];
-    var words = text.split(' ');
-    el.innerHTML = '';
+    var textEl = aside.querySelector('.page-explain__text');
+    var hintEl = aside.querySelector('.page-explain__hint');
+    if (hintEl) hintEl.style.opacity = '0';
+    var words = explain.main.split(' ');
+    textEl.innerHTML = '';
     words.forEach(function(word, i) {
         var span = document.createElement('span');
         span.textContent = (i === 0 ? '' : ' ') + word;
         span.className = 'page-explain__word';
-        el.appendChild(span);
+        textEl.appendChild(span);
         _explainTimers.push(setTimeout(function() {
             span.classList.add('page-explain__word--visible');
         }, 400 + i * 120));
     });
+    if (hintEl && explain.hint) {
+        hintEl.textContent = explain.hint;
+        var hintDelay = 400 + (words.length - 1) * 120 + 900;
+        _explainTimers.push(setTimeout(function() {
+            hintEl.style.opacity = '1';
+        }, hintDelay));
+    }
 }
 
 function showPage(name) {

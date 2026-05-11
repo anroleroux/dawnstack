@@ -631,6 +631,15 @@ main section h1 {
   opacity: 1;
 }
 
+.page-explain__hint {
+  margin: 1.75rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #bbb;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
 .page-main {
   flex: 1;
   min-width: 0;
