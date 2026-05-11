@@ -34,7 +34,7 @@ function typeExplain(el, text) {
         el.appendChild(span);
         _explainTimers.push(setTimeout(function() {
             span.classList.add('page-explain__word--visible');
-        }, 300 + i * 75));
+        }, 400 + i * 120));
     });
 }
 
@@ -49,7 +49,7 @@ function showPage(name) {
     }
 }
 
-showPage('milestones');
+// showPage('milestones');
 
 /* {{reactivity-js}} */
 
