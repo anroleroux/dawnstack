@@ -22,6 +22,10 @@ var pageExplains = {
     attributes: {
         main: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here.",
         hint: "Start by adding attribute groups — these are your categories, like Strengths, Wins, or Weaknesses. Find them in the nav under Attribute Groups. Then come back here to add individual attributes and assign each one to a group."
+    },
+    ideas: {
+        main: "Your attributes are the fuel. Ideas are where you ask — what could I build, offer, or create that only I can? Think without limits first, then bring clarity by rating each idea against who you are and what you know.",
+        hint: "Add an idea with the + button. Once added, rate it against your attributes and criteria like impact, reach, and feasibility to see which ones rise to the top."
     }
 };
 
