@@ -13,7 +13,8 @@
     <div id="app-section" hidden>
     <header>
       <nav class="main-nav">
-        <button class="nav-btn nav-btn--active" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
+        <button class="nav-btn nav-btn--active" id="nav-home" onclick="showPage('home')">Home</button>
+        <button class="nav-btn" id="nav-attributes" onclick="showPage('attributes')">Attributes</button>
         <button class="nav-btn" id="nav-ideas" onclick="showPage('ideas')">Ideas</button>
         <button class="nav-btn" id="nav-portfolio-items" onclick="showPage('portfolio-items')">Portfolio</button>
         <button class="nav-btn" id="nav-milestones" onclick="showPage('milestones')">Milestones</button>
@@ -21,7 +22,15 @@
       </nav>
     </header>
     <main>
-      <section id="page-attributes">
+      <section id="page-home">
+        <div class="home-layout">
+          <div id="home-explain">
+            <p class="page-explain__text"></p>
+            <p class="page-explain__hint"></p>
+          </div>
+        </div>
+      </section>
+      <section id="page-attributes" hidden>
         <div class="page-layout">
           <aside id="attributes-explain" class="page-explain">
             <p class="page-explain__text"></p>

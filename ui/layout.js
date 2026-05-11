@@ -19,6 +19,10 @@ function setCurrentUserId(userId) {
 
 var _explainTimers = [];
 var pageExplains = {
+    home: {
+        main: "Hi. I'm Anro. If you're anything like me, you have a bunch of ideas flying around in your head. And if you only have two — that's a perfectly good place to start. This is just a tool to help you picture your plan, prioritize what matters, and move with intention. I hope it serves you as well as it has served me.",
+        hint: "\"All models are wrong, some are useful.\" — George E. P. Box"
+    },
     attributes: {
         main: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here.",
         hint: "Start by adding attribute groups — these are your categories, like Strengths, Wins, or Weaknesses. Find them in the nav under Attribute Groups. Then come back here to add individual attributes and assign each one to a group."
@@ -107,7 +111,7 @@ function loadAll() {
 }
 
 function maybeAuth() {
-    if (!supabase) { setCurrentUserId(1); loadAll(); showPage('attributes'); return; }
+    if (!supabase) { setCurrentUserId(1); loadAll(); showPage('home'); return; }
     initAuth();
 }
 
@@ -115,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (testing) {  //testing
         document.getElementById('app-section').hidden = false; //testing
         loadAll();  //testing
-        showPage('attributes'); //testing
+        showPage('home'); //testing
         return;     //testing
     }               //testing
     maybeAuth();

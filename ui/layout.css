@@ -644,3 +644,37 @@ main section h1 {
   flex: 1;
   min-width: 0;
 }
+
+/* ── Home page ────────────────────────────────── */
+
+.home-layout {
+  display: flex;
+  justify-content: center;
+  padding: 9rem 2rem 4rem;
+  min-height: 100vh;
+}
+
+#home-explain {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+
+#home-explain .page-explain__text {
+  font-size: 1.2rem;
+  line-height: 2;
+  color: #2a2a2a;
+  font-style: normal;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+}
+
+#home-explain .page-explain__hint {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid #eee;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #bbb;
+  font-style: italic;
+}
