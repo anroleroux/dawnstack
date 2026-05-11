@@ -13,6 +13,7 @@ fsdev: ui/layout.html ui/dist/index.css ui/dist/index.js
 
 build: ui/layout.html ui/dist/index.css ui/dist/index.js
 	@mkdir -p ui/dist
+	sed -i '/\/\/testing-start$$/,/\/\/testing-end$$/d' ui/dist/index.js
 	sed -i '/\/\/testing$$/d' ui/dist/index.js
 	sed -i 's/const supabase = false/const supabase = true/' ui/dist/index.js
 	sed -i 's|__SUPABASE_URL__|$(SUPABASE_URL)|g' ui/dist/index.js

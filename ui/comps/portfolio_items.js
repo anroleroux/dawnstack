@@ -11,6 +11,19 @@ function portfolioItemPriority(portfolioItemId) {
     return (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1);
 }
 
+function portfolioItemTopPriority(portfolioItemId) {
+    const ideaIds = portfolioItemIdeas.list
+        .filter(r => r.portfolio_item_id === portfolioItemId)
+        .map(r => r.idea_id);
+    if (!ideaIds.length) return null;
+    const scores = ideaIds
+        .map(id => ideaPriority(id))
+        .filter(p => p !== '—')
+        .map(Number);
+    if (!scores.length) return null;
+    return Math.max(...scores);
+}
+
 const portfolioItemTypes = [
     {value: 'product', label: 'Product'},
     {value: 'service', label: 'Service'},
