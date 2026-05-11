@@ -26,6 +26,10 @@ var pageExplains = {
     ideas: {
         main: "Your attributes are the fuel. Ideas are where you ask — what could I build, offer, or create that only I can? Think without limits first, then bring clarity by rating each idea against who you are and what you know.",
         hint: "Add an idea with the + button. Once added, rate it against your attributes and criteria like impact, reach, and feasibility to see which ones rise to the top."
+    },
+    "portfolio-items": {
+        main: "This is where ideas become real things. Your portfolio is the collection of products, services, and projects you are committing to — the tangible bets you are placing on yourself and your vision.",
+        hint: "Add a portfolio item with the + button and link the ideas behind it. Each item can be a product, service, or project. From here you will break it down into milestones."
     }
 };
 
