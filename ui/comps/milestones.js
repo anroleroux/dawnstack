@@ -81,8 +81,8 @@ function buildGanttSchedule(config = {}) {
     if (!rows.length) return null;
 
     // WIP limits. TASK_WIP will drive task bin-packing once tasks have estimates.
-    const MILESTONE_WIP = config.milestoneWip ?? 3;
-    const TASK_WIP      = config.taskWip      ?? 2;
+    const MILESTONE_WIP = config.milestoneWip ?? 2;
+    const TASK_WIP      = config.taskWip      ?? 1;
 
     // Greedy priority-order pass: schedule milestones until MILESTONE_WIP slots are
     // full. Any milestone whose work window overlaps with MILESTONE_WIP already-
@@ -119,7 +119,7 @@ function buildGanttSchedule(config = {}) {
 }
 
 function ganttChart() {
-    const schedule = buildGanttSchedule();
+    const schedule = buildGanttSchedule(getSettings());
     if (!schedule) return '<p class="item-card__empty">No milestones to chart.</p>';
 
     const { rows, minDate, maxDate, months, effectiveDate } = schedule;
@@ -215,6 +215,22 @@ function milestonesTemplate(state) {
                             .filter(m => m.id !== p.id && !milestoneDeps.list.some(d => d.milestone_id === p.id && d.depends_on_id === m.id))
                             .map(m => `<option value="${m.id}">${m.goal} (${portfolioItemName(m.portfolio_item_id)})</option>`).join("")}
                     </select>
+                    <div class="editable-field__btns">
+                        <button class="save-field-btn" type="submit">Add</button>
+                    </div>
+                </form>
+            </div>
+            <div class="item-card__section">
+                <span class="item-card__section-label">Tasks</span>
+                ${tasks.list
+                    .filter(t => t.milestone_id === p.id)
+                    .map(t => `
+                <div class="editable-field">
+                    ${taskStatusBadge(t.status)}
+                    <span class="editable-field__value">${t.description}</span>
+                </div>`).join("") || '<p class="item-card__empty">No tasks.</p>'}
+                <form class="editable-field editable-field--editing" onsubmit="addTaskToMilestone(event,${p.id})">
+                    <input class="editable-field__input" name="description" type="text" placeholder="New task..." required>
                     <div class="editable-field__btns">
                         <button class="save-field-btn" type="submit">Add</button>
                     </div>
@@ -364,6 +380,37 @@ async function saveMilestone(e) {
         milestones.list.push({...data, id: Date.now()}); //testing
         milestones.adding = false; //testing
     } //testing
+}
+
+async function addTaskToMilestone(e, milestoneId) {
+    e.preventDefault();
+    const description = new FormData(e.target).get("description");
+    const data = {description, milestone_id: milestoneId, depends_on_id: null};
+
+    if (!testing) {  //testing
+    try {
+        let saved;
+        if (!supabase) {
+            const userId = getCurrentUserId();
+            const headers = {"Content-Type": "application/json"};
+            if (userId) headers["X-User-Id"] = userId;
+            const response = await fetch("/api/tasks", {method: "POST", headers, body: JSON.stringify(data)});
+            if (!response.ok) throw new Error("Failed to save task");
+            saved = await response.json();
+        } else {
+            const response = await fetch(sbUrl('/api/tasks'), {method: "POST", headers: sbHeaders(true), body: JSON.stringify(data)});
+            if (!response.ok) throw new Error("Failed to save task");
+            saved = (await response.json())[0];
+        }
+        tasks.list.push(saved);
+    } catch (err) {
+        alert("Could not add task.");
+        return;
+    }
+    } else { //testing
+        tasks.list.push({...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString(), started_at: null, completed_at: null}); //testing
+    } //testing
+    milestones._lv++;
 }
 
 async function loadMilestones() {

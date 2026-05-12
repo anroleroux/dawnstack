@@ -116,7 +116,10 @@ function ideasTemplate(state) {
             <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')" style="margin-right:auto">Criteria Ratings</button>
             <button class="start-btn" type="button" onclick="ideas.adding=true">+ Add idea</button>
         </div>
-        ${state.list.map((p, pid) => rowTemplate(p, pid)).join("")}
+        ${[...state.list]
+            .map((p, pid) => ({p, pid, score: ideaPriority(p.id) === '—' ? -1 : parseFloat(ideaPriority(p.id))}))
+            .sort((a, b) => b.score - a.score)
+            .map(({p, pid}) => rowTemplate(p, pid)).join("")}
     `;
 }
 

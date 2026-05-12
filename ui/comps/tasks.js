@@ -221,4 +221,5 @@ async function loadTasks() {
             {id:6, milestone_id:4, description:"Write module 1 script",        depends_on_id:null, status:"pending",created_at:"2026-05-09T08:00:00Z", started_at:null,                  completed_at:null}  //testing
         ); //testing
     } //testing
+    milestones._lv++;
 }

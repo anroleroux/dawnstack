@@ -100,6 +100,8 @@ function showPage(name) {
 
 /* {{portfolio-item-ideas-js}} */
 
+/* {{settings-js}} */
+
 /* {{milestones-js}} */
 
 /* {{milestone-deps-js}} */
@@ -124,6 +126,7 @@ function maybeAuth() {
 document.addEventListener("DOMContentLoaded", () => {
     if (testing) {  //testing-start
         document.getElementById('app-section').hidden = false;
+        showPage('home');
         loadAll();
         runGanttTests();
         return;
