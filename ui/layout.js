@@ -72,6 +72,7 @@ function showPage(name) {
     document.getElementById('page-' + name).hidden = false;
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-btn--active'));
     document.getElementById('nav-' + name)?.classList.add('nav-btn--active');
+    document.body.className = 'page-' + name;
     var explainEl = document.getElementById(name + '-explain');
     if (explainEl && pageExplains[name]) {
         typeExplain(explainEl, pageExplains[name]);
