@@ -100,6 +100,8 @@ function showPage(name) {
 
 /* {{portfolio-item-ideas-js}} */
 
+/* {{settings-js}} */
+
 /* {{milestones-js}} */
 
 /* {{milestone-deps-js}} */

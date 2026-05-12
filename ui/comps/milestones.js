@@ -119,7 +119,7 @@ function buildGanttSchedule(config = {}) {
 }
 
 function ganttChart() {
-    const schedule = buildGanttSchedule();
+    const schedule = buildGanttSchedule(getSettings());
     if (!schedule) return '<p class="item-card__empty">No milestones to chart.</p>';
 
     const { rows, minDate, maxDate, months, effectiveDate } = schedule;
