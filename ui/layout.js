@@ -124,6 +124,7 @@ function maybeAuth() {
 document.addEventListener("DOMContentLoaded", () => {
     if (testing) {  //testing-start
         document.getElementById('app-section').hidden = false;
+        showPage('home');
         loadAll();
         runGanttTests();
         return;
