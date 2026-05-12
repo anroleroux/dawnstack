@@ -82,4 +82,5 @@ function runGanttTests() {
 
     console.groupEnd();
     console.log('Gantt tests: ' + passed + ' passed, ' + failed + ' failed');
+    portfolioItems._lv++;
 }
