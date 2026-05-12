@@ -119,7 +119,10 @@ function portfolioItemsTemplate(state) {
             <button class="nav-btn" type="button" onclick="showPage('portfolio-item-ideas')" style="margin-right:auto">Item Ideas</button>
             <button class="start-btn" type="button" onclick="portfolioItems.adding=true">+ Add item</button>
         </div>
-        ${state.list.map((p, pid) => rowTemplate(p, pid)).join("")}
+        ${[...state.list]
+            .map((p, pid) => ({p, pid, score: portfolioItemPriority(p.id) === '—' ? -1 : parseFloat(portfolioItemPriority(p.id))}))
+            .sort((a, b) => b.score - a.score)
+            .map(({p, pid}) => rowTemplate(p, pid)).join("")}
     `;
 }
 

@@ -81,8 +81,8 @@ function buildGanttSchedule(config = {}) {
     if (!rows.length) return null;
 
     // WIP limits. TASK_WIP will drive task bin-packing once tasks have estimates.
-    const MILESTONE_WIP = config.milestoneWip ?? 3;
-    const TASK_WIP      = config.taskWip      ?? 2;
+    const MILESTONE_WIP = config.milestoneWip ?? 2;
+    const TASK_WIP      = config.taskWip      ?? 1;
 
     // Greedy priority-order pass: schedule milestones until MILESTONE_WIP slots are
     // full. Any milestone whose work window overlaps with MILESTONE_WIP already-
