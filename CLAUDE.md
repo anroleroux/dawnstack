@@ -265,13 +265,13 @@ These rules govern how `buildGanttSchedule()` in `ui/comps/milestones.js` models
 - `--page-accent-light` — sidebar (`.page-explain`) background tint
 - `--page-border-accent` — sidebar border, `h1` underline, form focus rings
 
-| Page | Primary | Accent light |
-|------|---------|--------------|
-| Home (default) | `#222` black | `#f5f5f5` grey |
-| Attributes | Brown-700 `#4a3527` | Brown-50 `#faf5ef` |
-| Ideas | Brown-700 → Green-700 hover | Green-50 `#f0f7f2` |
-| Portfolio | Green-700 `#2d5a3d` | Blue-50 `#f0f5fb` |
-| Milestones | Blue-700 `#1e4a7a` | Blue-50 `#f0f5fb` |
+| Page | Primary | Hover | Accent light |
+|------|---------|-------|--------------|
+| Home (default) | `#222` black | `#444` | `#f5f5f5` grey |
+| Attributes | Brown-700 `#4a3527` | Brown-900 `#2a1a0f` | Brown-50 `#faf5ef` |
+| Ideas | Brown-700 `#4a3527` | Green-500 `#27a85a` (sprout pop) | Green-50 `#edfbf3` |
+| Portfolio | Green-700 `#1a7a3e` | Green-900 `#0d4422` | Green-50 `#edfbf3` |
+| Milestones | Blue-500 `#2e9cd4` (sky) | Blue-700 `#1a6fa8` | Blue-50 `#f0f8ff` |
 
 Sub-pages inherit the theme of their parent section (e.g. `att_groups` → brown, `tasks` → blue).
 

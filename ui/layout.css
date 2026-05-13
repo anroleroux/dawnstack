@@ -1,3 +1,5 @@
+html { font-size: 16px; }
+
 * {
   box-sizing: border-box;
 }
@@ -12,20 +14,20 @@
   --brown-900: #2a1a0f;
 
   /* Green — growing plans, lushness */
-  --green-50:  #f0f7f2;
-  --green-100: #d6eedd;
-  --green-300: #8ac4a0;
-  --green-500: #4a8c64;
-  --green-700: #2d5a3d;
-  --green-900: #173322;
+  --green-50:  #edfbf3;
+  --green-100: #c4f5d6;
+  --green-300: #50c87a;
+  --green-500: #27a85a;
+  --green-700: #1a7a3e;
+  --green-900: #0d4422;
 
   /* Blue — sky, freedom, space */
-  --blue-50:  #f0f5fb;
-  --blue-100: #d4e5f5;
-  --blue-300: #88b4d8;
-  --blue-500: #3d7ab5;
-  --blue-700: #1e4a7a;
-  --blue-900: #0f2540;
+  --blue-50:  #f0f8ff;
+  --blue-100: #d6eaf8;
+  --blue-300: #7fb3d3;
+  --blue-500: #2e9cd4;
+  --blue-700: #1a6fa8;
+  --blue-900: #0d3b5e;
 
   /* Page theme defaults (home + unthemed sub-pages) */
   --page-primary:       #222;
@@ -52,7 +54,7 @@ body.page-att_groups {
 
 body.page-ideas {
   --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--green-700);
+  --page-primary-hover: var(--green-500);
   --page-accent-light:  var(--green-50);
   --page-border-accent: var(--green-300);
 }
@@ -61,7 +63,7 @@ body.page-criteria,
 body.page-criteria-ratings,
 body.page-attribute-ratings {
   --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--green-700);
+  --page-primary-hover: var(--green-500);
   --page-accent-light:  var(--green-50);
   --page-border-accent: var(--green-300);
 }
@@ -69,16 +71,16 @@ body.page-attribute-ratings {
 body.page-portfolio-items,
 body.page-portfolio-item-ideas {
   --page-primary:       var(--green-700);
-  --page-primary-hover: var(--blue-700);
-  --page-accent-light:  var(--blue-50);
-  --page-border-accent: var(--blue-300);
+  --page-primary-hover: var(--green-900);
+  --page-accent-light:  var(--green-50);
+  --page-border-accent: var(--green-300);
 }
 
 body.page-milestones,
 body.page-milestone-deps,
 body.page-tasks {
-  --page-primary:       var(--blue-700);
-  --page-primary-hover: var(--blue-900);
+  --page-primary:       var(--blue-500);
+  --page-primary-hover: var(--blue-700);
   --page-accent-light:  var(--blue-50);
   --page-border-accent: var(--blue-300);
 }
@@ -789,4 +791,73 @@ main section h1 {
   line-height: 1.6;
   color: #bbb;
   font-style: italic;
+}
+
+/* ── Responsive ────────────────────────────────── */
+
+@media (max-width: 768px) {
+  html { font-size: 15px; }
+
+  .main-nav {
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .page-layout {
+    flex-direction: column;
+    min-height: unset;
+  }
+
+  .page-explain {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--page-border-accent);
+    padding: 1.25rem 1.5rem 1rem;
+  }
+
+  .page-explain__text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-style: normal;
+  }
+
+  .page-explain__hint {
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+  }
+
+  .page-main { padding: 0 1rem; }
+
+  main section > h1 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  main section > .items-list {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0 1rem;
+  }
+
+  .home-layout { padding: 3.5rem 1.5rem 2.5rem; }
+
+  #home-explain .page-explain__text {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+
+  .main-nav {
+    gap: 0.1rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .page-explain { padding: 1rem 1.25rem 0.75rem; }
+
+  .home-layout { padding: 2.5rem 1rem 2rem; }
 }
