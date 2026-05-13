@@ -243,3 +243,39 @@ These rules govern how `buildGanttSchedule()` in `ui/comps/milestones.js` models
 5. **Infeasible schedules are surfaced visually.** When required work cannot fit between deadlines (work blocks overlap), the affected milestones are highlighted in red on the Gantt chart. The schedule is never silently compressed.
 6. **Milestone WIP limit.** At most N milestones may be actively in progress at the same time. Work toward multiple milestones is interleaved (tasks from different milestones are interspersed in the schedule), not sequential. Milestones beyond the WIP limit queue behind completing ones.
 7. **Task WIP limit.** At most M tasks may be scheduled concurrently at any point in time. The scheduler fills available WIP slots as fully as possible (bin-packing) rather than placing tasks sequentially. Tasks from different in-progress milestones compete for the same slots, subject to their milestone's priority and deadline.
+
+## Visual design
+
+**Mood:** Editorial / calm — generous whitespace, refined typography, minimal decoration.
+
+**Typography:** System font stack (`-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif`). No web fonts loaded.
+
+**Colour palette:** Three natural scales implemented as CSS custom properties in `ui/layout.css`:
+
+| Scale | Metaphor | Usage |
+|-------|----------|-------|
+| Brown (`--brown-*`) | Earth, seeds, planting | Attributes section |
+| Green (`--green-*`) | Growing plans, lushness | Ideas + Portfolio transition |
+| Blue (`--blue-*`) | Sky, freedom, space | Milestones section |
+
+**Per-page theming:** Each section carries its own palette via `body.page-<name>` CSS classes set by `showPage()` in `ui/layout.js`. The four CSS variables that change per page are:
+
+- `--page-primary` — buttons, nav active state, editable-field pencil hover
+- `--page-primary-hover` — button hover state
+- `--page-accent-light` — sidebar (`.page-explain`) background tint
+- `--page-border-accent` — sidebar border, `h1` underline, form focus rings
+
+| Page | Primary | Hover | Accent light |
+|------|---------|-------|--------------|
+| Home (default) | `#222` black | `#444` | `#f5f5f5` grey |
+| Attributes | Brown-700 `#4a3527` | Brown-900 `#2a1a0f` | Brown-50 `#faf5ef` |
+| Ideas | Brown-700 `#4a3527` | Green-500 `#27a85a` (sprout pop) | Green-50 `#edfbf3` |
+| Portfolio | Green-700 `#1a7a3e` | Green-900 `#0d4422` | Green-50 `#edfbf3` |
+| Milestones | Blue-500 `#2e9cd4` (sky) | Blue-700 `#1a6fa8` | Blue-50 `#f0f8ff` |
+
+Sub-pages inherit the theme of their parent section (e.g. `att_groups` → brown, `tasks` → blue).
+
+**Rules for new UI work:**
+- Never hard-code `#222`/`#444` for primary interactive colours — use `--page-primary` / `--page-primary-hover`.
+- Never hard-code `#e0e0e0` for section borders or sidebar backgrounds — use `--page-border-accent` / `--page-accent-light`.
+- Keep `h1` at `font-weight: 600`, `letter-spacing: -0.02em`.
