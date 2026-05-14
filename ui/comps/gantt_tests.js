@@ -6,82 +6,57 @@ function runGanttTests() {
         else       { console.error('  ✗ ' + name); failed++; }
     }
 
-    // Replaces all reactive list state with mock data, runs fn(), then restores.
-    function withMockState(mocks, fn) {
-        const stores = { milestones, milestoneDeps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings };
-        const saved  = {};
-        Object.keys(stores).forEach(k => {
-            saved[k] = [...stores[k].list];
-            stores[k].list.length = 0;
-            (mocks[k] || []).forEach(x => stores[k].list.push(x));
-        });
-        try { return fn(); } finally {
-            Object.keys(stores).forEach(k => {
-                stores[k].list.length = 0;
-                saved[k].forEach(x => stores[k].list.push(x));
-            });
-        }
-    }
-
     console.group('Gantt scheduling tests');
+    console.group('Happy-day: priority ordering and work duration');
 
-    // Rule 6: two milestones on different portfolio items with overlapping work
-    // windows should be scheduled after each other when MILESTONE_WIP = 1.
-    console.group('Rule 6: milestone WIP limit');
-    withMockState({
-        portfolioItems:     [{id:101, name:'High-PI', type:'product'}, {id:102, name:'Low-PI', type:'product'}],
-        portfolioItemIdeas: [{id:1, portfolio_item_id:101, idea_id:1001}, {id:2, portfolio_item_id:102, idea_id:1002}],
-        attributeRatings:   [{id:1, idea_id:1001, att_id:1, score:9}, {id:2, idea_id:1002, att_id:1, score:3}],
-        criteriaRatings:    [],
-        milestones: [
-            {id:201, portfolio_item_id:101, goal:'High milestone', date:'2026-08-15'},
-            {id:202, portfolio_item_id:102, goal:'Low milestone',  date:'2026-08-22'},
+    // High-PI (priority 9) has one milestone with no deadline and 3 tasks (6 days).
+    // Low-PI  (priority 3) has one milestone with a deadline and no tasks (14 days).
+    // Schedule starts 2026-01-01.
+    // Expected: High milestone scheduled first → 2026-01-07 (6 days)
+    //           Low milestone scheduled next  → 2026-01-21 (14 days after)
+    const data = {
+        portfolioItems: [
+            {id: 1, name: 'Low-PI',  type: 'product'},
+            {id: 2, name: 'High-PI', type: 'product'},
         ],
-        milestoneDeps: [],
-    }, () => {
-        // WORK_DAYS=14: M-201 workStart=Aug 1, M-202 workStart=Aug 8 → 7-day overlap
-        const s = buildGanttSchedule({ milestoneWip: 1, taskWip: 1 });
-        assert('schedule is not null', s !== null);
-        const allItems = s ? s.rows.flatMap(r => r.items) : [];
-        const high = allItems.find(x => x.m.id === 201);
-        const low  = allItems.find(x => x.m.id === 202);
-        assert('high-priority milestone is scheduled (not wipExceeded)', high && !high.wipExceeded);
-        assert('low-priority milestone is deferred (wipExceeded)',        low  &&  low.wipExceeded);
-    });
-    console.groupEnd();
-
-    // Rules 6+7: two milestones on the SAME portfolio item with overlapping work
-    // windows both fit when MILESTONE_WIP = 2, and TASK_WIP = 1 means their tasks
-    // are interleaved one-at-a-time within the overlap period.
-    console.group('Rules 6+7: concurrent milestones with task interleaving');
-    withMockState({
-        portfolioItems:     [{id:101, name:'PI', type:'product'}],
-        portfolioItemIdeas: [{id:1, portfolio_item_id:101, idea_id:1001}],
-        attributeRatings:   [{id:1, idea_id:1001, att_id:1, score:7}],
-        criteriaRatings:    [],
-        milestones: [
-            {id:301, portfolio_item_id:101, goal:'M-early', date:'2026-09-01'},
-            {id:302, portfolio_item_id:101, goal:'M-late',  date:'2026-09-08'},
+        portfolioItemIdeas: [
+            {portfolio_item_id: 1, idea_id: 10},
+            {portfolio_item_id: 2, idea_id: 20},
         ],
-        milestoneDeps: [],
-    }, () => {
-        // WORK_DAYS=14: M-301 workStart=Aug 18, M-302 workStart=Aug 25
-        // Overlap window: Aug 25–Sep 1 (7 days) — both milestones in progress
-        const s = buildGanttSchedule({ milestoneWip: 2, taskWip: 1 });
-        assert('schedule is not null', s !== null);
-        const allItems = s ? s.rows.flatMap(r => r.items) : [];
-        const m1 = allItems.find(x => x.m.id === 301);
-        const m2 = allItems.find(x => x.m.id === 302);
-        assert('first milestone fits within WIP limit (not wipExceeded)',  m1 && !m1.wipExceeded);
-        assert('second milestone fits within WIP limit (not wipExceeded)', m2 && !m2.wipExceeded);
-        assert('work windows overlap (both milestones in progress simultaneously)',
-            m1 && m2 && m2.workStart < m1.date && m1.workStart < m2.date);
-        assert('task WIP limit is 1 (tasks interleaved one at a time)', s && s.TASK_WIP === 1);
-    });
-    console.groupEnd();
+        attributeRatings: [
+            {idea_id: 10, score: 3},
+            {idea_id: 20, score: 9},
+        ],
+        criteriaRatings: [],
+        milestones: [
+            {id: 101, portfolio_item_id: 1, goal: 'Low milestone',  date: '2026-08-01'},
+            {id: 201, portfolio_item_id: 2, goal: 'High milestone', date: null},
+        ],
+        tasks: [
+            {id: 1, milestone_id: 201},
+            {id: 2, milestone_id: 201},
+            {id: 3, milestone_id: 201},
+        ],
+        deps: [],
+    };
 
+    const s = buildGanttSchedule(data, { today: '2026-01-01' });
+    assert('schedule is not null',               s !== null);
+    assert('two rows returned',                  s && s.rows.length === 2);
+    assert('High-PI row is first (priority 9)',  s && s.rows[0].pi.id === 2);
+    assert('Low-PI row is second (priority 3)',  s && s.rows[1].pi.id === 1);
+
+    const highItem = s && s.rows[0].items[0];
+    const lowItem  = s && s.rows[1].items[0];
+
+    assert('undated milestone is scheduled',          highItem && highItem.scheduledDate instanceof Date);
+    assert('undated milestone has no deadline',        highItem && highItem.deadline === null);
+    assert('dated milestone has a deadline',           lowItem  && lowItem.deadline instanceof Date);
+    const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    assert('High milestone: 3 tasks → 6 days from start', highItem && ymd(highItem.scheduledDate) === '2026-01-07');
+    assert('Low milestone: no tasks → 14 days after',     lowItem  && ymd(lowItem.scheduledDate)  === '2026-01-21');
+
+    console.groupEnd();
     console.groupEnd();
     console.log('Gantt tests: ' + passed + ' passed, ' + failed + ' failed');
-    portfolioItems._lv++;
-    milestones._lv++;
 }

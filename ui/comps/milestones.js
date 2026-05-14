@@ -1,111 +1,60 @@
-// Builds the scheduling model from current reactive state.
+// Builds the scheduling model from explicitly passed data.
 // Returns null when there is nothing to chart.
-// effectiveDate(id)     — latest deadline, propagated down through dependencies.
-// effectivePriority(id) — highest priority, propagated up through dependents;
-//   a low-priority milestone that blocks high-priority work inherits that priority.
-function buildGanttSchedule(config = {}) {
-    const dateMemo = new Map();
-    function effectiveDate(id, anc = new Set()) {
-        if (dateMemo.has(id)) return dateMemo.get(id);
-        if (anc.has(id)) return null;
-        const m = milestones.list.find(m => m.id === id);
-        if (!m || !m.date) { dateMemo.set(id, null); return null; }
-        const own = new Date(m.date);
-        const next = new Set(anc); next.add(id);
-        const r = milestoneDeps.list
-            .filter(d => d.milestone_id === id)
-            .reduce((lat, d) => {
-                const dd = effectiveDate(d.depends_on_id, next);
-                return dd && dd > lat ? dd : lat;
-            }, own);
-        dateMemo.set(id, r);
-        return r;
+// data: { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks }
+// config.today: ISO date string to pin the schedule start (defaults to now; useful for tests).
+// Each item in rows: { m, scheduledDate, deadline }
+//   scheduledDate — computed end of work window (always present)
+//   deadline      — m.date parsed as Date, or null if the milestone has no date
+function buildGanttSchedule(data, config = {}) {
+    const { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks } = data;
+
+    function ideaScore(ideaId) {
+        const scores = [
+            ...attributeRatings.filter(r => r.idea_id === ideaId).map(r => r.score),
+            ...criteriaRatings.filter(r => r.idea_id === ideaId).map(r => r.score),
+        ];
+        return scores.length ? scores.reduce((s, v) => s + v, 0) / scores.length : null;
     }
 
-    const priMemo = new Map();
-    function effectivePriority(id, anc = new Set()) {
-        if (priMemo.has(id)) return priMemo.get(id);
-        if (anc.has(id)) return 0;
-        const m = milestones.list.find(m => m.id === id);
-        if (!m) { priMemo.set(id, 0); return 0; }
-        const own = portfolioItemTopPriority(m.portfolio_item_id) ?? 0;
-        const next = new Set(anc); next.add(id);
-        const r = milestoneDeps.list
-            .filter(d => d.depends_on_id === id)
-            .reduce((max, d) => {
-                const dp = effectivePriority(d.milestone_id, next);
-                return dp > max ? dp : max;
-            }, own);
-        priMemo.set(id, r);
-        return r;
+    function piPriority(piId) {
+        const ideaIds = portfolioItemIdeas
+            .filter(r => r.portfolio_item_id === piId)
+            .map(r => r.idea_id);
+        const scores = ideaIds.map(ideaScore).filter(s => s !== null);
+        return scores.length ? Math.max(...scores) : 0;
     }
 
-    // Placeholder: later replaced by sum of task estimates for the milestone.
-    const WORK_DAYS = 14;
     const MS = 86400000;
-
-    // Earliest date work on this milestone can start: natural start (deadline minus
-    // WORK_DAYS) pushed forward to the latest dependency deadline if needed.
-    function workStart(id) {
-        const deadline = effectiveDate(id);
-        if (!deadline) return null;
-        const natural = new Date(deadline - WORK_DAYS * MS);
-        return milestoneDeps.list
-            .filter(d => d.milestone_id === id)
-            .reduce((floor, d) => {
-                const dd = effectiveDate(d.depends_on_id);
-                return dd && dd > floor ? dd : floor;
-            }, natural);
+    function workDuration(milestoneId) {
+        const n = tasks.filter(t => t.milestone_id === milestoneId).length;
+        return n > 0 ? n * 2 : 14;
     }
 
-    const rows = portfolioItems.list
+    const rows = portfolioItems
         .map(pi => ({
             pi,
-            items: milestones.list
-                .filter(m => m.portfolio_item_id === pi.id)
-                .map(m => {
-                    const date = effectiveDate(m.id);
-                    const ws   = workStart(m.id);
-                    return { m, date, priority: effectivePriority(m.id), workStart: ws, infeasible: ws && date && ws >= date };
-                })
-                .filter(x => x.date)
-                .sort((a, b) => a.date - b.date),
+            priority: piPriority(pi.id),
+            items: [],
         }))
-        .filter(r => r.items.length)
-        .sort((a, b) => {
-            const pa = Math.max(...a.items.map(x => x.priority));
-            const pb = Math.max(...b.items.map(x => x.priority));
-            return pb - pa;
-        });
+        .filter(r => milestones.some(m => m.portfolio_item_id === r.pi.id))
+        .sort((a, b) => b.priority - a.priority);
 
     if (!rows.length) return null;
 
-    // WIP limits. TASK_WIP will drive task bin-packing once tasks have estimates.
-    const MILESTONE_WIP = config.milestoneWip ?? 2;
-    const TASK_WIP      = config.taskWip      ?? 1;
+    // Schedule milestones sequentially in priority order.
+    // Each milestone's scheduledDate = cursor + its work duration.
+    const start = new Date(config.today || Date.now());
+    start.setHours(0, 0, 0, 0);
+    let cursor = new Date(start);
 
-    // Greedy priority-order pass: schedule milestones until MILESTONE_WIP slots are
-    // full. Any milestone whose work window overlaps with MILESTONE_WIP already-
-    // scheduled windows is marked wipExceeded.
-    const allItems = rows.flatMap(r => r.items)
-        .sort((a, b) => b.priority - a.priority || a.date - b.date);
-    const wipScheduled = [];
-    const wipExceededIds = new Set();
-    for (const item of allItems) {
-        const overlapping = wipScheduled.filter(
-            s => s.workStart < item.date && item.workStart < s.date
-        ).length;
-        if (overlapping >= MILESTONE_WIP) {
-            wipExceededIds.add(item.m.id);
-        } else {
-            wipScheduled.push(item);
+    for (const row of rows) {
+        for (const m of milestones.filter(m => m.portfolio_item_id === row.pi.id)) {
+            cursor = new Date(+cursor + workDuration(m.id) * MS);
+            row.items.push({ m, scheduledDate: new Date(cursor), deadline: m.date ? new Date(m.date) : null });
         }
     }
-    rows.forEach(r => r.items.forEach(item => {
-        item.wipExceeded = wipExceededIds.has(item.m.id);
-    }));
 
-    const allDates = rows.flatMap(r => r.items.map(x => x.date));
+    const allDates = rows.flatMap(r => r.items.map(x => x.scheduledDate));
     const mn = new Date(Math.min(...allDates));
     const mx = new Date(Math.max(...allDates));
     const minDate = new Date(mn.getFullYear(), mn.getMonth(), 1);
@@ -115,14 +64,25 @@ function buildGanttSchedule(config = {}) {
     for (let d = new Date(minDate); d < maxDate; d = new Date(d.getFullYear(), d.getMonth() + 1, 1))
         months.push(new Date(d));
 
-    return { rows, minDate, maxDate, months, effectiveDate, effectivePriority, MILESTONE_WIP, TASK_WIP };
+    return { rows, minDate, maxDate, months, deps };
 }
 
+const fmtDate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
 function ganttChart() {
-    const schedule = buildGanttSchedule(getSettings());
+    const schedule = buildGanttSchedule({
+        milestones:         milestones.list,
+        deps:               milestoneDeps.list,
+        portfolioItems:     portfolioItems.list,
+        portfolioItemIdeas: portfolioItemIdeas.list,
+        attributeRatings:   attributeRatings.list,
+        criteriaRatings:    criteriaRatings.list,
+        tasks:              tasks.list,
+    }, getSettings());
     if (!schedule) return '<p class="item-card__empty">No milestones to chart.</p>';
 
-    const { rows, minDate, maxDate, months, effectiveDate } = schedule;
+    const { rows, minDate, maxDate, months, deps: dList } = schedule;
+    const allItems = rows.flatMap(r => r.items);
 
     const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
     const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -151,31 +111,25 @@ function ganttChart() {
         const y = rowY(i);
         s += `<line x1="${LABEL_W}" y1="${y}" x2="${X1}" y2="${y}" stroke="#ebebeb" stroke-width="1"/>
               <text x="${LABEL_W - 8}" y="${y + 4}" text-anchor="end" fill="#555" font-size="12" font-weight="500">${esc(pi.name)}</text>`;
-        items.forEach(({ m, date, workStart, infeasible, wipExceeded }, j) => {
-            const x  = toX(date);
-            const wx = workStart ? toX(workStart) : x;
-            const barW = Math.max(0, x - wx);
+        items.forEach(({ m, scheduledDate }, j) => {
+            const x  = toX(scheduledDate);
             const up = j % 2 === 0;
-            const barFill   = wipExceeded ? '#f5f5f5' : infeasible ? '#fdecea' : '#e8f2fc';
-            const barStroke = wipExceeded ? '#ccc'    : infeasible ? '#e57373' : '#c0d8f0';
-            const dotFill   = wipExceeded ? '#bbb'    : infeasible ? '#e53935' : '#4a90d9';
-            const dash      = wipExceeded ? ' stroke-dasharray="4,3"' : '';
-            s += `<rect x="${wx.toFixed(1)}" y="${y - 6}" width="${barW.toFixed(1)}" height="12" rx="3" fill="${barFill}" stroke="${barStroke}" stroke-width="1"${dash}/>
-                  <circle cx="${x.toFixed(1)}" cy="${y}" r="${MR}" fill="${dotFill}" stroke="#fff" stroke-width="2"/>
-                  <text x="${x.toFixed(1)}" y="${up ? y - MR - 6  : y + MR + 14}" text-anchor="middle" fill="${wipExceeded ? '#bbb' : '#333'}" font-size="11">${esc(m.goal)}</text>
-                  <text x="${x.toFixed(1)}" y="${up ? y - MR - 16 : y + MR + 24}" text-anchor="middle" fill="#bbb" font-size="9">${date.toISOString().slice(0, 10)}</text>`;
+            s += `<rect x="${x.toFixed(1)}" y="${y - 6}" width="0" height="12" rx="3" fill="#e8f2fc" stroke="#c0d8f0" stroke-width="1"/>
+                  <circle cx="${x.toFixed(1)}" cy="${y}" r="${MR}" fill="#4a90d9" stroke="#fff" stroke-width="2"/>
+                  <text x="${x.toFixed(1)}" y="${up ? y - MR - 6  : y + MR + 14}" text-anchor="middle" fill="#333" font-size="11">${esc(m.goal)}</text>
+                  <text x="${x.toFixed(1)}" y="${up ? y - MR - 16 : y + MR + 24}" text-anchor="middle" fill="#bbb" font-size="9">${fmtDate(scheduledDate)}</text>`;
         });
     });
 
-    for (const dep of milestoneDeps.list) {
-        const src = milestones.list.find(m => m.id === dep.depends_on_id);
-        const tgt = milestones.list.find(m => m.id === dep.milestone_id);
+    for (const dep of dList) {
+        const src = allItems.find(x => x.m.id === dep.depends_on_id);
+        const tgt = allItems.find(x => x.m.id === dep.milestone_id);
         if (!src || !tgt) continue;
-        const ri = rows.findIndex(r => r.pi.id === src.portfolio_item_id);
-        const rj = rows.findIndex(r => r.pi.id === tgt.portfolio_item_id);
+        const ri = rows.findIndex(r => r.pi.id === src.m.portfolio_item_id);
+        const rj = rows.findIndex(r => r.pi.id === tgt.m.portfolio_item_id);
         if (ri === -1 || rj === -1) continue;
-        const x1 = toX(effectiveDate(src.id)), y1 = rowY(ri);
-        const x2 = toX(effectiveDate(tgt.id)), y2 = rowY(rj);
+        const x1 = toX(src.scheduledDate), y1 = rowY(ri);
+        const x2 = toX(tgt.scheduledDate), y2 = rowY(rj);
         if (Math.abs(x1 - x2) < 1 && ri === rj) continue;
         const dx = Math.min(40, (x2 - x1) * 0.4 + 8);
         s += `<path d="M${(x1+MR).toFixed(1)},${y1} C${(x1+dx).toFixed(1)},${y1} ${(x2-dx).toFixed(1)},${y2} ${(x2-MR).toFixed(1)},${y2}"
