@@ -30,29 +30,70 @@ function buildGanttSchedule(data, config = {}) {
         return n > 0 ? n * 2 : 14;
     }
 
+    // Rule 3: propagate effective priority backwards through the dependency graph.
+    // A dependency's effective priority = max(its own, the effective priority of everything that depends on it).
+    const mPriority = {};
+    for (const m of milestones) mPriority[m.id] = piPriority(m.portfolio_item_id);
+    let changed = true;
+    while (changed) {
+        changed = false;
+        for (const dep of deps) {
+            const hi = mPriority[dep.milestone_id] ?? 0;
+            if ((mPriority[dep.depends_on_id] ?? 0) < hi) {
+                mPriority[dep.depends_on_id] = hi;
+                changed = true;
+            }
+        }
+    }
+
     const rows = portfolioItems
         .map(pi => ({
             pi,
-            priority: piPriority(pi.id),
+            priority: Math.max(...milestones.filter(m => m.portfolio_item_id === pi.id).map(m => mPriority[m.id] ?? 0), 0),
             items: [],
         }))
-        .filter(r => milestones.some(m => m.portfolio_item_id === r.pi.id))
-        .sort((a, b) => b.priority - a.priority);
+        .filter(r => milestones.some(m => m.portfolio_item_id === r.pi.id));
 
     if (!rows.length) return null;
 
-    // Schedule milestones sequentially in priority order.
-    // Each milestone's scheduledDate = cursor + its work duration.
+    // Build per-milestone dependency set.
+    const depsOf = {};
+    for (const m of milestones) depsOf[m.id] = new Set();
+    for (const d of deps) if (depsOf[d.milestone_id]) depsOf[d.milestone_id].add(d.depends_on_id);
+
+    // Topological scheduling: always pick the highest-priority ready milestone.
+    // "Ready" = all of its dependencies have already been scheduled.
+    // Ties broken by original array order for stable output.
     const start = new Date(config.today || Date.now());
     start.setHours(0, 0, 0, 0);
     let cursor = new Date(start);
+    const scheduled = {};
+    const remaining = new Set(milestones.map(m => m.id));
 
-    for (const row of rows) {
-        for (const m of milestones.filter(m => m.portfolio_item_id === row.pi.id)) {
-            cursor = new Date(+cursor + workDuration(m.id) * MS);
-            row.items.push({ m, scheduledDate: new Date(cursor), deadline: m.date ? new Date(m.date) : null });
-        }
+    while (remaining.size > 0) {
+        const ready = milestones.filter(m =>
+            remaining.has(m.id) &&
+            [...(depsOf[m.id] || [])].every(id => id in scheduled)
+        );
+        if (!ready.length) break;
+        ready.sort((a, b) =>
+            (mPriority[b.id] ?? 0) - (mPriority[a.id] ?? 0) ||
+            milestones.indexOf(a) - milestones.indexOf(b)
+        );
+        const m = ready[0];
+        cursor = new Date(+cursor + workDuration(m.id) * MS);
+        scheduled[m.id] = { m, scheduledDate: new Date(cursor), deadline: m.date ? new Date(m.date) : null };
+        remaining.delete(m.id);
+        const row = rows.find(r => r.pi.id === m.portfolio_item_id);
+        if (row) row.items.push(scheduled[m.id]);
     }
+
+    // Sort rows by earliest scheduledDate so dep-elevated PIs appear before their dependents.
+    rows.sort((a, b) => {
+        const aMin = a.items.length ? Math.min(...a.items.map(x => +x.scheduledDate)) : Infinity;
+        const bMin = b.items.length ? Math.min(...b.items.map(x => +x.scheduledDate)) : Infinity;
+        return aMin - bMin;
+    });
 
     const allDates = rows.flatMap(r => r.items.map(x => x.scheduledDate));
     const mn = new Date(Math.min(...allDates));
