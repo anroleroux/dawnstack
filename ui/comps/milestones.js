@@ -1,10 +1,3 @@
-// Builds the scheduling model from explicitly passed data.
-// Returns null when there is nothing to chart.
-// data: { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks }
-// config.today: ISO date string to pin the schedule start (defaults to now; useful for tests).
-// Each item in rows: { m, scheduledDate, deadline }
-//   scheduledDate — computed end of work window (always present)
-//   deadline      — m.date parsed as Date, or null if the milestone has no date
 function buildGanttSchedule(data, config = {}) {
     const { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks, attributes, attributeGroups, criteriaList } = data;
 
@@ -34,76 +27,164 @@ function buildGanttSchedule(data, config = {}) {
         return scores.length ? Math.max(...scores) : 0;
     }
 
-    const MS = 86400000;
-    function workDuration(milestoneId) {
-        const n = tasks.filter(t => t.milestone_id === milestoneId).length;
-        return n > 0 ? n * 2 : 14;
+    // Phase 2 — Duration estimation
+    const avgTaskDuration      = config.avgTaskDuration      ?? 2;
+    const avgTasksPerMilestone = config.avgTasksPerMilestone ?? 7;
+
+    function remainingDuration(milestoneId) {
+        const mTasks   = tasks.filter(t => t.milestone_id === milestoneId);
+        const incomplete = mTasks.filter(t => t.status !== 'completed').length;
+        if (mTasks.length === 0) return avgTasksPerMilestone * avgTaskDuration;
+        return incomplete * avgTaskDuration;
     }
 
-    // Rule 3: propagate effective priority backwards through the dependency graph.
-    // A dependency's effective priority = max(its own, the effective priority of everything that depends on it).
-    const mPriority = {};
-    for (const m of milestones) mPriority[m.id] = piPriority(m.portfolio_item_id);
-    let changed = true;
-    while (changed) {
-        changed = false;
-        for (const dep of deps) {
-            const hi = mPriority[dep.milestone_id] ?? 0;
-            if ((mPriority[dep.depends_on_id] ?? 0) < hi) {
-                mPriority[dep.depends_on_id] = hi;
-                changed = true;
+    const warnings = [];
+    const suggestions = [];
+
+    // Phase 1.1 — Topological sort & cycle detection (Kahn's algorithm)
+    const milestoneIds = milestones.map(m => m.id);
+    const inDegree = Object.fromEntries(milestoneIds.map(id => [id, 0]));
+    const adjList  = Object.fromEntries(milestoneIds.map(id => [id, []]));
+    for (const dep of deps) {
+        if (inDegree[dep.depends_on_id] !== undefined && inDegree[dep.milestone_id] !== undefined) {
+            adjList[dep.depends_on_id].push(dep.milestone_id);
+            inDegree[dep.milestone_id]++;
+        }
+    }
+    const queue  = milestoneIds.filter(id => inDegree[id] === 0);
+    const sorted = [];
+    while (queue.length) {
+        const id = queue.shift();
+        sorted.push(id);
+        for (const succ of adjList[id]) {
+            if (--inDegree[succ] === 0) queue.push(succ);
+        }
+    }
+    const cyclicIds = new Set(milestoneIds.filter(id => !sorted.includes(id)));
+    if (cyclicIds.size > 0)
+        warnings.push({ type: 'cycle', milestoneIds: [...cyclicIds] });
+
+    // Dep elevation: propagate max priority from dependents back to prerequisites
+    const dependents = Object.fromEntries(milestoneIds.map(id => [id, []]));
+    for (const dep of deps) {
+        if (!cyclicIds.has(dep.depends_on_id) && !cyclicIds.has(dep.milestone_id))
+            dependents[dep.depends_on_id].push(dep.milestone_id);
+    }
+    const effectivePriority = Object.fromEntries(
+        milestones.filter(m => !cyclicIds.has(m.id)).map(m => [m.id, piPriority(m.portfolio_item_id)])
+    );
+    for (let i = sorted.length - 1; i >= 0; i--) {
+        const id = sorted[i];
+        for (const did of dependents[id])
+            effectivePriority[id] = Math.max(effectivePriority[id], effectivePriority[did] ?? 0);
+    }
+
+    const start = new Date(config.today || Date.now());
+    start.setHours(0, 0, 0, 0);
+
+    // Phase 1.5 — Priority topological sort: greedily pick highest effective-priority
+    // ready milestone at each step to build the global flat sequence.
+    const priInDegree  = Object.fromEntries(sorted.map(id => [id, 0]));
+    const sortedIndex  = Object.fromEntries(sorted.map((id, i) => [id, i]));
+    for (const dep of deps) {
+        if (!cyclicIds.has(dep.depends_on_id) && !cyclicIds.has(dep.milestone_id))
+            priInDegree[dep.milestone_id]++;
+    }
+
+    const readyQ = sorted.filter(id => priInDegree[id] === 0)
+        .sort((a, b) => (effectivePriority[b] ?? 0) - (effectivePriority[a] ?? 0) || sortedIndex[a] - sortedIndex[b]);
+
+    const sequence = [];
+    while (readyQ.length) {
+        const id = readyQ.shift();
+        sequence.push(id);
+        for (const succ of adjList[id]) {
+            if (cyclicIds.has(succ)) continue;
+            if (--priInDegree[succ] === 0) {
+                const ep = effectivePriority[succ] ?? 0;
+                const si = sortedIndex[succ];
+                let k = 0;
+                while (k < readyQ.length) {
+                    const o = readyQ[k];
+                    if (ep > (effectivePriority[o] ?? 0) || (ep === (effectivePriority[o] ?? 0) && si < sortedIndex[o])) break;
+                    k++;
+                }
+                readyQ.splice(k, 0, succ);
             }
         }
     }
 
-    const rows = portfolioItems
-        .map(pi => ({
-            pi,
-            priority: Math.max(...milestones.filter(m => m.portfolio_item_id === pi.id).map(m => mPriority[m.id] ?? 0), 0),
-            items: [],
-        }))
-        .filter(r => milestones.some(m => m.portfolio_item_id === r.pi.id));
+    // Build flat item list, excluding completed milestones (remainingDuration = 0)
+    const milestoneById = Object.fromEntries(milestones.map(m => [m.id, m]));
+    const seqItems = sequence
+        .filter(id => remainingDuration(id) > 0)
+        .map(id => {
+            const m = milestoneById[id];
+            return { m, scheduledDate: new Date(start), deadline: m.date ? new Date(m.date) : null };
+        });
 
-    if (!rows.length) return null;
+    if (!seqItems.length) return { rows: [], minDate: start, maxDate: start, months: [], deps, warnings, suggestions };
 
-    // Build per-milestone dependency set.
-    const depsOf = {};
-    for (const m of milestones) depsOf[m.id] = new Set();
-    for (const d of deps) if (depsOf[d.milestone_id]) depsOf[d.milestone_id].add(d.depends_on_id);
-
-    // Topological scheduling: always pick the highest-priority ready milestone.
-    // "Ready" = all of its dependencies have already been scheduled.
-    // Ties broken by original array order for stable output.
-    const start = new Date(config.today || Date.now());
-    start.setHours(0, 0, 0, 0);
-    let cursor = new Date(start);
-    const scheduled = {};
-    const remaining = new Set(milestones.map(m => m.id));
-
-    while (remaining.size > 0) {
-        const ready = milestones.filter(m =>
-            remaining.has(m.id) &&
-            [...(depsOf[m.id] || [])].every(id => id in scheduled)
-        );
-        if (!ready.length) break;
-        ready.sort((a, b) =>
-            (mPriority[b.id] ?? 0) - (mPriority[a.id] ?? 0) ||
-            milestones.indexOf(a) - milestones.indexOf(b)
-        );
-        const m = ready[0];
-        cursor = new Date(+cursor + workDuration(m.id) * MS);
-        scheduled[m.id] = { m, scheduledDate: new Date(cursor), deadline: m.date ? new Date(m.date) : null };
-        remaining.delete(m.id);
-        const row = rows.find(r => r.pi.id === m.portfolio_item_id);
-        if (row) row.items.push(scheduled[m.id]);
+    // Deadline protection: move items earlier in seqItems to prevent avoidable
+    // breaches, logging a suggestion for each priority/deadline trade-off.
+    function simEnds(itemList) {
+        let c = new Date(start);
+        return itemList.map(item => {
+            c = new Date(+c + remainingDuration(item.m.id) * 86400000);
+            return { item, end: new Date(c) };
+        });
     }
 
-    // Sort rows by earliest scheduledDate so dep-elevated PIs appear before their dependents.
-    rows.sort((a, b) => {
-        const aMin = a.items.length ? Math.min(...a.items.map(x => +x.scheduledDate)) : Infinity;
-        const bMin = b.items.length ? Math.min(...b.items.map(x => +x.scheduledDate)) : Infinity;
-        return aMin - bMin;
-    });
+    let reordered = true;
+    while (reordered) {
+        reordered = false;
+        const sim = simEnds(seqItems);
+        for (const { item, end } of sim) {
+            if (!item.deadline || end <= item.deadline) continue;
+            const ri = seqItems.indexOf(item);
+            const depIds = deps
+                .filter(d => d.milestone_id === item.m.id && !cyclicIds.has(d.depends_on_id))
+                .map(d => d.depends_on_id);
+            for (let j = ri - 1; j >= 0; j--) {
+                if (depIds.some(did => seqItems.findIndex(x => x.m.id === did) >= j)) break;
+                const candidate = [...seqItems];
+                const [moved] = candidate.splice(ri, 1);
+                candidate.splice(j, 0, moved);
+                const testSim = simEnds(candidate);
+                const testEnd = testSim.find(e => e.item === item).end;
+                if (testEnd <= item.deadline) {
+                    const before = sim.filter(e => e.item.deadline && e.end > e.item.deadline).length;
+                    const after  = testSim.filter(e => e.item.deadline && e.end > e.item.deadline).length;
+                    if (after <= before) {
+                        suggestions.push({ type: 'priority-deadline', milestoneId: item.m.id });
+                        seqItems.splice(ri, 1);
+                        seqItems.splice(j, 0, moved);
+                        reordered = true;
+                        break;
+                    }
+                }
+            }
+            if (reordered) break;
+        }
+    }
+
+    // Phase 3 — Schedule simulation: walk flat sequence, assign dates
+    let cursor = new Date(start);
+    for (const item of seqItems) {
+        cursor = new Date(+cursor + remainingDuration(item.m.id) * 86400000);
+        item.scheduledDate = new Date(cursor);
+        if (item.deadline && cursor > item.deadline)
+            warnings.push({ type: 'deadline', milestoneId: item.m.id, deadline: item.deadline, scheduledDate: cursor });
+    }
+
+    // Reconstruct PI rows from flat sequence, preserving global order within each row
+    const rowMap = new Map(portfolioItems.map(pi => [pi.id, { pi, priority: 0, items: [] }]));
+    for (const item of seqItems)
+        rowMap.get(item.m.portfolio_item_id)?.items.push(item);
+    const rows = [...rowMap.values()].filter(r => r.items.length > 0);
+    for (const row of rows)
+        row.priority = Math.max(0, ...row.items.map(item => effectivePriority[item.m.id] ?? 0));
+    rows.sort((a, b) => seqItems.indexOf(a.items[0]) - seqItems.indexOf(b.items[0]));
 
     const allDates = rows.flatMap(r => r.items.map(x => x.scheduledDate));
     const mn = new Date(Math.min(...allDates));
@@ -115,7 +196,7 @@ function buildGanttSchedule(data, config = {}) {
     for (let d = new Date(minDate); d < maxDate; d = new Date(d.getFullYear(), d.getMonth() + 1, 1))
         months.push(new Date(d));
 
-    return { rows, minDate, maxDate, months, deps };
+    return { rows, minDate, maxDate, months, deps, warnings, suggestions };
 }
 
 const fmtDate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
