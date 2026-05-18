@@ -1,14 +1,16 @@
 create table attribute_groups (
     id          serial       primary key,
     name        varchar(100) not null,
-    description text         not null default ''
+    description text         not null default '',
+    weight      numeric      not null default 1
 );
 
 create table attributes (
     id           serial       primary key,
     att_group_id integer      not null references attribute_groups(id),
     name         varchar(200) not null,
-    description  text         not null default ''
+    description  text         not null default '',
+    weight       numeric      not null default 1
 );
 
 create table ideas (
@@ -28,7 +30,8 @@ create table attribute_ratings (
 create table criteria (
     id          serial       primary key,
     name        varchar(200) not null,
-    description text         not null default ''
+    description text         not null default '',
+    weight      numeric      not null default 1
 );
 
 create table criteria_ratings (

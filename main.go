@@ -16,16 +16,18 @@ import (
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type AttributeGroup struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight"`
 }
 
 type Attribute struct {
-	ID          int    `json:"id"`
-	AttGroupID  int    `json:"att_group_id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	AttGroupID  int     `json:"att_group_id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight"`
 }
 
 type Idea struct {
@@ -42,9 +44,10 @@ type AttributeRating struct {
 }
 
 type Criterion struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight"`
 }
 
 type CriteriaRating struct {
@@ -256,7 +259,7 @@ func main() {
 
 func listAttributeGroups(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.QueryContext(r.Context(),
-		`select id, name, description from attribute_groups order by id`)
+		`select id, name, description, weight from attribute_groups order by id`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -265,7 +268,7 @@ func listAttributeGroups(w http.ResponseWriter, r *http.Request) {
 	out := make([]AttributeGroup, 0)
 	for rows.Next() {
 		var g AttributeGroup
-		if err := rows.Scan(&g.ID, &g.Name, &g.Description); err != nil {
+		if err := rows.Scan(&g.ID, &g.Name, &g.Description, &g.Weight); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -281,10 +284,10 @@ func createAttributeGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := db.QueryRowContext(r.Context(),
-		`insert into attribute_groups (name, description) values ($1, $2)
-		 returning id, name, description`,
-		g.Name, g.Description,
-	).Scan(&g.ID, &g.Name, &g.Description)
+		`insert into attribute_groups (name, description, weight) values ($1, $2, $3)
+		 returning id, name, description, weight`,
+		g.Name, g.Description, g.Weight,
+	).Scan(&g.ID, &g.Name, &g.Description, &g.Weight)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -305,10 +308,10 @@ func updateAttributeGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.QueryRowContext(r.Context(),
-		`update attribute_groups set name=$1, description=$2 where id=$3
-		 returning id, name, description`,
-		g.Name, g.Description, id,
-	).Scan(&g.ID, &g.Name, &g.Description)
+		`update attribute_groups set name=$1, description=$2, weight=$3 where id=$4
+		 returning id, name, description, weight`,
+		g.Name, g.Description, g.Weight, id,
+	).Scan(&g.ID, &g.Name, &g.Description, &g.Weight)
 	if err == sql.ErrNoRows {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -328,7 +331,7 @@ func deleteAttributeGroup(w http.ResponseWriter, r *http.Request) {
 
 func listAttributes(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.QueryContext(r.Context(),
-		`select id, att_group_id, name, description from attributes order by id`)
+		`select id, att_group_id, name, description, weight from attributes order by id`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -337,7 +340,7 @@ func listAttributes(w http.ResponseWriter, r *http.Request) {
 	out := make([]Attribute, 0)
 	for rows.Next() {
 		var a Attribute
-		if err := rows.Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description); err != nil {
+		if err := rows.Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description, &a.Weight); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -353,10 +356,10 @@ func createAttribute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := db.QueryRowContext(r.Context(),
-		`insert into attributes (att_group_id, name, description) values ($1, $2, $3)
-		 returning id, att_group_id, name, description`,
-		a.AttGroupID, a.Name, a.Description,
-	).Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description)
+		`insert into attributes (att_group_id, name, description, weight) values ($1, $2, $3, $4)
+		 returning id, att_group_id, name, description, weight`,
+		a.AttGroupID, a.Name, a.Description, a.Weight,
+	).Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description, &a.Weight)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -367,11 +370,11 @@ func createAttribute(w http.ResponseWriter, r *http.Request) {
 
 func patchAttribute(w http.ResponseWriter, r *http.Request) {
 	patchRow(w, r, "attributes",
-		[]string{"att_group_id", "name", "description"},
-		"id, att_group_id, name, description",
+		[]string{"att_group_id", "name", "description", "weight"},
+		"id, att_group_id, name, description, weight",
 		func(row *sql.Row) error {
 			var a Attribute
-			if err := row.Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description); err != nil {
+			if err := row.Scan(&a.ID, &a.AttGroupID, &a.Name, &a.Description, &a.Weight); err != nil {
 				return err
 			}
 			writeJSON(w, a)
@@ -505,7 +508,7 @@ func deleteAttributeRating(w http.ResponseWriter, r *http.Request) {
 
 func listCriteria(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.QueryContext(r.Context(),
-		`select id, name, description from criteria order by id`)
+		`select id, name, description, weight from criteria order by id`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -514,7 +517,7 @@ func listCriteria(w http.ResponseWriter, r *http.Request) {
 	out := make([]Criterion, 0)
 	for rows.Next() {
 		var c Criterion
-		if err := rows.Scan(&c.ID, &c.Name, &c.Description); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.Weight); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -530,10 +533,10 @@ func createCriterion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := db.QueryRowContext(r.Context(),
-		`insert into criteria (name, description) values ($1, $2)
-		 returning id, name, description`,
-		c.Name, c.Description,
-	).Scan(&c.ID, &c.Name, &c.Description)
+		`insert into criteria (name, description, weight) values ($1, $2, $3)
+		 returning id, name, description, weight`,
+		c.Name, c.Description, c.Weight,
+	).Scan(&c.ID, &c.Name, &c.Description, &c.Weight)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -554,10 +557,10 @@ func updateCriterion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.QueryRowContext(r.Context(),
-		`update criteria set name=$1, description=$2 where id=$3
-		 returning id, name, description`,
-		c.Name, c.Description, id,
-	).Scan(&c.ID, &c.Name, &c.Description)
+		`update criteria set name=$1, description=$2, weight=$3 where id=$4
+		 returning id, name, description, weight`,
+		c.Name, c.Description, c.Weight, id,
+	).Scan(&c.ID, &c.Name, &c.Description, &c.Weight)
 	if err == sql.ErrNoRows {
 		http.Error(w, "not found", http.StatusNotFound)
 		return

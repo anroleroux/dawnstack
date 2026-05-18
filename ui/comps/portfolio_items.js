@@ -116,7 +116,6 @@ function portfolioItemsTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('portfolio-item-ideas')" style="margin-right:auto">Item Ideas</button>
             <button class="start-btn" type="button" onclick="portfolioItems.adding=true">+ Add item</button>
         </div>
         ${[...state.list]

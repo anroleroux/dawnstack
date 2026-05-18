@@ -710,11 +710,49 @@ main section h1 {
   letter-spacing: -0.02em;
 }
 
+.page-header {
+  max-width: 720px;
+  margin: 2rem auto 0;
+  padding: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 2px solid var(--page-border-accent);
+}
+
+.page-header > h1 {
+  margin: 0;
+  padding: 0;
+  max-width: unset;
+  border-bottom: none;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: -0.02em;
+}
+
+.page-subnav {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 /* ── Page explain pane ────────────────────────── */
 
-.page-layout {
+main {
   display: flex;
   min-height: 100vh;
+}
+
+#main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-layout {
+  /* kept for compatibility; layout is now handled by main + #main-content */
 }
 
 .page-explain {
@@ -753,6 +791,22 @@ main section h1 {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+
+.got-it-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: #ccc;
+  padding: 0;
+  margin-top: 2.5rem;
+  display: block;
+  margin-left: auto;
+  transition: color 0.15s;
+}
+
+.got-it-btn:hover { color: #888; }
 
 .page-main {
   flex: 1;
@@ -804,7 +858,7 @@ main section h1 {
     padding: 0.4rem 0.75rem;
   }
 
-  .page-layout {
+  main {
     flex-direction: column;
     min-height: unset;
   }
@@ -833,6 +887,12 @@ main section h1 {
     padding-left: 1rem;
     padding-right: 1rem;
     margin-top: 1.25rem;
+  }
+
+  .page-header {
+    margin-top: 1.25rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   main section > .items-list {

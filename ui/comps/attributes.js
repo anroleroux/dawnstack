@@ -11,6 +11,7 @@ function attrItemsTemplate(state) {
                 ${editableField(mr, api, 'Name',            'name',        p.name,                           'text')}
                 ${editableField(mr, api, 'Attribute group', 'att_group_id', attributeGroupName(p.att_group_id), 'select', attributeGroups.list.map(c => ({value: c.id, label: c.name})))}
                 ${editableField(mr, api, 'Description',     'description', p.description,                   'text')}
+                ${editableField(mr, api, 'Weight',          'weight',      p.weight ?? 1,                   'text')}
             </div>
             <div class="item-card__actions">
                 <button class="delete-btn" type="button" onclick="deleteAttribute(attrItems.selected)">Delete</button>
@@ -26,9 +27,15 @@ function attrItemsTemplate(state) {
                 <button class="back-btn" type="button" onclick="attrItems.adding=false">&#8592; Cancel</button>
             </div>
             <div class="add-form">
-                <div class="add-form__field">
-                    <label>Name</label>
-                    <input name="name" type="text" required>
+                <div class="add-form__field--row">
+                    <div class="add-form__field">
+                        <label>Name</label>
+                        <input name="name" type="text" required>
+                    </div>
+                    <div class="add-form__field" style="max-width:80px">
+                        <label>Weight</label>
+                        <input name="weight" type="number" min="0" step="0.1" value="1" required>
+                    </div>
                 </div>
                 <div class="add-form__field">
                     <label>Attribute group</label>
@@ -54,6 +61,9 @@ function attrItemsTemplate(state) {
                 <span class="item-row__name">${p.name}</span>
                 <span class="item-row__category">${attributeGroupName(p.att_group_id)}</span>
             </div>
+            <div class="item-row__meta">
+                <span class="item-row__score">${p.weight ?? 1}×</span>
+            </div>
         </div>
     `;
 
@@ -61,7 +71,6 @@ function attrItemsTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('att_groups')" style="margin-right:auto">Attribute Groups</button>
             <button class="start-btn" type="button" onclick="attrItems.adding=true">+ Add attribute</button>
         </div>
         ${state.list.map((p, pid) => rowTemplate(p, pid)).join("")}
@@ -108,9 +117,10 @@ async function saveAttribute(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const data = {
-        name:        fd.get("name"),
+        name:         fd.get("name"),
         att_group_id: parseInt(fd.get("att_group_id"), 10),
-        description: fd.get("description") || "",
+        description:  fd.get("description") || "",
+        weight:       parseFloat(fd.get("weight")) || 1,
     };
 
     if (!testing) {  //testing
@@ -170,12 +180,12 @@ async function loadAttributes() {
     }
     } else { //testing
         attrItems.list.push( //testing
-            {id:1, name:"Problem solving",  att_group_id:1, description:"Ability to break down and work through complex problems."}, //testing
-            {id:2, name:"Communication",    att_group_id:1, description:"Clear and effective written and verbal communication."}, //testing
-            {id:3, name:"Launched side project", att_group_id:2, description:"Built and shipped a web app independently."}, //testing
-            {id:4, name:"Learned new framework", att_group_id:2, description:"Picked up a new frontend framework quickly."}, //testing
-            {id:5, name:"Time management",  att_group_id:3, description:"Struggles with prioritising competing tasks."}, //testing
-            {id:6, name:"Public speaking",  att_group_id:3, description:"Nervous when presenting to large audiences."} //testing
+            {id:1, name:"Problem solving",       att_group_id:1, description:"Ability to break down and work through complex problems.", weight:1}, //testing
+            {id:2, name:"Communication",         att_group_id:1, description:"Clear and effective written and verbal communication.",       weight:1}, //testing
+            {id:3, name:"Launched side project", att_group_id:2, description:"Built and shipped a web app independently.",                 weight:1}, //testing
+            {id:4, name:"Learned new framework", att_group_id:2, description:"Picked up a new frontend framework quickly.",                weight:1}, //testing
+            {id:5, name:"Time management",       att_group_id:3, description:"Struggles with prioritising competing tasks.",               weight:1}, //testing
+            {id:6, name:"Public speaking",       att_group_id:3, description:"Nervous when presenting to large audiences.",               weight:1} //testing
         ); //testing
         ensureAttributeRatings(); //testing
     } //testing

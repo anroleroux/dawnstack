@@ -6,9 +6,15 @@ function attributeGroupsTemplate(state) {
                 <button class="back-btn" type="button" onclick="attributeGroups.adding=false">&#8592; Cancel</button>
             </div>
             <div class="add-form">
-                <div class="add-form__field">
-                    <label>Name</label>
-                    <input name="name" type="text" required>
+                <div class="add-form__field--row">
+                    <div class="add-form__field">
+                        <label>Name</label>
+                        <input name="name" type="text" required>
+                    </div>
+                    <div class="add-form__field" style="max-width:80px">
+                        <label>Weight</label>
+                        <input name="weight" type="number" min="0" step="0.1" value="1" required>
+                    </div>
                 </div>
                 <div class="add-form__field">
                     <label>Description</label>
@@ -28,9 +34,15 @@ function attributeGroupsTemplate(state) {
                 <button class="back-btn" type="button" onclick="attributeGroups.editing=null">&#8592; Cancel</button>
             </div>
             <div class="add-form">
-                <div class="add-form__field">
-                    <label>Name</label>
-                    <input name="name" type="text" value="${c.name}" required>
+                <div class="add-form__field--row">
+                    <div class="add-form__field">
+                        <label>Name</label>
+                        <input name="name" type="text" value="${c.name}" required>
+                    </div>
+                    <div class="add-form__field" style="max-width:80px">
+                        <label>Weight</label>
+                        <input name="weight" type="number" min="0" step="0.1" value="${c.weight ?? 1}" required>
+                    </div>
                 </div>
                 <div class="add-form__field">
                     <label>Description</label>
@@ -50,6 +62,7 @@ function attributeGroupsTemplate(state) {
                 <span class="item-row__category">${c.description || ''}</span>
             </div>
             <div class="row-actions">
+                <span class="item-row__score">${c.weight ?? 1}×</span>
                 <button class="edit-btn" type="button" onclick="editAttributeGroup(${c.id})">Edit</button>
                 <button class="delete-btn" type="button" onclick="deleteAttributeGroup(${c.id})">Delete</button>
             </div>
@@ -111,6 +124,7 @@ async function saveAttributeGroup(e) {
     const data = {
         name:        fd.get("name"),
         description: fd.get("description") || "",
+        weight:      parseFloat(fd.get("weight")) || 1,
     };
 
     if (!testing) {  //testing
@@ -146,6 +160,7 @@ async function updateAttributeGroup(e) {
         id:          attributeGroups.editing.id,
         name:        fd.get("name"),
         description: fd.get("description") || "",
+        weight:      parseFloat(fd.get("weight")) || 1,
     };
 
     if (!testing) {  //testing
@@ -201,9 +216,9 @@ async function loadAttributeGroups() {
     }
     } else { //testing
         attributeGroups.list.push( //testing
-            {id:1, name:"Strengths",  description:"Things you are particularly good at."}, //testing
-            {id:2, name:"Wins",       description:"Past successes and achievements."}, //testing
-            {id:3, name:"Weaknesses", description:"Areas you want to improve."} //testing
+            {id:1, name:"Strengths",  description:"Things you are particularly good at.", weight:1}, //testing
+            {id:2, name:"Wins",       description:"Past successes and achievements.",      weight:1}, //testing
+            {id:3, name:"Weaknesses", description:"Areas you want to improve.",            weight:1} //testing
         ); //testing
     } //testing
 }

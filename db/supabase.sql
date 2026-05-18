@@ -5,7 +5,8 @@ create table attribute_groups (
     id          serial       primary key,
     user_id     uuid         not null references auth.users(id) default auth.uid(),
     name        varchar(100) not null,
-    description text         not null default ''
+    description text         not null default '',
+    weight      numeric      not null default 1
 );
 
 create table attributes (
@@ -13,7 +14,8 @@ create table attributes (
     user_id      uuid         not null references auth.users(id) default auth.uid(),
     att_group_id integer      not null references attribute_groups(id),
     name         varchar(200) not null,
-    description  text         not null default ''
+    description  text         not null default '',
+    weight       numeric      not null default 1
 );
 
 create table ideas (
@@ -36,7 +38,8 @@ create table criteria (
     id          serial       primary key,
     user_id     uuid         not null references auth.users(id) default auth.uid(),
     name        varchar(200) not null,
-    description text         not null default ''
+    description text         not null default '',
+    weight      numeric      not null default 1
 );
 
 create table criteria_ratings (

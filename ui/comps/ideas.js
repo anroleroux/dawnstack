@@ -1,8 +1,18 @@
 function ideaPriority(ideaId) {
-    const scores = [
-        ...attributeRatings.list.filter(r => r.idea_id === ideaId).map(r => r.score),
-        ...criteriaRatings.list.filter(r => r.idea_id === ideaId).map(r => r.score),
-    ];
+    const attrScores = attributeRatings.list
+        .filter(r => r.idea_id === ideaId)
+        .map(r => {
+            const attr  = attrItems.list.find(a => a.id === r.att_id);
+            const group = attributeGroups.list.find(g => g.id === attr?.att_group_id);
+            return r.score * (attr?.weight ?? 1) * (group?.weight ?? 1);
+        });
+    const critScores = criteriaRatings.list
+        .filter(r => r.idea_id === ideaId)
+        .map(r => {
+            const crit = criteria.list.find(c => c.id === r.crit_id);
+            return r.score * (crit?.weight ?? 1);
+        });
+    const scores = [...attrScores, ...critScores];
     if (!scores.length) return '—';
     return (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1);
 }
@@ -111,9 +121,6 @@ function ideasTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
-            <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')" style="margin-right:auto">Criteria Ratings</button>
             <button class="start-btn" type="button" onclick="ideas.adding=true">+ Add idea</button>
         </div>
         ${[...state.list]
