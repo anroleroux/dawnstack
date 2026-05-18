@@ -16,9 +16,10 @@ import (
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type AttributeGroup struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight"`
 }
 
 type Attribute struct {
@@ -256,7 +257,7 @@ func main() {
 
 func listAttributeGroups(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.QueryContext(r.Context(),
-		`select id, name, description from attribute_groups order by id`)
+		`select id, name, description, weight from attribute_groups order by id`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -265,7 +266,7 @@ func listAttributeGroups(w http.ResponseWriter, r *http.Request) {
 	out := make([]AttributeGroup, 0)
 	for rows.Next() {
 		var g AttributeGroup
-		if err := rows.Scan(&g.ID, &g.Name, &g.Description); err != nil {
+		if err := rows.Scan(&g.ID, &g.Name, &g.Description, &g.Weight); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -281,10 +282,10 @@ func createAttributeGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := db.QueryRowContext(r.Context(),
-		`insert into attribute_groups (name, description) values ($1, $2)
-		 returning id, name, description`,
-		g.Name, g.Description,
-	).Scan(&g.ID, &g.Name, &g.Description)
+		`insert into attribute_groups (name, description, weight) values ($1, $2, $3)
+		 returning id, name, description, weight`,
+		g.Name, g.Description, g.Weight,
+	).Scan(&g.ID, &g.Name, &g.Description, &g.Weight)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -305,10 +306,10 @@ func updateAttributeGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.QueryRowContext(r.Context(),
-		`update attribute_groups set name=$1, description=$2 where id=$3
-		 returning id, name, description`,
-		g.Name, g.Description, id,
-	).Scan(&g.ID, &g.Name, &g.Description)
+		`update attribute_groups set name=$1, description=$2, weight=$3 where id=$4
+		 returning id, name, description, weight`,
+		g.Name, g.Description, g.Weight, id,
+	).Scan(&g.ID, &g.Name, &g.Description, &g.Weight)
 	if err == sql.ErrNoRows {
 		http.Error(w, "not found", http.StatusNotFound)
 		return

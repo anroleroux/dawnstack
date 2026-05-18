@@ -1,8 +1,15 @@
 function ideaPriority(ideaId) {
-    const scores = [
-        ...attributeRatings.list.filter(r => r.idea_id === ideaId).map(r => r.score),
-        ...criteriaRatings.list.filter(r => r.idea_id === ideaId).map(r => r.score),
-    ];
+    const attrScores = attributeRatings.list
+        .filter(r => r.idea_id === ideaId)
+        .map(r => {
+            const attr  = attrItems.list.find(a => a.id === r.att_id);
+            const group = attributeGroups.list.find(g => g.id === attr?.att_group_id);
+            return r.score * (group?.weight ?? 1);
+        });
+    const critScores = criteriaRatings.list
+        .filter(r => r.idea_id === ideaId)
+        .map(r => r.score);
+    const scores = [...attrScores, ...critScores];
     if (!scores.length) return '—';
     return (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1);
 }

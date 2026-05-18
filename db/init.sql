@@ -1,7 +1,8 @@
 create table attribute_groups (
     id          serial       primary key,
     name        varchar(100) not null,
-    description text         not null default ''
+    description text         not null default '',
+    weight      numeric      not null default 1
 );
 
 create table attributes (
