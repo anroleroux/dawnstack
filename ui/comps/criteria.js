@@ -6,9 +6,15 @@ function criteriaTemplate(state) {
                 <button class="back-btn" type="button" onclick="criteria.adding=false">&#8592; Cancel</button>
             </div>
             <div class="add-form">
-                <div class="add-form__field">
-                    <label>Name</label>
-                    <input name="name" type="text" required>
+                <div class="add-form__field--row">
+                    <div class="add-form__field">
+                        <label>Name</label>
+                        <input name="name" type="text" required>
+                    </div>
+                    <div class="add-form__field" style="max-width:80px">
+                        <label>Weight</label>
+                        <input name="weight" type="number" min="0" step="0.1" value="1" required>
+                    </div>
                 </div>
                 <div class="add-form__field">
                     <label>Description</label>
@@ -28,9 +34,15 @@ function criteriaTemplate(state) {
                 <button class="back-btn" type="button" onclick="criteria.editing=null">&#8592; Cancel</button>
             </div>
             <div class="add-form">
-                <div class="add-form__field">
-                    <label>Name</label>
-                    <input name="name" type="text" value="${c.name}" required>
+                <div class="add-form__field--row">
+                    <div class="add-form__field">
+                        <label>Name</label>
+                        <input name="name" type="text" value="${c.name}" required>
+                    </div>
+                    <div class="add-form__field" style="max-width:80px">
+                        <label>Weight</label>
+                        <input name="weight" type="number" min="0" step="0.1" value="${c.weight ?? 1}" required>
+                    </div>
                 </div>
                 <div class="add-form__field">
                     <label>Description</label>
@@ -50,6 +62,7 @@ function criteriaTemplate(state) {
                 <span class="item-row__category">${c.description || ''}</span>
             </div>
             <div class="row-actions">
+                <span class="item-row__score">${c.weight ?? 1}×</span>
                 <button class="edit-btn" type="button" onclick="editCriterion(${c.id})">Edit</button>
                 <button class="delete-btn" type="button" onclick="deleteCriterion(${c.id})">Delete</button>
             </div>
@@ -111,6 +124,7 @@ async function saveCriterion(e) {
     const data = {
         name:        fd.get("name"),
         description: fd.get("description") || "",
+        weight:      parseFloat(fd.get("weight")) || 1,
     };
 
     if (!testing) {  //testing
@@ -146,6 +160,7 @@ async function updateCriterion(e) {
         id:          criteria.editing.id,
         name:        fd.get("name"),
         description: fd.get("description") || "",
+        weight:      parseFloat(fd.get("weight")) || 1,
     };
 
     if (!testing) {  //testing
@@ -202,11 +217,11 @@ async function loadCriteria() {
     }
     } else { //testing
         criteria.list.push( //testing
-            {id:1, name:"Impact",      description:"How significantly will this affect the target audience."}, //testing
-            {id:2, name:"Confidence",  description:"How confident are we in our estimates."}, //testing
-            {id:3, name:"Ease",        description:"How easy is it to implement."}, //testing
-            {id:4, name:"Reach",       description:"How many people will this affect in a given period."}, //testing
-            {id:5, name:"Feasibility", description:"Technical and financial feasibility."} //testing
+            {id:1, name:"Impact",      description:"How significantly will this affect the target audience.", weight:1}, //testing
+            {id:2, name:"Confidence",  description:"How confident are we in our estimates.",                  weight:1}, //testing
+            {id:3, name:"Ease",        description:"How easy is it to implement.",                            weight:1}, //testing
+            {id:4, name:"Reach",       description:"How many people will this affect in a given period.",     weight:1}, //testing
+            {id:5, name:"Feasibility", description:"Technical and financial feasibility.",                    weight:1} //testing
         ); //testing
         ensureCriteriaRatings(); //testing
     } //testing

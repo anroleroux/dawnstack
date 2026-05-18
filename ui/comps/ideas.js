@@ -8,7 +8,10 @@ function ideaPriority(ideaId) {
         });
     const critScores = criteriaRatings.list
         .filter(r => r.idea_id === ideaId)
-        .map(r => r.score);
+        .map(r => {
+            const crit = criteria.list.find(c => c.id === r.crit_id);
+            return r.score * (crit?.weight ?? 1);
+        });
     const scores = [...attrScores, ...critScores];
     if (!scores.length) return '—';
     return (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(1);

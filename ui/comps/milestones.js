@@ -6,7 +6,7 @@
 //   scheduledDate — computed end of work window (always present)
 //   deadline      — m.date parsed as Date, or null if the milestone has no date
 function buildGanttSchedule(data, config = {}) {
-    const { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks, attributes, attributeGroups } = data;
+    const { milestones, deps, portfolioItems, portfolioItemIdeas, attributeRatings, criteriaRatings, tasks, attributes, attributeGroups, criteriaList } = data;
 
     function ideaScore(ideaId) {
         const attrScores = attributeRatings
@@ -18,7 +18,10 @@ function buildGanttSchedule(data, config = {}) {
             });
         const critScores = criteriaRatings
             .filter(r => r.idea_id === ideaId)
-            .map(r => r.score);
+            .map(r => {
+                const crit = criteriaList?.find(c => c.id === r.crit_id);
+                return r.score * (crit?.weight ?? 1);
+            });
         const scores = [...attrScores, ...critScores];
         return scores.length ? scores.reduce((s, v) => s + v, 0) / scores.length : null;
     }
@@ -128,6 +131,7 @@ function ganttChart() {
         tasks:              tasks.list,
         attributes:         attrItems.list,
         attributeGroups:    attributeGroups.list,
+        criteriaList:       criteria.list,
     }, getSettings());
     if (!schedule) return '<p class="item-card__empty">No milestones to chart.</p>';
 

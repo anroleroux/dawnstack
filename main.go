@@ -43,9 +43,10 @@ type AttributeRating struct {
 }
 
 type Criterion struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Weight      float64 `json:"weight"`
 }
 
 type CriteriaRating struct {
@@ -506,7 +507,7 @@ func deleteAttributeRating(w http.ResponseWriter, r *http.Request) {
 
 func listCriteria(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.QueryContext(r.Context(),
-		`select id, name, description from criteria order by id`)
+		`select id, name, description, weight from criteria order by id`)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -515,7 +516,7 @@ func listCriteria(w http.ResponseWriter, r *http.Request) {
 	out := make([]Criterion, 0)
 	for rows.Next() {
 		var c Criterion
-		if err := rows.Scan(&c.ID, &c.Name, &c.Description); err != nil {
+		if err := rows.Scan(&c.ID, &c.Name, &c.Description, &c.Weight); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -531,10 +532,10 @@ func createCriterion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := db.QueryRowContext(r.Context(),
-		`insert into criteria (name, description) values ($1, $2)
-		 returning id, name, description`,
-		c.Name, c.Description,
-	).Scan(&c.ID, &c.Name, &c.Description)
+		`insert into criteria (name, description, weight) values ($1, $2, $3)
+		 returning id, name, description, weight`,
+		c.Name, c.Description, c.Weight,
+	).Scan(&c.ID, &c.Name, &c.Description, &c.Weight)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -555,10 +556,10 @@ func updateCriterion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.QueryRowContext(r.Context(),
-		`update criteria set name=$1, description=$2 where id=$3
-		 returning id, name, description`,
-		c.Name, c.Description, id,
-	).Scan(&c.ID, &c.Name, &c.Description)
+		`update criteria set name=$1, description=$2, weight=$3 where id=$4
+		 returning id, name, description, weight`,
+		c.Name, c.Description, c.Weight, id,
+	).Scan(&c.ID, &c.Name, &c.Description, &c.Weight)
 	if err == sql.ErrNoRows {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
