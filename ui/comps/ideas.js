@@ -4,7 +4,7 @@ function ideaPriority(ideaId) {
         .map(r => {
             const attr  = attrItems.list.find(a => a.id === r.att_id);
             const group = attributeGroups.list.find(g => g.id === attr?.att_group_id);
-            return r.score * (group?.weight ?? 1);
+            return r.score * (attr?.weight ?? 1) * (group?.weight ?? 1);
         });
     const critScores = criteriaRatings.list
         .filter(r => r.idea_id === ideaId)
