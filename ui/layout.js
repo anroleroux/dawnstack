@@ -17,8 +17,15 @@ function setCurrentUserId(userId) {
   localStorage.setItem(USER_STORAGE_KEY, userId);
 }
 
+const EXPLAIN_DISMISSED_KEY = 'explainDismissed';
+
 var _explainTimers = [];
 var _currentGroup = null;
+
+function gotItExplain() {
+    localStorage.setItem(EXPLAIN_DISMISSED_KEY, '1');
+    document.getElementById('shared-explain').hidden = true;
+}
 
 const pageGroups = {
     'attributes':           'attributes',
@@ -92,19 +99,22 @@ function showPage(name) {
     document.body.className = 'page-' + name;
 
     const sharedExplain = document.getElementById('shared-explain');
-    if (group && pageExplains[group]) {
+    const dismissed = !!localStorage.getItem(EXPLAIN_DISMISSED_KEY);
+    if (group && pageExplains[group] && !dismissed) {
         if (group !== _currentGroup) {
             _currentGroup = group;
             sharedExplain.hidden = false;
             typeExplain(sharedExplain, pageExplains[group]);
         }
     } else {
-        _currentGroup = null;
-        sharedExplain.hidden = true;
-        var inlineExplain = document.getElementById(name + '-explain');
-        if (inlineExplain && pageExplains[name]) {
-            typeExplain(inlineExplain, pageExplains[name]);
+        if (!group) {
+            _currentGroup = null;
+            var inlineExplain = document.getElementById(name + '-explain');
+            if (inlineExplain && pageExplains[name]) {
+                typeExplain(inlineExplain, pageExplains[name]);
+            }
         }
+        sharedExplain.hidden = true;
     }
 }
 
