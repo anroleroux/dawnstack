@@ -18,6 +18,22 @@ function setCurrentUserId(userId) {
 }
 
 var _explainTimers = [];
+var _currentGroup = null;
+
+const pageGroups = {
+    'attributes':           'attributes',
+    'att_groups':           'attributes',
+    'ideas':                'ideas',
+    'criteria':             'ideas',
+    'attribute-ratings':    'ideas',
+    'criteria-ratings':     'ideas',
+    'portfolio-items':      'portfolio-items',
+    'portfolio-item-ideas': 'portfolio-items',
+    'milestones':           'milestones',
+    'milestone-deps':       'milestones',
+    'tasks':                'milestones',
+};
+
 var pageExplains = {
     home: {
         main: "Hi. I'm Anro. If you're anything like me, you have a bunch of ideas flying around in your head. And if you only have two — that's a perfectly good place to start. This is just a tool to help you picture your plan, prioritize what matters, and move with intention. I hope it serves you as well as it has served me.",
@@ -68,14 +84,27 @@ function typeExplain(aside, explain) {
 }
 
 function showPage(name) {
-    document.querySelectorAll('main > section').forEach(s => s.hidden = true);
+    document.querySelectorAll('#main-content > section').forEach(s => s.hidden = true);
     document.getElementById('page-' + name).hidden = false;
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-btn--active'));
-    document.getElementById('nav-' + name)?.classList.add('nav-btn--active');
+    const group = pageGroups[name] || null;
+    document.getElementById('nav-' + (group || name))?.classList.add('nav-btn--active');
     document.body.className = 'page-' + name;
-    var explainEl = document.getElementById(name + '-explain');
-    if (explainEl && pageExplains[name]) {
-        typeExplain(explainEl, pageExplains[name]);
+
+    const sharedExplain = document.getElementById('shared-explain');
+    if (group && pageExplains[group]) {
+        if (group !== _currentGroup) {
+            _currentGroup = group;
+            sharedExplain.hidden = false;
+            typeExplain(sharedExplain, pageExplains[group]);
+        }
+    } else {
+        _currentGroup = null;
+        sharedExplain.hidden = true;
+        var inlineExplain = document.getElementById(name + '-explain');
+        if (inlineExplain && pageExplains[name]) {
+            typeExplain(inlineExplain, pageExplains[name]);
+        }
     }
 }
 

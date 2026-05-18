@@ -23,20 +23,20 @@
       </nav>
     </header>
     <main>
-      <section id="page-home">
-        <div class="home-layout">
-          <div id="home-explain">
-            <p class="page-explain__text"></p>
-            <p class="page-explain__hint"></p>
+      <aside id="shared-explain" class="page-explain" hidden>
+        <p class="page-explain__text"></p>
+        <p class="page-explain__hint"></p>
+      </aside>
+      <div id="main-content">
+        <section id="page-home">
+          <div class="home-layout">
+            <div id="home-explain">
+              <p class="page-explain__text"></p>
+              <p class="page-explain__hint"></p>
+            </div>
           </div>
-        </div>
-      </section>
-      <section id="page-attributes" hidden>
-        <div class="page-layout">
-          <aside id="attributes-explain" class="page-explain">
-            <p class="page-explain__text"></p>
-            <p class="page-explain__hint"></p>
-          </aside>
+        </section>
+        <section id="page-attributes" hidden>
           <div class="page-main">
             <div class="page-header">
               <h1>Attributes</h1>
@@ -48,75 +48,69 @@
               <p>Loading attributes...</p>
             </div>
           </div>
-        </div>
-      </section>
-      <section id="page-att_groups" hidden>
-        <div class="page-header">
-          <h1>Attribute Groups</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('attributes')">Attributes</button>
-          </nav>
-        </div>
-        <div id="att_groups-list" class="items-list">
-          <p>Loading attribute groups...</p>
-        </div>
-      </section>
-      <section id="page-criteria" hidden>
-        <div class="page-header">
-          <h1>Criteria</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
-            <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')">Criteria Ratings</button>
-          </nav>
-        </div>
-        <div id="criteria-list" class="items-list">
-          <p>Loading criteria...</p>
-        </div>
-      </section>
-      <section id="page-criteria-ratings" hidden>
-        <div class="page-header">
-          <h1>Criteria Ratings</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
-            <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
-          </nav>
-        </div>
-        <div id="criteria-ratings-list" class="items-list">
-          <p>Loading criteria ratings...</p>
-        </div>
-      </section>
-      <section id="page-attribute-ratings" hidden>
-        <div class="page-header">
-          <h1>Attribute Ratings</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')">Criteria Ratings</button>
-          </nav>
-        </div>
-        <div id="attribute-ratings-list" class="items-list">
-          <p>Loading attribute ratings...</p>
-        </div>
-      </section>
-      <section id="page-portfolio-item-ideas" hidden>
-        <div class="page-header">
-          <h1>Item Ideas</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('portfolio-items')">Portfolio</button>
-          </nav>
-        </div>
-        <div id="portfolio-item-ideas-list" class="items-list">
-          <p>Loading item idea links...</p>
-        </div>
-      </section>
-      <section id="page-portfolio-items" hidden>
-        <div class="page-layout">
-          <aside id="portfolio-items-explain" class="page-explain">
-            <p class="page-explain__text"></p>
-            <p class="page-explain__hint"></p>
-          </aside>
+        </section>
+        <section id="page-att_groups" hidden>
+          <div class="page-header">
+            <h1>Attribute Groups</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('attributes')">Attributes</button>
+            </nav>
+          </div>
+          <div id="att_groups-list" class="items-list">
+            <p>Loading attribute groups...</p>
+          </div>
+        </section>
+        <section id="page-criteria" hidden>
+          <div class="page-header">
+            <h1>Criteria</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
+              <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
+              <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')">Criteria Ratings</button>
+            </nav>
+          </div>
+          <div id="criteria-list" class="items-list">
+            <p>Loading criteria...</p>
+          </div>
+        </section>
+        <section id="page-criteria-ratings" hidden>
+          <div class="page-header">
+            <h1>Criteria Ratings</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
+              <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
+              <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
+            </nav>
+          </div>
+          <div id="criteria-ratings-list" class="items-list">
+            <p>Loading criteria ratings...</p>
+          </div>
+        </section>
+        <section id="page-attribute-ratings" hidden>
+          <div class="page-header">
+            <h1>Attribute Ratings</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('ideas')">Ideas</button>
+              <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
+              <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')">Criteria Ratings</button>
+            </nav>
+          </div>
+          <div id="attribute-ratings-list" class="items-list">
+            <p>Loading attribute ratings...</p>
+          </div>
+        </section>
+        <section id="page-portfolio-item-ideas" hidden>
+          <div class="page-header">
+            <h1>Item Ideas</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('portfolio-items')">Portfolio</button>
+            </nav>
+          </div>
+          <div id="portfolio-item-ideas-list" class="items-list">
+            <p>Loading item idea links...</p>
+          </div>
+        </section>
+        <section id="page-portfolio-items" hidden>
           <div class="page-main">
             <div class="page-header">
               <h1>Portfolio</h1>
@@ -128,26 +122,20 @@
               <p>Loading portfolio items...</p>
             </div>
           </div>
-        </div>
-      </section>
-      <section id="page-milestone-deps" hidden>
-        <div class="page-header">
-          <h1>Dependencies</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('milestones')">Milestones</button>
-            <button class="nav-btn" type="button" onclick="showPage('tasks')">Tasks</button>
-          </nav>
-        </div>
-        <div id="milestone-deps-list" class="items-list">
-          <p>Loading dependencies...</p>
-        </div>
-      </section>
-      <section id="page-milestones" hidden>
-        <div class="page-layout">
-          <aside id="milestones-explain" class="page-explain">
-            <p class="page-explain__text"></p>
-            <p class="page-explain__hint"></p>
-          </aside>
+        </section>
+        <section id="page-milestone-deps" hidden>
+          <div class="page-header">
+            <h1>Dependencies</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('milestones')">Milestones</button>
+              <button class="nav-btn" type="button" onclick="showPage('tasks')">Tasks</button>
+            </nav>
+          </div>
+          <div id="milestone-deps-list" class="items-list">
+            <p>Loading dependencies...</p>
+          </div>
+        </section>
+        <section id="page-milestones" hidden>
           <div class="page-main">
             <div class="page-header">
               <h1>Milestones</h1>
@@ -160,26 +148,20 @@
               <p>Loading milestones...</p>
             </div>
           </div>
-        </div>
-      </section>
-      <section id="page-tasks" hidden>
-        <div class="page-header">
-          <h1>Tasks</h1>
-          <nav class="page-subnav">
-            <button class="nav-btn" type="button" onclick="showPage('milestones')">Milestones</button>
-            <button class="nav-btn" type="button" onclick="showPage('milestone-deps')">Dependencies</button>
-          </nav>
-        </div>
-        <div id="tasks-list" class="items-list">
-          <p>Loading tasks...</p>
-        </div>
-      </section>
-      <section id="page-ideas" hidden>
-        <div class="page-layout">
-          <aside id="ideas-explain" class="page-explain">
-            <p class="page-explain__text"></p>
-            <p class="page-explain__hint"></p>
-          </aside>
+        </section>
+        <section id="page-tasks" hidden>
+          <div class="page-header">
+            <h1>Tasks</h1>
+            <nav class="page-subnav">
+              <button class="nav-btn" type="button" onclick="showPage('milestones')">Milestones</button>
+              <button class="nav-btn" type="button" onclick="showPage('milestone-deps')">Dependencies</button>
+            </nav>
+          </div>
+          <div id="tasks-list" class="items-list">
+            <p>Loading tasks...</p>
+          </div>
+        </section>
+        <section id="page-ideas" hidden>
           <div class="page-main">
             <div class="page-header">
               <h1>Ideas</h1>
@@ -193,12 +175,12 @@
               <p>Loading ideas...</p>
             </div>
           </div>
-        </div>
-      </section>
-      <section id="page-settings" hidden>
-        <h1>Settings</h1>
-        <div id="settings-form" class="items-list"></div>
-      </section>
+        </section>
+        <section id="page-settings" hidden>
+          <h1>Settings</h1>
+          <div id="settings-form" class="items-list"></div>
+        </section>
+      </div>
     </main>
     </div>
 

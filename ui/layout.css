@@ -741,9 +741,18 @@ main section h1 {
 
 /* ── Page explain pane ────────────────────────── */
 
-.page-layout {
+main {
   display: flex;
   min-height: 100vh;
+}
+
+#main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-layout {
+  /* kept for compatibility; layout is now handled by main + #main-content */
 }
 
 .page-explain {
@@ -833,7 +842,7 @@ main section h1 {
     padding: 0.4rem 0.75rem;
   }
 
-  .page-layout {
+  main {
     flex-direction: column;
     min-height: unset;
   }
