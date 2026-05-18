@@ -111,9 +111,6 @@ function ideasTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('criteria')">Criteria</button>
-            <button class="nav-btn" type="button" onclick="showPage('attribute-ratings')">Attribute Ratings</button>
-            <button class="nav-btn" type="button" onclick="showPage('criteria-ratings')" style="margin-right:auto">Criteria Ratings</button>
             <button class="start-btn" type="button" onclick="ideas.adding=true">+ Add idea</button>
         </div>
         ${[...state.list]

@@ -61,7 +61,6 @@ function attrItemsTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('att_groups')" style="margin-right:auto">Attribute Groups</button>
             <button class="start-btn" type="button" onclick="attrItems.adding=true">+ Add attribute</button>
         </div>
         ${state.list.map((p, pid) => rowTemplate(p, pid)).join("")}

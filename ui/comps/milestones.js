@@ -287,15 +287,12 @@ function milestonesTemplate(state) {
     if (state.adding)   return addFormTemplate();
     if (state.view === 'chart') return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('milestone-deps')" style="margin-right:auto">Dependencies</button>
             <button class="nav-btn" type="button" onclick="milestones.view='list'">&#8592; List</button>
         </div>
         ${ganttChart()}
     `;
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('milestone-deps')" style="margin-right:auto">Dependencies</button>
-            <button class="nav-btn" type="button" onclick="showPage('tasks')">Tasks</button>
             <button class="nav-btn" type="button" onclick="milestones.view='chart'">Chart</button>
             <button class="start-btn" type="button" onclick="milestones.adding=true">+ Add milestone</button>
         </div>
