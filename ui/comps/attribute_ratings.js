@@ -155,13 +155,6 @@ async function saveAttributeRating(e) {
 }
 
 function ensureAttributeRatings() {
-    for (const idea of ideas.list) {
-        for (const attr of attrItems.list) {
-            if (!attributeRatings.list.some(r => r.idea_id === idea.id && r.att_id === attr.id)) {
-                attributeRatings.list.push({id: null, idea_id: idea.id, att_id: attr.id, score: 5});
-            }
-        }
-    }
 }
 
 async function loadAttributeRatings() {
