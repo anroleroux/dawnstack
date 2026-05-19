@@ -232,18 +232,16 @@ To add a new model, three files need to be touched:
   } //testing-end
   ```
 
-## Scheduling rules
+## Scheduling algorithm
 
-These rules govern how `buildGanttSchedule()` in `ui/comps/milestones.js` models time.
+The full algorithm spec lives in `Scheduling.md`. Key behaviours implemented in `buildGanttSchedule()`:
 
-1. **Milestone date is a deadline (BY date).** The date field is the latest the milestone must be complete — not a target start or exact placement. It is a constraint, not a position. Higher-priority work is scheduled first; lower-priority work fills slack inside the deadline window of higher-priority work.
-2. **Schedule by portfolio item priority.** Milestones belonging to the highest-priority portfolio item are scheduled first. Portfolio item priority is the highest idea score among all ideas linked to that item. Idea score = average of all attribute + criteria ratings for that idea.
-3. **Dependencies inherit the priority of their dependents.** If a lower-priority milestone is a dependency (direct or transitive) of a higher-priority milestone, it is scheduled before the higher priority. 
-4. **Milestones require work time.** Work duration = task count × 2 days; 14 days if the milestone has no tasks. Each milestone's `scheduledDate` = previous milestone's `scheduledDate` + its work duration. The optional `date` field is a deadline — if `scheduledDate > deadline` the milestone is infeasible *(visual flagging deferred)*.
-
-5. **Infeasible schedules are surfaced visually.** When required work cannot fit between deadlines, the affected milestones are highlighted in red on the Gantt chart. *(deferred — not yet implemented)*
-6. **Milestone WIP limit.** At most N milestones may be actively in progress at the same time. Milestones beyond the WIP limit queue behind completing ones. *(deferred — not yet implemented)*
-7. **Task WIP limit.** At most M tasks may be scheduled concurrently at any point in time. The scheduler fills available WIP slots as fully as possible (bin-packing). *(deferred — not yet implemented)*
+- **Priority** — milestone priority is derived from its portfolio item: the highest idea score among all ideas linked to that item. Idea score = weighted average of attribute + criteria ratings.
+- **Dep elevation** — a prerequisite milestone inherits the effective priority of its highest-priority dependent (direct or transitive), so it is always scheduled before the work that needs it.
+- **Sequencing** — a greedy priority topological sort builds one flat global queue: at each step the highest effective-priority ready milestone (all deps satisfied) is picked next. Ties are broken by position in the Kahn topological sort.
+- **Duration** — `remainingDuration = incompleteTasks × avgTaskDuration`. If a milestone has no tasks at all, `remainingDuration = avgTasksPerMilestone × avgTaskDuration`. Defaults: `avgTaskDuration = 2` days, `avgTasksPerMilestone = 7`. Completed milestones (all tasks done) are excluded from the schedule entirely.
+- **Deadline protection** — before committing to the priority order, the scheduler simulates the sequence and checks for deadline breaches. If moving a milestone earlier resolves a breach without causing another, it is moved and a suggestion is logged.
+- **Cycle detection** — cyclic milestones are excluded from the schedule; a warning is logged for each cycle.
 
 ### `buildGanttSchedule` interface
 
@@ -263,11 +261,23 @@ buildGanttSchedule(data, config = {})
 | `criteriaRatings` | `criteriaRatings.list` |
 | `tasks` | `tasks.list` |
 
-`config.today` (ISO string) pins the schedule start date — used by tests for determinism; defaults to `Date.now()`.
+`config.today` (ISO string) pins the schedule start date — used by tests for determinism; defaults to `Date.now()`. `config.avgTaskDuration` and `config.avgTasksPerMilestone` override the duration defaults.
 
-Returns `{ rows, minDate, maxDate, months, deps }` or `null` when empty.
+Always returns an object (never `null`):
 
-`rows` is sorted highest-priority portfolio item first. Each row: `{ pi, priority, items[] }`. Each item: `{ m, scheduledDate, deadline }` — `scheduledDate` is always a `Date` (computed); `deadline` is a `Date` if `m.date` is set, otherwise `null`.
+```js
+{
+  sequence,    // flat ordered array of items — the primary schedule queue
+  rows,        // same items grouped by portfolio item, for Gantt rendering
+  warnings,    // [{ type: 'cycle', milestoneIds } | { type: 'deadline', milestoneId, deadline, scheduledDate }]
+  suggestions, // [{ type: 'priority-deadline', milestoneId }]
+  minDate, maxDate, months, deps
+}
+```
+
+`sequence` and `rows[].items` share the same item objects: `{ m, scheduledDate, deadline }` — `scheduledDate` is always a `Date` (the estimated completion); `deadline` is a `Date` if `m.date` is set, otherwise `null`.
+
+`rows` is sorted by first item's position in `sequence`. Each row: `{ pi, priority, items[] }`.
 
 ### Gantt tests
 

@@ -123,7 +123,7 @@ function buildGanttSchedule(data, config = {}) {
             return { m, scheduledDate: new Date(start), deadline: m.date ? new Date(m.date) : null };
         });
 
-    if (!seqItems.length) return { rows: [], minDate: start, maxDate: start, months: [], deps, warnings, suggestions };
+    if (!seqItems.length) return { rows: [], sequence: [], minDate: start, maxDate: start, months: [], deps, warnings, suggestions };
 
     // Deadline protection: move items earlier in seqItems to prevent avoidable
     // breaches, logging a suggestion for each priority/deadline trade-off.
@@ -196,7 +196,7 @@ function buildGanttSchedule(data, config = {}) {
     for (let d = new Date(minDate); d < maxDate; d = new Date(d.getFullYear(), d.getMonth() + 1, 1))
         months.push(new Date(d));
 
-    return { rows, minDate, maxDate, months, deps, warnings, suggestions };
+    return { rows, sequence: seqItems, minDate, maxDate, months, deps, warnings, suggestions };
 }
 
 const fmtDate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -214,7 +214,7 @@ function ganttChart() {
         attributeGroups:    attributeGroups.list,
         criteriaList:       criteria.list,
     }, getSettings());
-    if (!schedule) return '<p class="item-card__empty">No milestones to chart.</p>';
+    if (!schedule || !schedule.sequence.length) return '<p class="item-card__empty">No milestones to chart.</p>';
 
     const { rows, minDate, maxDate, months, deps: dList } = schedule;
     const allItems = rows.flatMap(r => r.items);

@@ -624,6 +624,61 @@ function runGanttTests() {
 
     console.groupEnd();
 
+    console.group('Partially completed tasks: only pending tasks count toward duration');
+
+    // M1 has 4 tasks: 3 completed, 1 pending → remaining = 1 × 2d = 2d → 2026-01-03
+    const dataPartial = {
+        portfolioItems:     [{id: 1, name: 'PI', type: 'product'}],
+        portfolioItemIdeas: [{portfolio_item_id: 1, idea_id: 1}],
+        attributeRatings:   [{idea_id: 1, score: 5}],
+        criteriaRatings:    [],
+        milestones:         [{id: 1, portfolio_item_id: 1, goal: 'M1', date: null}],
+        tasks: [
+            {id: 1, milestone_id: 1, status: 'completed'},
+            {id: 2, milestone_id: 1, status: 'completed'},
+            {id: 3, milestone_id: 1, status: 'completed'},
+            {id: 4, milestone_id: 1, status: 'pending'},
+        ],
+        deps: [],
+    };
+    const sPartial = buildGanttSchedule(dataPartial, {today: '2026-01-01'});
+    assert('M1 (1 pending task=2d): 2026-01-03',
+        sPartial && ymd(sPartial.rows[0].items[0].scheduledDate) === '2026-01-03');
+
+    console.groupEnd();
+
+    console.group('sequence field: flat ordered milestone queue');
+
+    // Re-use the priority ordering scenario: High-PI (9) before Low-PI (3), no deps.
+    const dataSeq = {
+        portfolioItems: [
+            {id: 1, name: 'Low-PI',  type: 'product'},
+            {id: 2, name: 'High-PI', type: 'product'},
+        ],
+        portfolioItemIdeas: [
+            {portfolio_item_id: 1, idea_id: 10},
+            {portfolio_item_id: 2, idea_id: 20},
+        ],
+        attributeRatings: [
+            {idea_id: 10, score: 3},
+            {idea_id: 20, score: 9},
+        ],
+        criteriaRatings: [],
+        milestones: [
+            {id: 101, portfolio_item_id: 1, goal: 'Low milestone',  date: null},
+            {id: 201, portfolio_item_id: 2, goal: 'High milestone', date: null},
+        ],
+        tasks: [],
+        deps: [],
+    };
+    const sSeq = buildGanttSchedule(dataSeq, {today: '2026-01-01'});
+    assert('result has sequence array',       sSeq && Array.isArray(sSeq.sequence));
+    assert('sequence has 2 items',            sSeq && sSeq.sequence.length === 2);
+    assert('High milestone first in sequence', sSeq && sSeq.sequence[0].m.id === 201);
+    assert('Low milestone second in sequence', sSeq && sSeq.sequence[1].m.id === 101);
+
+    console.groupEnd();
+
     console.group('Output shape — warnings and suggestions');
 
     const dataShape = {
