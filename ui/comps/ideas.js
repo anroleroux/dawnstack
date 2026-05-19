@@ -277,8 +277,10 @@ async function saveIdea(e) {
         alert("Could not save idea.");
     }
     } else { //testing
-        ideas.list.push({...data, id: Date.now()}); //testing
+        const saved = {...data, id: Date.now()}; //testing
+        ideas.list.push(saved); //testing
         ideas.adding = false; //testing
+        populateAttributeRatingsWithGemini(saved); //testing
     } //testing
 }
 

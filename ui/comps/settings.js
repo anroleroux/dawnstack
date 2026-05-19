@@ -52,9 +52,7 @@ function saveSettingsForm(e) {
     const taskWip                  = Math.max(1, parseInt(fd.get('taskWip'),      10) || 2);
     const geminiApiKey             = fd.get('geminiApiKey') || '';
     const populateAttributeRatings = fd.get('populateAttributeRatings') === 'on';
-    if (!testing) { //testing
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify({milestoneWip, taskWip, geminiApiKey, populateAttributeRatings}));
-    } //testing
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({milestoneWip, taskWip, geminiApiKey, populateAttributeRatings}));
     appSettings.milestoneWip             = milestoneWip;
     appSettings.taskWip                  = taskWip;
     appSettings.geminiApiKey             = geminiApiKey;

@@ -1,5 +1,4 @@
 async function populateAttributeRatingsWithGemini(idea) {
-    if (!testing) {  //testing
     const settings = getSettings();
     if (!settings.geminiApiKey || !settings.populateAttributeRatings) return;
 
@@ -29,18 +28,19 @@ Return {"ratings": [...]} with exactly ${attrs.length} integers (0-10), one per 
 
     try {
         const res = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${settings.geminiApiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${settings.geminiApiKey}`,
             {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     contents: [{parts: [{text: prompt}]}],
                     generationConfig: {
+                        thinkingConfig: {thinkingLevel: "LOW"},
                         responseMimeType: 'application/json',
                         responseSchema: {
                             type: 'OBJECT',
                             properties: {
-                                ratings: {type: 'ARRAY', items: {type: 'INTEGER'}}
+                                ratings: {type: 'ARRAY', items: {type: 'NUMBER'}}
                             },
                             required: ['ratings']
                         }
@@ -63,30 +63,11 @@ Return {"ratings": [...]} with exactly ${attrs.length} integers (0-10), one per 
         }
         for (let i = 0; i < attrs.length; i++) {
             const score = Math.min(10, Math.max(0, Math.round(Number(ratings[i])) || 0));
-            await createAttributeRatingRecord(idea.id, attrs[i].id, score);
+            await createAttributeRating({idea_id: idea.id, att_id: attrs[i].id, score});
         }
         ideas._lv++;
         portfolioItems._lv++;
     } catch (err) {
         console.error('populateAttributeRatingsWithGemini failed:', err);
     }
-    } //testing
-}
-
-async function createAttributeRatingRecord(ideaId, attId, score) {
-    const data = {idea_id: ideaId, att_id: attId, score};
-    let saved;
-    if (!supabase) {
-        const userId = getCurrentUserId();
-        const headers = {'Content-Type': 'application/json'};
-        if (userId) headers['X-User-Id'] = userId;
-        const res = await fetch('/api/attribute-ratings', {method: 'POST', headers, body: JSON.stringify(data)});
-        if (!res.ok) throw new Error('Failed to create attribute rating');
-        saved = await res.json();
-    } else {
-        const res = await fetch(sbUrl('/api/attribute-ratings'), {method: 'POST', headers: sbHeaders(true), body: JSON.stringify(data)});
-        if (!res.ok) throw new Error('Failed to create attribute rating');
-        saved = (await res.json())[0];
-    }
-    attributeRatings.list.push(saved);
 }

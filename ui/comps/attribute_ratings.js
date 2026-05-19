@@ -119,6 +119,27 @@ async function deleteAttributeRating(r) {
     attributeRatings.selected = null;
 }
 
+async function createAttributeRating(data) {
+    if (!testing) {  //testing
+    let saved;
+    if (!supabase) {
+        const userId = getCurrentUserId();
+        const headers = { "Content-Type": "application/json" };
+        if (userId) headers["X-User-Id"] = userId;
+        const response = await fetch("/api/attribute-ratings", { method: "POST", headers, body: JSON.stringify(data) });
+        if (!response.ok) throw new Error("Failed to save attribute rating");
+        saved = await response.json();
+    } else {
+        const response = await fetch(sbUrl('/api/attribute-ratings'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+        if (!response.ok) throw new Error("Failed to save attribute rating");
+        saved = (await response.json())[0];
+    }
+    attributeRatings.list.push(saved);
+    } else { //testing
+        attributeRatings.list.push({...data, id: Date.now()}); //testing
+    } //testing
+}
+
 async function saveAttributeRating(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
@@ -127,31 +148,12 @@ async function saveAttributeRating(e) {
         att_id:  parseInt(fd.get("att_id"),  10),
         score:   Math.min(10, Math.max(0, parseInt(fd.get("score"), 10) || 0)),
     };
-
-    if (!testing) {  //testing
     try {
-        let saved;
-        if (!supabase) {
-            const userId = getCurrentUserId();
-            const headers = { "Content-Type": "application/json" };
-            if (userId) headers["X-User-Id"] = userId;
-            const response = await fetch("/api/attribute-ratings", { method: "POST", headers, body: JSON.stringify(data) });
-            if (!response.ok) throw new Error("Failed to save attribute rating");
-            saved = await response.json();
-        } else {
-            const response = await fetch(sbUrl('/api/attribute-ratings'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
-            if (!response.ok) throw new Error("Failed to save attribute rating");
-            saved = (await response.json())[0];
-        }
-        attributeRatings.list.push(saved);
+        await createAttributeRating(data);
         attributeRatings.adding = false;
     } catch (err) {
         alert("Could not save attribute rating.");
     }
-    } else { //testing
-        attributeRatings.list.push({...data, id: Date.now()}); //testing
-        attributeRatings.adding = false; //testing
-    } //testing
 }
 
 function ensureAttributeRatings() {
