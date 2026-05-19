@@ -144,6 +144,8 @@ function showPage(name) {
 
 /* {{settings-js}} */
 
+/* {{gemini-js}} */
+
 /* {{milestones-js}} */
 
 /* {{milestone-deps-js}} */
