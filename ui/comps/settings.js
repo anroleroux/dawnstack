@@ -61,6 +61,5 @@ function saveSettingsForm(e) {
     appSettings.populateAttributeRatings = populateAttributeRatings;
     appSettings.saved = true;
     milestones._lv++;
-    if (populateAttributeRatings) populateAttributeRatingsWithGemini();
     setTimeout(() => { appSettings.saved = false; }, 2000);
 }

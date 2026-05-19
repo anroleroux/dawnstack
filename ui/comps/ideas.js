@@ -272,6 +272,7 @@ async function saveIdea(e) {
         }
         ideas.list.push(saved);
         ideas.adding = false;
+        populateAttributeRatingsWithGemini(saved);
     } catch (err) {
         alert("Could not save idea.");
     }

@@ -198,7 +198,6 @@ async function loadAttributeRatings() {
         ); //testing
     } //testing
     ensureAttributeRatings();
-    populateAttributeRatingsWithGemini();
     ideas._lv++;
     portfolioItems._lv++;
 }
