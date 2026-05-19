@@ -921,3 +921,56 @@ main {
 
   .home-layout { padding: 2.5rem 1rem 2rem; }
 }
+
+/* Cascade delete modal */
+#cascade-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.cascade-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+}
+
+.cascade-dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.75rem 2rem;
+  max-width: 420px;
+  width: calc(100% - 2rem);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.cascade-dialog__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.75rem;
+}
+
+.cascade-dialog__warning {
+  font-size: 0.875rem;
+  color: #555;
+  margin: 0 0 0.5rem;
+}
+
+.cascade-dialog__list {
+  font-size: 0.875rem;
+  color: #333;
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  line-height: 1.7;
+}
+
+.cascade-dialog__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}

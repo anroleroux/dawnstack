@@ -64,7 +64,7 @@ function criteriaTemplate(state) {
             <div class="row-actions">
                 <span class="item-row__score">${c.weight ?? 1}×</span>
                 <button class="edit-btn" type="button" onclick="editCriterion(${c.id})">Edit</button>
-                <button class="delete-btn" type="button" onclick="deleteCriterion(${c.id})">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteCriterion(${c.id})">Delete</button>
             </div>
         </div>
     `;

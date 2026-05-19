@@ -66,7 +66,7 @@ function portfolioItemsTemplate(state) {
                 </form>
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deletePortfolioItem(portfolioItems.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeletePortfolioItem(portfolioItems.selected)">Delete</button>
             </div>
         </div>
         `;

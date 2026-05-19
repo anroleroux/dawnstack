@@ -1,4 +1,5 @@
 {{reactivity-js}}:ui/reactivity.js
+{{cascade-js}}:ui/comps/cascade.js
 {{auth-js}}:ui/comps/auth.js
 {{attributes-js}}:ui/comps/attributes.js
 {{att_groups-js}}:ui/comps/att_groups.js

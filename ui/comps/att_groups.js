@@ -64,7 +64,7 @@ function attributeGroupsTemplate(state) {
             <div class="row-actions">
                 <span class="item-row__score">${c.weight ?? 1}×</span>
                 <button class="edit-btn" type="button" onclick="editAttributeGroup(${c.id})">Edit</button>
-                <button class="delete-btn" type="button" onclick="deleteAttributeGroup(${c.id})">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteAttributeGroup(${c.id})">Delete</button>
             </div>
         </div>
     `;

@@ -326,7 +326,7 @@ function milestonesTemplate(state) {
                 </form>
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteMilestone(milestones.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteMilestone(milestones.selected)">Delete</button>
             </div>
         </div>
         `;

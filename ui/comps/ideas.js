@@ -77,7 +77,7 @@ function ideasTemplate(state) {
                 }).join("")}
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteIdea(ideas.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteIdea(ideas.selected)">Delete</button>
             </div>
         </div>
         `;
