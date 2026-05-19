@@ -32,11 +32,12 @@ function ideasTemplate(state) {
             </div>
             <div class="item-card__section">
                 <span class="item-card__section-label">Attribute ratings</span>
-                ${attrItems.list.map(a => {
-                    const r   = attributeRatings.list.find(r => r.idea_id === p.id && r.att_id === a.id);
-                    const score = r ? r.score : 5;
-                    const er  = ideas.editing_rating;
-                    if (er && er.kind === 'attr' && er.refId === a.id) return `
+                ${(() => {
+                    const rows = attrItems.list.map(a => {
+                        const r  = attributeRatings.list.find(r => r.idea_id === p.id && r.att_id === a.id);
+                        if (!r) return '';
+                        const er = ideas.editing_rating;
+                        if (er && er.kind === 'attr' && er.refId === a.id) return `
                 <div class="editable-field editable-field--editing">
                     <label class="editable-field__label">${a.name}</label>
                     <input class="editable-field__input" type="number" min="0" max="10" step="1" value="${er._draft}" oninput="ideas.editing_rating._draft=this.value">
@@ -45,21 +46,24 @@ function ideasTemplate(state) {
                         <button class="cancel-field-btn" type="button" onclick="cancelRatingEdit()">Cancel</button>
                     </div>
                 </div>`;
-                    return `
+                        return `
                 <div class="editable-field">
                     <span class="editable-field__label">${a.name}</span>
-                    <span class="editable-field__value">${score}</span>
-                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('attr',${a.id},${score})">&#9998;</button>
+                    <span class="editable-field__value">${r.score}</span>
+                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('attr',${a.id},${r.score})">&#9998;</button>
                 </div>`;
-                }).join("")}
+                    }).join("");
+                    return rows || '<p class="item-card__empty">No attribute ratings.</p>';
+                })()}
             </div>
             <div class="item-card__section">
                 <span class="item-card__section-label">Criteria ratings</span>
-                ${criteria.list.map(c => {
-                    const r   = criteriaRatings.list.find(r => r.idea_id === p.id && r.crit_id === c.id);
-                    const score = r ? r.score : 5;
-                    const er  = ideas.editing_rating;
-                    if (er && er.kind === 'crit' && er.refId === c.id) return `
+                ${(() => {
+                    const rows = criteria.list.map(c => {
+                        const r  = criteriaRatings.list.find(r => r.idea_id === p.id && r.crit_id === c.id);
+                        if (!r) return '';
+                        const er = ideas.editing_rating;
+                        if (er && er.kind === 'crit' && er.refId === c.id) return `
                 <div class="editable-field editable-field--editing">
                     <label class="editable-field__label">${c.name}</label>
                     <input class="editable-field__input" type="number" min="0" max="10" step="1" value="${er._draft}" oninput="ideas.editing_rating._draft=this.value">
@@ -68,16 +72,18 @@ function ideasTemplate(state) {
                         <button class="cancel-field-btn" type="button" onclick="cancelRatingEdit()">Cancel</button>
                     </div>
                 </div>`;
-                    return `
+                        return `
                 <div class="editable-field">
                     <span class="editable-field__label">${c.name}</span>
-                    <span class="editable-field__value">${score}</span>
-                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('crit',${c.id},${score})">&#9998;</button>
+                    <span class="editable-field__value">${r.score}</span>
+                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('crit',${c.id},${r.score})">&#9998;</button>
                 </div>`;
-                }).join("")}
+                    }).join("");
+                    return rows || '<p class="item-card__empty">No criteria ratings.</p>';
+                })()}
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteIdea(ideas.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteIdea(ideas.selected)">Delete</button>
             </div>
         </div>
         `;
@@ -266,12 +272,15 @@ async function saveIdea(e) {
         }
         ideas.list.push(saved);
         ideas.adding = false;
+        populateAttributeRatingsWithGemini(saved);
     } catch (err) {
         alert("Could not save idea.");
     }
     } else { //testing
-        ideas.list.push({...data, id: Date.now()}); //testing
+        const saved = {...data, id: Date.now()}; //testing
+        ideas.list.push(saved); //testing
         ideas.adding = false; //testing
+        populateAttributeRatingsWithGemini(saved); //testing
     } //testing
 }
 

@@ -53,7 +53,7 @@ function tasksTemplate(state) {
                 </div>
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteTask(tasks.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteTask(tasks.selected)">Delete</button>
             </div>
         </div>
         `;

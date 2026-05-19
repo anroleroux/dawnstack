@@ -1,4 +1,5 @@
 {{reactivity-js}}:ui/reactivity.js
+{{cascade-js}}:ui/comps/cascade.js
 {{auth-js}}:ui/comps/auth.js
 {{attributes-js}}:ui/comps/attributes.js
 {{att_groups-js}}:ui/comps/att_groups.js
@@ -9,6 +10,7 @@
 {{portfolio-items-js}}:ui/comps/portfolio_items.js
 {{portfolio-item-ideas-js}}:ui/comps/portfolio_item_ideas.js
 {{settings-js}}:ui/comps/settings.js
+{{gemini-js}}:ui/comps/gemini.js
 {{milestones-js}}:ui/comps/milestones.js
 {{milestone-deps-js}}:ui/comps/milestone_deps.js
 {{tasks-js}}:ui/comps/tasks.js

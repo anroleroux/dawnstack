@@ -122,6 +122,8 @@ function showPage(name) {
 
 /* {{reactivity-js}} */
 
+/* {{cascade-js}} */
+
 /* {{auth-js}} */
 
 /* {{attributes-js}} */
@@ -141,6 +143,8 @@ function showPage(name) {
 /* {{portfolio-item-ideas-js}} */
 
 /* {{settings-js}} */
+
+/* {{gemini-js}} */
 
 /* {{milestones-js}} */
 

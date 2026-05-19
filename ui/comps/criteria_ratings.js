@@ -145,13 +145,6 @@ async function saveCriteriaRating(e) {
 }
 
 function ensureCriteriaRatings() {
-    for (const idea of ideas.list) {
-        for (const crit of criteria.list) {
-            if (!criteriaRatings.list.some(r => r.idea_id === idea.id && r.crit_id === crit.id)) {
-                criteriaRatings.list.push({id: null, idea_id: idea.id, crit_id: crit.id, score: 5});
-            }
-        }
-    }
 }
 
 async function loadCriteriaRatings() {

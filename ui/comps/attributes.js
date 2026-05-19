@@ -14,7 +14,7 @@ function attrItemsTemplate(state) {
                 ${editableField(mr, api, 'Weight',          'weight',      p.weight ?? 1,                   'text')}
             </div>
             <div class="item-card__actions">
-                <button class="delete-btn" type="button" onclick="deleteAttribute(attrItems.selected)">Delete</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteAttribute(attrItems.selected)">Delete</button>
             </div>
         </div>
         `;

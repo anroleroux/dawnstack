@@ -1,5 +1,5 @@
 const SETTINGS_KEY = 'dawnstack_settings';
-const SETTINGS_DEFAULTS = {milestoneWip: 2, taskWip: 1};
+const SETTINGS_DEFAULTS = {milestoneWip: 2, taskWip: 1, geminiApiKey: '', populateAttributeRatings: false};
 
 function getSettings() {
     try {
@@ -11,13 +11,25 @@ function settingsTemplate(state) {
     return `
     <form class="item-card item-card--detail" onsubmit="saveSettingsForm(event)">
         <div class="add-form">
-            <div class="add-form__field">
-                <label>Milestone WIP limit</label>
-                <input name="milestoneWip" type="number" min="1" max="20" step="1" value="${state.milestoneWip}" required>
+            <div class="add-form__field--row">
+                <div class="add-form__field">
+                    <label>Milestone WIP limit</label>
+                    <input name="milestoneWip" type="number" min="1" max="20" step="1" value="${state.milestoneWip}" required>
+                </div>
+                <div class="add-form__field">
+                    <label>Task WIP limit</label>
+                    <input name="taskWip" type="number" min="1" max="20" step="1" value="${state.taskWip}" required>
+                </div>
             </div>
             <div class="add-form__field">
-                <label>Task WIP limit</label>
-                <input name="taskWip" type="number" min="1" max="20" step="1" value="${state.taskWip}" required>
+                <label>Gemini API key</label>
+                <input name="geminiApiKey" type="password" value="${state.geminiApiKey}" autocomplete="off" placeholder="AIza…">
+            </div>
+            <div class="add-form__field">
+                <label class="settings-toggle">
+                    <input name="populateAttributeRatings" type="checkbox" ${state.populateAttributeRatings ? 'checked' : ''}>
+                    Populate attribute ratings via Gemini
+                </label>
             </div>
         </div>
         <div class="item-card__actions">
@@ -36,13 +48,15 @@ var appSettings = mount(
 function saveSettingsForm(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
-    const milestoneWip = Math.max(1, parseInt(fd.get('milestoneWip'), 10) || 3);
-    const taskWip      = Math.max(1, parseInt(fd.get('taskWip'),      10) || 2);
-    if (!testing) { //testing
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify({milestoneWip, taskWip}));
-    } //testing
-    appSettings.milestoneWip = milestoneWip;
-    appSettings.taskWip      = taskWip;
+    const milestoneWip             = Math.max(1, parseInt(fd.get('milestoneWip'), 10) || 3);
+    const taskWip                  = Math.max(1, parseInt(fd.get('taskWip'),      10) || 2);
+    const geminiApiKey             = fd.get('geminiApiKey') || '';
+    const populateAttributeRatings = fd.get('populateAttributeRatings') === 'on';
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({milestoneWip, taskWip, geminiApiKey, populateAttributeRatings}));
+    appSettings.milestoneWip             = milestoneWip;
+    appSettings.taskWip                  = taskWip;
+    appSettings.geminiApiKey             = geminiApiKey;
+    appSettings.populateAttributeRatings = populateAttributeRatings;
     appSettings.saved = true;
     milestones._lv++;
     setTimeout(() => { appSettings.saved = false; }, 2000);
