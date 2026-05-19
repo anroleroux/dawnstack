@@ -11,8 +11,7 @@ async function apiDelete(endpoint, id) {
 }
 
 function removeFromStore(store, id) {
-    const idx = store.list.findIndex(x => x.id === id);
-    if (idx !== -1) store.list.splice(idx, 1);
+    store.list = store.list.filter(x => x.id !== id);
 }
 
 function showCascadeConfirm(title, groups) {
