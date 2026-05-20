@@ -286,7 +286,7 @@ function milestonesTemplate(state) {
             <div class="item-card__fields">
                 ${editableField(mr, api, 'Goal',           'goal',              p.goal,                                'text')}
                 ${editableField(mr, api, 'Portfolio item', 'portfolio_item_id', portfolioItemName(p.portfolio_item_id), 'select', portfolioItems.list.map(i => ({value: i.id, label: i.name})))}
-                ${editableField(mr, api, 'Deadline',        'date',              p.date || 'None',                      'text')}
+                ${editableField(mr, api, 'Deadline',        'date',              p.date || 'None',                      'date')}
             </div>
             <div class="item-card__section">
                 <span class="item-card__section-label">Dependencies</span>

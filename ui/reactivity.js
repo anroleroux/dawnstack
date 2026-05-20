@@ -125,6 +125,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
     if (inputType === 'number') val = parseFloat(val) || 0;
     if (inputType === 'score')  val = Math.min(10, Math.max(0, parseInt(val, 10) || 0));
     if (inputType === 'select') val = parseInt(val, 10);
+    if (inputType === 'date')   val = val || null;
 
     if (!testing) {  //testing
     if (!supabase) {

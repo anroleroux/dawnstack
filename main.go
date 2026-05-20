@@ -74,7 +74,7 @@ type Milestone struct {
 	ID              int    `json:"id"`
 	PortfolioItemID int    `json:"portfolio_item_id"`
 	Goal            string `json:"goal"`
-	Date            string `json:"date"`
+	Date            *string `json:"date"`
 }
 
 type MilestoneDep struct {
