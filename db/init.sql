@@ -62,7 +62,7 @@ create table milestones (
     id                serial  primary key,
     portfolio_item_id integer not null references portfolio_items(id),
     goal              text    not null,
-    date              date    not null
+    date              date
 );
 
 create table milestone_dependencies (
