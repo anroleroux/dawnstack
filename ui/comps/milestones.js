@@ -286,7 +286,7 @@ function milestonesTemplate(state) {
             <div class="item-card__fields">
                 ${editableField(mr, api, 'Goal',           'goal',              p.goal,                                'text')}
                 ${editableField(mr, api, 'Portfolio item', 'portfolio_item_id', portfolioItemName(p.portfolio_item_id), 'select', portfolioItems.list.map(i => ({value: i.id, label: i.name})))}
-                ${editableField(mr, api, 'Date',           'date',              p.date,                                'text')}
+                ${editableField(mr, api, 'Deadline',        'date',              p.date || 'None',                      'text')}
             </div>
             <div class="item-card__section">
                 <span class="item-card__section-label">Dependencies</span>
@@ -351,7 +351,7 @@ function milestonesTemplate(state) {
                     </select>
                 </div>
                 <div class="add-form__field">
-                    <label>Deadline</label>
+                    <label>Deadline <span style="font-weight:400;opacity:0.6">(optional)</span></label>
                     <input name="date" type="date">
                 </div>
             </div>
@@ -372,7 +372,7 @@ function milestonesTemplate(state) {
             </div>
             <div class="item-row__meta">
                 <span class="item-row__score">${scoreDisplay}</span>
-                <span class="item-row__category">${p.date}</span>
+                ${p.date ? `<span class="item-row__category" style="color:#c0392b">${p.date}</span>` : ''}
             </div>
         </div>
     `;};
