@@ -273,6 +273,7 @@ async function saveIdea(e) {
         ideas.list.push(saved);
         ideas.adding = false;
         populateAttributeRatingsWithGemini(saved);
+        populateCriteriaRatingsWithGemini(saved);
     } catch (err) {
         alert("Could not save idea.");
     }
@@ -281,6 +282,7 @@ async function saveIdea(e) {
         ideas.list.push(saved); //testing
         ideas.adding = false; //testing
         populateAttributeRatingsWithGemini(saved); //testing
+        populateCriteriaRatingsWithGemini(saved); //testing
     } //testing
 }
 

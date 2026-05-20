@@ -109,6 +109,27 @@ async function deleteCriteriaRating(r) {
     criteriaRatings.selected = null;
 }
 
+async function createCriteriaRating(data) {
+    if (!testing) {  //testing
+    let saved;
+    if (!supabase) {
+        const userId = getCurrentUserId();
+        const headers = { "Content-Type": "application/json" };
+        if (userId) headers["X-User-Id"] = userId;
+        const response = await fetch("/api/criteria-ratings", { method: "POST", headers, body: JSON.stringify(data) });
+        if (!response.ok) throw new Error("Failed to save criteria rating");
+        saved = await response.json();
+    } else {
+        const response = await fetch(sbUrl('/api/criteria-ratings'), { method: "POST", headers: sbHeaders(true), body: JSON.stringify(data) });
+        if (!response.ok) throw new Error("Failed to save criteria rating");
+        saved = (await response.json())[0];
+    }
+    criteriaRatings.list.push(saved);
+    } else { //testing
+        criteriaRatings.list.push({...data, id: Date.now()}); //testing
+    } //testing
+}
+
 async function saveCriteriaRating(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
