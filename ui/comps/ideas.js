@@ -35,7 +35,6 @@ function ideasTemplate(state) {
                 ${(() => {
                     const rows = attrItems.list.map(a => {
                         const r  = attributeRatings.list.find(r => r.idea_id === p.id && r.att_id === a.id);
-                        if (!r) return '';
                         const er = ideas.editing_rating;
                         if (er && er.kind === 'attr' && er.refId === a.id) return `
                 <div class="editable-field editable-field--editing">
@@ -46,6 +45,12 @@ function ideasTemplate(state) {
                         <button class="cancel-field-btn" type="button" onclick="cancelRatingEdit()">Cancel</button>
                     </div>
                 </div>`;
+                        if (!r) return `
+                <div class="editable-field">
+                    <span class="editable-field__label">${a.name}</span>
+                    <span class="editable-field__value" style="opacity:0.35">—</span>
+                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('attr',${a.id},0)">+</button>
+                </div>`;
                         return `
                 <div class="editable-field">
                     <span class="editable-field__label">${a.name}</span>
@@ -53,7 +58,7 @@ function ideasTemplate(state) {
                     <button class="edit-field-btn" type="button" onclick="beginRatingEdit('attr',${a.id},${r.score})">&#9998;</button>
                 </div>`;
                     }).join("");
-                    return rows || '<p class="item-card__empty">No attribute ratings.</p>';
+                    return rows || '<p class="item-card__empty">No attributes defined.</p>';
                 })()}
             </div>
             <div class="item-card__section">
@@ -61,7 +66,6 @@ function ideasTemplate(state) {
                 ${(() => {
                     const rows = criteria.list.map(c => {
                         const r  = criteriaRatings.list.find(r => r.idea_id === p.id && r.crit_id === c.id);
-                        if (!r) return '';
                         const er = ideas.editing_rating;
                         if (er && er.kind === 'crit' && er.refId === c.id) return `
                 <div class="editable-field editable-field--editing">
@@ -72,6 +76,12 @@ function ideasTemplate(state) {
                         <button class="cancel-field-btn" type="button" onclick="cancelRatingEdit()">Cancel</button>
                     </div>
                 </div>`;
+                        if (!r) return `
+                <div class="editable-field">
+                    <span class="editable-field__label">${c.name}</span>
+                    <span class="editable-field__value" style="opacity:0.35">—</span>
+                    <button class="edit-field-btn" type="button" onclick="beginRatingEdit('crit',${c.id},0)">+</button>
+                </div>`;
                         return `
                 <div class="editable-field">
                     <span class="editable-field__label">${c.name}</span>
@@ -79,7 +89,7 @@ function ideasTemplate(state) {
                     <button class="edit-field-btn" type="button" onclick="beginRatingEdit('crit',${c.id},${r.score})">&#9998;</button>
                 </div>`;
                     }).join("");
-                    return rows || '<p class="item-card__empty">No criteria ratings.</p>';
+                    return rows || '<p class="item-card__empty">No criteria defined.</p>';
                 })()}
             </div>
             <div class="item-card__actions">
