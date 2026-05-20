@@ -351,8 +351,8 @@ function milestonesTemplate(state) {
                     </select>
                 </div>
                 <div class="add-form__field">
-                    <label>Date</label>
-                    <input name="date" type="date" required>
+                    <label>Deadline</label>
+                    <input name="date" type="date">
                 </div>
             </div>
             <div class="item-card__actions">
@@ -439,7 +439,7 @@ async function saveMilestone(e) {
     const data = {
         goal:              fd.get("goal"),
         portfolio_item_id: parseInt(fd.get("portfolio_item_id"), 10),
-        date:              fd.get("date"),
+        date:              fd.get("date") || null,
     };
 
     if (!testing) {  //testing
