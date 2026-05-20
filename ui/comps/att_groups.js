@@ -51,20 +51,19 @@ function attributeGroupsTemplate(state) {
             </div>
             <div class="item-card__actions">
                 <button class="start-btn" type="submit">Update</button>
+                <button class="delete-btn" type="button" onclick="cascadeDeleteAttributeGroup(attributeGroups.editing.id)">Delete</button>
             </div>
         </form>
     `;
 
     const rowTemplate = (c) => `
-        <div class="item-row">
+        <div class="item-row" onclick="editAttributeGroup(${c.id})">
             <div class="item-row__main">
                 <span class="item-row__name">${c.name}</span>
                 <span class="item-row__category">${c.description || ''}</span>
             </div>
-            <div class="row-actions">
+            <div class="item-row__meta">
                 <span class="item-row__score">${c.weight ?? 1}×</span>
-                <button class="edit-btn" type="button" onclick="editAttributeGroup(${c.id})">Edit</button>
-                <button class="delete-btn" type="button" onclick="cascadeDeleteAttributeGroup(${c.id})">Delete</button>
             </div>
         </div>
     `;

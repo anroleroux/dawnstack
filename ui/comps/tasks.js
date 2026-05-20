@@ -107,7 +107,6 @@ function tasksTemplate(state) {
     if (state.adding)   return addFormTemplate();
     return `
         <div class="items-toolbar">
-            <button class="nav-btn" type="button" onclick="showPage('milestones')" style="margin-right:auto">&#8592; Milestones</button>
             <button class="start-btn" type="button" onclick="tasks.adding=true">+ Add task</button>
         </div>
         ${state.list.map((t, tid) => rowTemplate(t, tid)).join("")}
