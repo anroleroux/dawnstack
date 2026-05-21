@@ -124,7 +124,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
     let val = mount._draft;
     if (inputType === 'number') val = parseFloat(val) || 0;
     if (inputType === 'score')  val = Math.min(10, Math.max(0, parseInt(val, 10) || 0));
-    if (inputType === 'select') val = parseInt(val, 10);
+    if (inputType === 'select') { const n = parseInt(val, 10); val = isNaN(n) ? val : n; }
     if (inputType === 'date')   val = val || null;
 
     if (!testing) {  //testing
@@ -145,4 +145,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
 
     mount.selected[fieldKey] = val;
     mount.editing_field = null;
+    if (typeof window[mountRef + '_afterSave'] === 'function') {
+        window[mountRef + '_afterSave'](fieldKey, val, apiPath);
+    }
 }

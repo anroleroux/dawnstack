@@ -185,6 +185,30 @@ async function saveTask(e) {
     } //testing
 }
 
+function tasks_afterSave(fieldKey, val, apiPath) {
+    if (fieldKey !== 'status') return;
+    const now = new Date().toISOString();
+    const extra = {};
+    if ((val === 'busy' || val === 'done') && !tasks.selected.started_at) extra.started_at = now;
+    if (val === 'done' && !tasks.selected.completed_at) extra.completed_at = now;
+    if (!Object.keys(extra).length) return;
+
+    if (!testing) {  //testing
+    if (!supabase) {
+        const userId = getCurrentUserId();
+        const headers = { "Content-Type": "application/json" };
+        if (userId) headers["X-User-Id"] = userId;
+        fetch(`${apiPath}/${tasks.selected.id}`, { method: "PATCH", headers, body: JSON.stringify(extra) })
+            .catch(() => {});
+    } else {
+        fetch(`${sbUrl(apiPath)}?id=eq.${tasks.selected.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify(extra) })
+            .catch(() => {});
+    }
+    } //testing
+
+    for (const [k, v] of Object.entries(extra)) tasks.selected[k] = v;
+}
+
 async function loadTasks() {
     const list = document.getElementById("tasks-list");
     list.innerHTML = "<li>Loading tasks...</li>";

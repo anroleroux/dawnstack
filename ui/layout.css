@@ -769,10 +769,7 @@ main {
 #main-content {
   flex: 1;
   min-width: 0;
-}
-
-.page-layout {
-  /* kept for compatibility; layout is now handled by main + #main-content */
+  padding: 0 1rem;
 }
 
 .page-explain {
@@ -827,11 +824,6 @@ main {
 }
 
 .got-it-btn:hover { color: #888; }
-
-.page-main {
-  flex: 1;
-  min-width: 0;
-}
 
 /* ── Home page ────────────────────────────────── */
 
@@ -900,8 +892,6 @@ main {
     margin-top: 0.75rem;
     font-size: 0.72rem;
   }
-
-  .page-main { padding: 0 1rem; }
 
   main section > h1 {
     padding-left: 1rem;
