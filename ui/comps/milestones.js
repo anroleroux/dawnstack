@@ -314,9 +314,11 @@ function milestonesTemplate(state) {
                 ${tasks.list
                     .filter(t => t.milestone_id === p.id)
                     .map(t => `
-                <div class="editable-field">
+                <div class="editable-field editable-field--clickable" onclick="selectTask(tasks.list.findIndex(x=>x.id===${t.id}));showPage('tasks')">
                     ${taskStatusBadge(t.status)}
                     <span class="editable-field__value">${t.description}</span>
+                    ${t.status === 'pending' ? `<button class="task-advance-btn task-advance-btn--start" type="button" onclick="event.stopPropagation();advanceTaskStatus(${t.id})">Start</button>` : ''}
+                    ${t.status === 'busy'    ? `<button class="task-advance-btn task-advance-btn--done"  type="button" onclick="event.stopPropagation();advanceTaskStatus(${t.id})">Done</button>`  : ''}
                 </div>`).join("") || '<p class="item-card__empty">No tasks.</p>'}
                 <form class="editable-field editable-field--editing" onsubmit="addTaskToMilestone(event,${p.id})">
                     <input class="editable-field__input" name="description" type="text" placeholder="New task..." required>
