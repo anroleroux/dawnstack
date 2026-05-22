@@ -541,6 +541,23 @@ header {
 
 .cancel-field-btn:hover { color: #111; }
 
+.task-advance-btn {
+  margin-left: auto;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+  background: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.task-advance-btn--start { color: #f59e0b; border-color: #f59e0b; }
+.task-advance-btn--start:hover { background: #fff8e1; }
+.task-advance-btn--done  { color: #2d7a3a; border-color: #2d7a3a; }
+.task-advance-btn--done:hover  { background: #e6f4ea; }
+
 .status-btns { display: flex; gap: 0.4rem; }
 
 .status-btn {

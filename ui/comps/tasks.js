@@ -221,6 +221,29 @@ async function setTaskStatus(newStatus) {
     tasks_afterSave('status', newStatus, apiPath);
 }
 
+async function advanceTaskStatus(taskId) {
+    const t = tasks.list.find(x => x.id === taskId);
+    if (!t) return;
+    const next = t.status === 'pending' ? 'busy' : t.status === 'busy' ? 'done' : null;
+    if (!next) return;
+    const now = new Date().toISOString();
+    const patch = {status: next};
+    if ((next === 'busy' || next === 'done') && !t.started_at)  patch.started_at  = now;
+    if (next === 'done' && !t.completed_at)                     patch.completed_at = now;
+    const apiPath = '/api/tasks';
+    if (!testing) {  //testing
+    if (!supabase) {
+        const userId = getCurrentUserId();
+        const headers = { "Content-Type": "application/json" };
+        if (userId) headers["X-User-Id"] = userId;
+        fetch(`${apiPath}/${t.id}`, { method: "PATCH", headers, body: JSON.stringify(patch) }).catch(() => {});
+    } else {
+        fetch(`${sbUrl(apiPath)}?id=eq.${t.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify(patch) }).catch(() => {});
+    }
+    } //testing
+    for (const [k, v] of Object.entries(patch)) t[k] = v;
+}
+
 async function loadTasks() {
     const list = document.getElementById("tasks-list");
     list.innerHTML = "<li>Loading tasks...</li>";
