@@ -30,11 +30,14 @@ function tasksTemplate(state) {
             <div class="item-card__fields">
                 ${editableField(mr, api, 'Description',  'description',  t.description,                'text')}
                 ${editableField(mr, api, 'Milestone',    'milestone_id', milestoneName(t.milestone_id), 'select', milestones.list.map(m => ({value: m.id, label: m.goal})))}
-                ${editableField(mr, api, 'Status',       'status',       t.status,                      'select', [
-                    {value: 'pending', label: 'Pending'},
-                    {value: 'busy',    label: 'Busy'},
-                    {value: 'done',    label: 'Done'},
-                ])}
+                <div class="editable-field">
+                    <label class="editable-field__label">Status</label>
+                    <div class="status-btns">
+                        <button class="status-btn${t.status === 'pending' ? ' status-btn--pending' : ''}" type="button" onclick="setTaskStatus('pending')">Pending</button>
+                        <button class="status-btn${t.status === 'busy'    ? ' status-btn--busy'    : ''}" type="button" onclick="setTaskStatus('busy')">Busy</button>
+                        <button class="status-btn${t.status === 'done'    ? ' status-btn--done'    : ''}" type="button" onclick="setTaskStatus('done')">Done</button>
+                    </div>
+                </div>
                 ${editableField(mr, api, 'Depends on',   'depends_on_id', taskName(t.depends_on_id),   'select', depOptions)}
             </div>
             <div class="item-card__section">
@@ -207,6 +210,24 @@ function tasks_afterSave(fieldKey, val, apiPath) {
     } //testing
 
     for (const [k, v] of Object.entries(extra)) tasks.selected[k] = v;
+}
+
+async function setTaskStatus(newStatus) {
+    const apiPath = '/api/tasks';
+    if (!testing) {  //testing
+    if (!supabase) {
+        const userId = getCurrentUserId();
+        const headers = { "Content-Type": "application/json" };
+        if (userId) headers["X-User-Id"] = userId;
+        fetch(`${apiPath}/${tasks.selected.id}`, { method: "PATCH", headers, body: JSON.stringify({status: newStatus}) })
+            .catch(() => alert("Could not save changes."));
+    } else {
+        fetch(`${sbUrl(apiPath)}?id=eq.${tasks.selected.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify({status: newStatus}) })
+            .catch(() => alert("Could not save changes."));
+    }
+    } //testing
+    tasks.selected.status = newStatus;
+    tasks_afterSave('status', newStatus, apiPath);
 }
 
 async function loadTasks() {
