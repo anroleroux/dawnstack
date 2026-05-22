@@ -219,6 +219,7 @@ async function setTaskStatus(newStatus) {
     } //testing
     tasks.selected.status = newStatus;
     tasks_afterSave('status', newStatus, apiPath);
+    if (_renders['milestones-list']) _renders['milestones-list']();
 }
 
 async function advanceTaskStatus(taskId) {
