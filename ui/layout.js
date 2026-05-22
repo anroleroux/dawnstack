@@ -118,7 +118,7 @@ function showPage(name) {
     }
 }
 
-// showPage('milestones');
+showPage('home');
 
 /* {{reactivity-js}} */
 
@@ -163,7 +163,7 @@ function loadAll() {
 }
 
 function maybeAuth() {
-    if (!supabase) { setCurrentUserId(1); loadAll(); showPage('home'); return; }
+    if (!supabase) { setCurrentUserId(1); showPage('home'); loadAll(); return; }
     initAuth();
 }
 
