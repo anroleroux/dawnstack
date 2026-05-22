@@ -938,7 +938,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 
 func patchTask(w http.ResponseWriter, r *http.Request) {
 	patchRow(w, r, "tasks",
-		[]string{"milestone_id", "description", "depends_on_id", "status", "started_at", "completed_at"},
+		[]string{"milestone_id", "description", "depends_on_id", "status", "created_at", "started_at", "completed_at"},
 		taskCols,
 		func(row *sql.Row) error {
 			var t Task

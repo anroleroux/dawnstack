@@ -42,18 +42,9 @@ function tasksTemplate(state) {
             </div>
             <div class="item-card__section">
                 <span class="item-card__section-label">Timestamps</span>
-                <div class="editable-field">
-                    <label class="editable-field__label">Created</label>
-                    <span class="editable-field__value">${t.created_at || '—'}</span>
-                </div>
-                <div class="editable-field">
-                    <label class="editable-field__label">Started</label>
-                    <span class="editable-field__value">${t.started_at || '—'}</span>
-                </div>
-                <div class="editable-field">
-                    <label class="editable-field__label">Completed</label>
-                    <span class="editable-field__value">${t.completed_at || '—'}</span>
-                </div>
+                ${editableField(mr, api, 'Created',   'created_at',   t.created_at   || '—', 'datetime-local')}
+                ${editableField(mr, api, 'Started',   'started_at',   t.started_at   || '—', 'datetime-local')}
+                ${editableField(mr, api, 'Completed', 'completed_at', t.completed_at || '—', 'datetime-local')}
             </div>
             <div class="item-card__actions">
                 <button class="delete-btn" type="button" onclick="cascadeDeleteTask(tasks.selected)">Delete</button>
