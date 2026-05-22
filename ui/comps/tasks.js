@@ -242,6 +242,7 @@ async function advanceTaskStatus(taskId) {
     }
     } //testing
     for (const [k, v] of Object.entries(patch)) t[k] = v;
+    if (_renders['milestones-list']) _renders['milestones-list']();
 }
 
 async function loadTasks() {

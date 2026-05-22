@@ -41,6 +41,8 @@ function reactive(obj, onChange) {
     });
 }
 
+var _renders = {};
+
 function mount(root, state, template) {
     function bindEditableInputs() {
         document.querySelectorAll("input[id^='input-']").forEach(input => {
@@ -56,7 +58,8 @@ function mount(root, state, template) {
         root.innerHTML = template(state);
         bindEditableInputs();
     }
-    
+
+    if (root.id) _renders[root.id] = render;
     const r = reactive(state, render);
     render();
     return r;
