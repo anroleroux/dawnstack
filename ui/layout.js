@@ -19,7 +19,6 @@ function setCurrentUserId(userId) {
 
 const EXPLAIN_DISMISSED_KEY = 'explainDismissed';
 
-var _explainTimers = [];
 var _currentGroup = null;
 
 function gotItExplain() {
@@ -65,28 +64,23 @@ var pageExplains = {
 };
 
 function typeExplain(aside, explain) {
-    _explainTimers.forEach(clearTimeout);
-    _explainTimers = [];
     var textEl = aside.querySelector('.page-explain__text');
     var hintEl = aside.querySelector('.page-explain__hint');
-    if (hintEl) hintEl.style.opacity = '0';
     var words = explain.main.split(' ');
     textEl.innerHTML = '';
     words.forEach(function(word, i) {
         var span = document.createElement('span');
         span.textContent = (i === 0 ? '' : ' ') + word;
         span.className = 'page-explain__word';
+        span.style.animation = 'page-explain-fade-in 1s ease ' + (400 + i * 120) + 'ms forwards';
         textEl.appendChild(span);
-        _explainTimers.push(setTimeout(function() {
-            span.classList.add('page-explain__word--visible');
-        }, 400 + i * 120));
     });
     if (hintEl && explain.hint) {
         hintEl.textContent = explain.hint;
         var hintDelay = 400 + (words.length - 1) * 120 + 900;
-        _explainTimers.push(setTimeout(function() {
-            hintEl.style.opacity = '1';
-        }, hintDelay));
+        hintEl.style.animation = 'none';
+        hintEl.offsetHeight; // force reflow to restart animation
+        hintEl.style.animation = 'page-explain-fade-in 0.8s ease ' + hintDelay + 'ms forwards';
     }
 }
 

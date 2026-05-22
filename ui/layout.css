@@ -828,14 +828,14 @@ main {
   letter-spacing: 0.01em;
 }
 
-.page-explain__word {
-  opacity: 0;
-  transition: opacity 1s ease;
+@keyframes page-explain-fade-in {
+  to { opacity: 1; }
 }
 
-.page-explain__word--visible {
-  opacity: 1;
+.page-explain__word {
+  opacity: 0;
 }
+
 
 .page-explain__hint {
   margin: 1.75rem 0 0;
@@ -843,7 +843,6 @@ main {
   line-height: 1.65;
   color: #bbb;
   opacity: 0;
-  transition: opacity 0.8s ease;
 }
 
 .got-it-btn {
