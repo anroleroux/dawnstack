@@ -460,6 +460,9 @@ header {
 
 .editable-field:last-child { border-bottom: none; }
 
+.editable-field--clickable { cursor: pointer; }
+.editable-field--clickable:hover { background: var(--page-accent-light); }
+
 .editable-field--editing {
   flex-direction: column;
   align-items: stretch;

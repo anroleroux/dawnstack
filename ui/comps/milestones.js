@@ -314,7 +314,7 @@ function milestonesTemplate(state) {
                 ${tasks.list
                     .filter(t => t.milestone_id === p.id)
                     .map(t => `
-                <div class="editable-field">
+                <div class="editable-field editable-field--clickable" onclick="selectTask(tasks.list.findIndex(x=>x.id===${t.id}));showPage('tasks')">
                     ${taskStatusBadge(t.status)}
                     <span class="editable-field__value">${t.description}</span>
                 </div>`).join("") || '<p class="item-card__empty">No tasks.</p>'}
