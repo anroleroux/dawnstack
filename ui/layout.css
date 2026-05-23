@@ -29,7 +29,7 @@ html { font-size: 16px; }
   --blue-700: #1a6fa8;
   --blue-900: #0d3b5e;
 
-  /* Type scale */
+  /* Type scale — ratio 1.25 */
   --ratio:   1.25;
   --step-0:  1rem;
   --step--1: calc(var(--step-0)  / var(--ratio));
@@ -37,6 +37,21 @@ html { font-size: 16px; }
   --step-1:  calc(var(--step-0)  * var(--ratio));
   --step-2:  calc(var(--step-1)  * var(--ratio));
   --step-3:  calc(var(--step-2)  * var(--ratio));
+
+  /* Size scale — ratio 1.5 */
+  --size-ratio: 1.5;
+  --size-0:  1rem;
+  --size--1: calc(var(--size-0)  / var(--size-ratio));
+  --size--2: calc(var(--size--1) / var(--size-ratio));
+  --size--3: calc(var(--size--2) / var(--size-ratio));
+  --size-1:  calc(var(--size-0)  * var(--size-ratio));
+  --size-2:  calc(var(--size-1)  * var(--size-ratio));
+  --size-3:  calc(var(--size-2)  * var(--size-ratio));
+  --size-4:  calc(var(--size-3)  * var(--size-ratio));
+
+  /* Neutral text */
+  --color-muted: #999;
+  --color-desc: #aaa;
 
   /* Page theme defaults (home + unthemed sub-pages) */
   --page-primary:       #222;
@@ -74,8 +89,8 @@ header {
   max-width: 720px;
   margin: 0 auto;
   display: flex;
-  gap: 0.25rem;
-  padding: 0.6rem 0;
+  gap: var(--size--3);
+  padding: var(--size--1) 0;
 }
 
 .nav-btn {
@@ -84,7 +99,7 @@ header {
   cursor: pointer;
   font-size: var(--step--1);
   color: #888;
-  padding: 0.3rem 0.75rem;
+  padding: var(--size--3) var(--size--1);
   border-radius: 5px;
   transition: color 0.15s, background 0.15s;
 }
@@ -97,7 +112,7 @@ header {
 
 .items-list {
   max-width: 720px;
-  margin: 1.5rem auto;
+  margin: var(--size-1) auto;
   display: flex;
   flex-direction: column;
 }
@@ -110,7 +125,7 @@ header {
   border: none;
   border-bottom: 1px solid #ebebeb;
   border-radius: 0;
-  padding: 1rem 0.75rem 1rem 1rem;
+  padding: var(--size-0) var(--size--1) var(--size-0) var(--size-0);
   cursor: pointer;
   position: relative;
   transition: background 0.2s, padding-left 0.2s;
@@ -132,7 +147,7 @@ header {
 
 .item-row:hover {
   background: var(--page-accent-light);
-  padding-left: 1.5rem;
+  padding-left: var(--size-1);
 }
 
 .item-row:hover::before { opacity: 1; }
@@ -140,7 +155,7 @@ header {
 .item-row__main {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--size--3);
   flex: 1;
   min-width: 0;
 }
@@ -154,7 +169,7 @@ header {
 
 .item-row__category {
   font-size: var(--step--2);
-  color: #aaa;
+  color: var(--color-desc);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -163,9 +178,9 @@ header {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.25rem;
+  gap: var(--size--3);
   flex-shrink: 0;
-  margin-left: 1.5rem;
+  margin-left: var(--size-1);
 }
 
 .item-row__score {
@@ -175,7 +190,7 @@ header {
   background: var(--page-accent-light);
   border: 1px solid var(--page-border-accent);
   border-radius: 3px;
-  padding: 0.15rem 0.45rem;
+  padding: 0.15rem var(--size--2);
   letter-spacing: 0.02em;
 }
 
@@ -185,16 +200,16 @@ header {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: var(--size-1);
   max-width: 720px;
-  margin: 1.5rem 0;
+  margin: var(--size-1) 0;
 }
 
 .item-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--size--1);
 }
 
 .item-card__category {
@@ -210,50 +225,14 @@ header {
   color: #555;
   cursor: pointer;
   font-size: var(--step--1);
-  padding: 0.25rem 0.5rem;
+  padding: var(--size--3) var(--size--2);
 }
 
 .back-btn:hover { color: #111; }
 
 .item-card--detail h2 {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--size--2);
   font-size: var(--step-2);
-}
-
-.item-card__desc {
-  color: #555;
-  line-height: 1.5;
-  margin: 0 0 1rem;
-}
-
-.item-card__meta {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.25rem;
-}
-
-.item-card__price {
-  font-size: var(--step-1);
-  font-weight: 700;
-}
-
-/* ── Shared stock badges ──────────────────────── */
-
-.in-stock {
-  font-size: var(--step--1);
-  background: #e6f4ea;
-  color: #2d7a3a;
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
-}
-
-.out-stock {
-  font-size: var(--step--1);
-  background: #fdecea;
-  color: #b71c1c;
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
 }
 
 /* ── Buttons ──────────────────────────────────── */
@@ -263,7 +242,7 @@ header {
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 0.5rem 1.2rem;
+  padding: var(--size--2) var(--size-0);
   font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.2s;
@@ -276,7 +255,7 @@ header {
   color: #b71c1c;
   border: 1px solid #b71c1c;
   border-radius: 5px;
-  padding: 0.5rem 1.2rem;
+  padding: var(--size--2) var(--size-0);
   font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
@@ -285,28 +264,6 @@ header {
 .delete-btn:hover {
   background: #b71c1c;
   color: #fff;
-}
-
-.edit-btn {
-  background: none;
-  color: #555;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 0.35rem 0.9rem;
-  font-size: var(--step--1);
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
-}
-
-.edit-btn:hover {
-  border-color: #888;
-  color: #222;
-}
-
-.row-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 /* ── Toolbar ──────────────────────────────────── */
@@ -323,19 +280,19 @@ header {
 .add-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: var(--size--1);
+  margin-bottom: var(--size-1);
 }
 
 .add-form__field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--size--3);
 }
 
 .add-form__field--row {
   flex-direction: row;
-  gap: 1rem;
+  gap: var(--size-0);
 }
 
 .add-form__field--row > .add-form__field {
@@ -354,7 +311,7 @@ header {
 .add-form__field textarea {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
-  padding: 0.45rem 0.6rem;
+  padding: var(--size--2) var(--size--1);
   font-size: var(--step--1);
   font-family: inherit;
   outline: none;
@@ -369,13 +326,13 @@ header {
 
 .add-form__field textarea {
   resize: vertical;
-  min-height: 4rem;
+  min-height: var(--size-3);
 }
 
 .settings-toggle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--size--2);
   cursor: pointer;
   text-transform: none;
   letter-spacing: 0;
@@ -384,8 +341,8 @@ header {
 }
 
 .settings-toggle input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
+  width: var(--size-0);
+  height: var(--size-0);
   cursor: pointer;
   accent-color: var(--page-primary);
   border: none;
@@ -397,13 +354,13 @@ header {
 .item-card__fields {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--size-1);
 }
 
 .item-card__section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--size-1);
 }
 
 .item-card__section-label {
@@ -411,20 +368,20 @@ header {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--size--3);
 }
 
 .item-card__empty {
   font-size: var(--step--1);
-  color: #bbb;
-  margin: 0.25rem 0;
+  color: var(--color-muted);
+  margin: var(--size--3) 0;
 }
 
 .editable-field {
   display: flex;
   align-items: baseline;
-  gap: 0.75rem;
-  padding: 0.45rem 0;
+  gap: var(--size--1);
+  padding: var(--size--2) 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -436,8 +393,8 @@ header {
 .editable-field--editing {
   flex-direction: column;
   align-items: stretch;
-  gap: 0.4rem;
-  padding: 0.6rem 0;
+  gap: var(--size--2);
+  padding: var(--size--1) 0;
 }
 
 .editable-field__label {
@@ -460,9 +417,9 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  color: #ccc;
+  color: var(--color-muted);
   font-size: var(--step--1);
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem var(--size--3);
   border-radius: 3px;
   line-height: 1;
   transition: color 0.15s;
@@ -473,7 +430,7 @@ header {
 .editable-field__input {
   border: 1px solid #aaa;
   border-radius: 5px;
-  padding: 0.4rem 0.6rem;
+  padding: var(--size--2) var(--size--1);
   font-size: var(--step--1);
   font-family: inherit;
   outline: none;
@@ -484,7 +441,7 @@ header {
 
 .editable-field__btns {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--size--2);
 }
 
 .save-field-btn {
@@ -492,7 +449,7 @@ header {
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 0.3rem 0.8rem;
+  padding: var(--size--3) var(--size--1);
   font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.2s;
@@ -506,7 +463,7 @@ header {
   border: none;
   cursor: pointer;
   font-size: var(--step--1);
-  padding: 0.3rem 0.5rem;
+  padding: var(--size--3) var(--size--2);
 }
 
 .cancel-field-btn:hover { color: #111; }
@@ -515,7 +472,7 @@ header {
   margin-left: auto;
   border: 1px solid;
   border-radius: 4px;
-  padding: 0.15rem 0.55rem;
+  padding: 0.15rem var(--size--2);
   font-size: var(--step--2);
   cursor: pointer;
   background: none;
@@ -528,20 +485,20 @@ header {
 .task-advance-btn--done  { color: #2d7a3a; border-color: #2d7a3a; }
 .task-advance-btn--done:hover  { background: #e6f4ea; }
 
-.status-btns { display: flex; gap: 0.4rem; }
+.status-btns { display: flex; gap: var(--size--2); }
 
 .status-btn {
   background: none;
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 0.25rem 0.75rem;
+  padding: var(--size--3) var(--size--1);
   font-size: var(--step--1);
-  color: #aaa;
+  color: var(--color-muted);;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.status-btn--pending { background: #f5f5f5; color: #666;    border-color: #ccc;    font-weight: 600; }
+.status-btn--pending { background: #f5f5f5; color: #666;    border-color: var(--color-muted);    font-weight: 600; }
 .status-btn--busy    { background: #fff8e1; color: #f59e0b; border-color: #f59e0b; font-weight: 600; }
 .status-btn--done    { background: #e6f4ea; color: #2d7a3a; border-color: #2d7a3a; font-weight: 600; }
 
@@ -552,20 +509,20 @@ header {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
+  padding: var(--size-0);
 }
 
 .auth-card {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  padding: 2rem;
+  padding: var(--size-2);
   width: 100%;
   max-width: 380px;
 }
 
 .auth-card h2 {
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--size-1);
   font-size: var(--step-2);
   font-weight: 700;
   text-align: center;
@@ -575,7 +532,7 @@ header {
 .auth-tabs {
   display: flex;
   gap: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--size-1);
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   overflow: hidden;
@@ -585,7 +542,7 @@ header {
   flex: 1;
   background: none;
   border: none;
-  padding: 0.5rem;
+  padding: var(--size--2);
   font-size: var(--step--1);
   cursor: pointer;
   color: #888;
@@ -598,7 +555,7 @@ header {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--size--1);
 }
 
 .auth-form label {
@@ -614,7 +571,7 @@ header {
   width: 100%;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
-  padding: 0.5rem 0.7rem;
+  padding: var(--size--2) var(--size--1);
   font-size: var(--step--1);
   font-family: inherit;
   outline: none;
@@ -628,11 +585,11 @@ header {
   color: #fff;
   border: none;
   border-radius: 5px;
-  padding: 0.6rem 1rem;
+  padding: var(--size--1) var(--size-0);
   font-size: var(--step--1);
   cursor: pointer;
   width: 100%;
-  margin-top: 0.25rem;
+  margin-top: var(--size--3);
   transition: background 0.2s;
 }
 
@@ -646,7 +603,7 @@ header {
   font-size: var(--step--1);
   text-align: center;
   width: 100%;
-  padding: 0.25rem;
+  padding: var(--size--3);
   text-decoration: underline;
 }
 
@@ -657,7 +614,7 @@ header {
   color: #b71c1c;
   background: #fdecea;
   border-radius: 4px;
-  padding: 0.4rem 0.6rem;
+  padding: var(--size--2) var(--size--1);
   text-align: center;
 }
 
@@ -666,16 +623,16 @@ header {
   color: #2d7a3a;
   background: #e6f4ea;
   border-radius: 4px;
-  padding: 0.5rem 0.7rem;
+  padding: var(--size--2) var(--size--1);
   text-align: center;
 }
 
 .auth-divider {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0.5rem 0;
-  color: #bbb;
+  gap: var(--size--1);
+  margin: var(--size--2) 0;
+  color: var(--color-muted);
   font-size: var(--step--1);
 }
 
@@ -689,20 +646,20 @@ header {
 .auth-oauth {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--size--2);
 }
 
 .auth-oauth-btn {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
+  padding: var(--size--2) var(--size-0);
   font-size: var(--step--1);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--size--2);
   transition: border-color 0.15s, background 0.15s;
 }
 
@@ -716,7 +673,7 @@ header {
   cursor: pointer;
   font-size: var(--step--1);
   color: #888;
-  padding: 0.3rem 0.75rem;
+  padding: var(--size--3) var(--size--1);
   border-radius: 5px;
   margin-left: auto;
   transition: color 0.15s, background 0.15s;
@@ -728,8 +685,8 @@ header {
 
 main section h1 {
   max-width: 720px;
-  margin: 2rem auto 0.25rem;
-  padding: 0 0 0.5rem;
+  margin: var(--size-2) auto var(--size--3);
+  padding: 0 0 var(--size--2);
   font-size: var(--step-2);
   font-weight: 600;
   color: #222;
@@ -739,12 +696,12 @@ main section h1 {
 
 .page-header {
   max-width: 720px;
-  margin: 2rem auto 0;
-  padding: 0 0 0.5rem;
+  margin: var(--size-2) auto 0;
+  padding: 0 0 var(--size--2);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--size-0);
   border-bottom: 2px solid var(--page-border-accent);
 }
 
@@ -761,7 +718,7 @@ main section h1 {
 
 .page-subnav {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--size--3);
   align-items: center;
   flex-shrink: 0;
 }
@@ -776,13 +733,13 @@ main {
 #main-content {
   flex: 1;
   min-width: 0;
-  padding: 0 1rem;
+  padding: 0 var(--size-0);
 }
 
 .page-explain {
   width: 300px;
   flex-shrink: 0;
-  padding: 3rem 2rem 2.5rem 2rem;
+  padding: var(--size-3) var(--size-2) var(--size-2) var(--size-2);
   border-right: 2px solid var(--page-border-accent);
   background: var(--page-accent-light);
   transition: background 0.4s ease, border-color 0.4s ease;
@@ -808,10 +765,10 @@ main {
 
 
 .page-explain__hint {
-  margin: 1.75rem 0 0;
+  margin: var(--size-1) 0 0;
   font-size: var(--step--1);
   line-height: 1.65;
-  color: #bbb;
+  color: var(--color-muted);
   opacity: 0;
 }
 
@@ -821,9 +778,9 @@ main {
   cursor: pointer;
   font-size: var(--step--2);
   font-family: inherit;
-  color: #ccc;
+  color: var(--color-muted);
   padding: 0;
-  margin-top: 2.5rem;
+  margin-top: var(--size-2);
   display: block;
   margin-left: auto;
   transition: color 0.15s;
@@ -836,7 +793,7 @@ main {
 .home-layout {
   display: flex;
   justify-content: center;
-  padding: 9rem 2rem 4rem;
+  padding: 9rem var(--size-2) var(--size-3);
   min-height: 100vh;
 }
 
@@ -856,12 +813,12 @@ main {
 }
 
 #home-explain .page-explain__hint {
-  margin-top: 3rem;
-  padding-top: 1.75rem;
+  margin-top: var(--size-3);
+  padding-top: var(--size-1);
   border-top: 1px solid #eee;
   font-size: var(--step--1);
   line-height: 1.6;
-  color: #bbb;
+  color: var(--color-muted);
   font-style: italic;
 }
 
@@ -873,7 +830,7 @@ main {
   .main-nav {
     flex-wrap: wrap;
     gap: 0.15rem;
-    padding: 0.4rem 0.75rem;
+    padding: var(--size--2) var(--size--1);
   }
 
   main {
@@ -885,7 +842,7 @@ main {
     width: 100%;
     border-right: none;
     border-bottom: 2px solid var(--page-border-accent);
-    padding: 1.25rem 1.5rem 1rem;
+    padding: var(--size-1) var(--size-1) var(--size-0);
   }
 
   .page-explain__text {
@@ -895,29 +852,29 @@ main {
   }
 
   .page-explain__hint {
-    margin-top: 0.75rem;
+    margin-top: var(--size--1);
     font-size: var(--step--2);
   }
 
   main section > h1 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-top: 1.25rem;
+    padding-left: var(--size-0);
+    padding-right: var(--size-0);
+    margin-top: var(--size-1);
   }
 
   .page-header {
-    margin-top: 1.25rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin-top: var(--size-1);
+    padding-left: var(--size-0);
+    padding-right: var(--size-0);
   }
 
   main section > .items-list {
     margin-left: 0;
     margin-right: 0;
-    padding: 0 1rem;
+    padding: 0 var(--size-0);
   }
 
-  .home-layout { padding: 3.5rem 1.5rem 2.5rem; }
+  .home-layout { padding: var(--size-3) var(--size-1) var(--size-2); }
 
   #home-explain .page-explain__text {
     font-size: var(--step-0);
@@ -930,12 +887,12 @@ main {
 
   .main-nav {
     gap: 0.1rem;
-    padding: 0.3rem 0.5rem;
+    padding: var(--size--3) var(--size--2);
   }
 
-  .page-explain { padding: 1rem 1.25rem 0.75rem; }
+  .page-explain { padding: var(--size-0) var(--size-1) var(--size--1); }
 
-  .home-layout { padding: 2.5rem 1rem 2rem; }
+  .home-layout { padding: var(--size-2) var(--size-0) var(--size-2); }
 }
 
 /* Cascade delete modal */
@@ -958,9 +915,9 @@ main {
   position: relative;
   background: #fff;
   border-radius: 8px;
-  padding: 1.75rem 2rem;
+  padding: var(--size-1) var(--size-2);
   max-width: 420px;
-  width: calc(100% - 2rem);
+  width: calc(100% - var(--size-2));
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
 
@@ -968,25 +925,25 @@ main {
   font-size: var(--step-1);
   font-weight: 600;
   letter-spacing: -0.01em;
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--size--1);
 }
 
 .cascade-dialog__warning {
   font-size: var(--step--1);
   color: #555;
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--size--2);
 }
 
 .cascade-dialog__list {
   font-size: var(--step--1);
   color: #333;
-  margin: 0 0 1.25rem;
-  padding-left: 1.25rem;
+  margin: 0 0 var(--size-1);
+  padding-left: var(--size-1);
   line-height: 1.7;
 }
 
 .cascade-dialog__actions {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--size--1);
   justify-content: flex-end;
 }

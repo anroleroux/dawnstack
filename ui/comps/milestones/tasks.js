@@ -180,6 +180,7 @@ async function saveTask(e) {
 }
 
 function tasks_afterSave(fieldKey, val, apiPath) {
+    if (fieldKey === 'milestone_id') { milestones._lv++; return; }
     if (fieldKey !== 'status') return;
     const now = new Date().toISOString();
     const extra = {};
