@@ -29,6 +29,15 @@ html { font-size: 16px; }
   --blue-700: #1a6fa8;
   --blue-900: #0d3b5e;
 
+  /* Type scale */
+  --ratio:   1.25;
+  --step-0:  1rem;
+  --step--1: calc(var(--step-0)  / var(--ratio));
+  --step--2: calc(var(--step--1) / var(--ratio));
+  --step-1:  calc(var(--step-0)  * var(--ratio));
+  --step-2:  calc(var(--step-1)  * var(--ratio));
+  --step-3:  calc(var(--step-2)  * var(--ratio));
+
   /* Page theme defaults (home + unthemed sub-pages) */
   --page-primary:       #222;
   --page-primary-hover: #444;
@@ -38,52 +47,13 @@ html { font-size: 16px; }
 
 /* ── Per-page theme overrides ─────────────────── */
 
-body.page-attributes {
-  --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--brown-900);
-  --page-accent-light:  var(--brown-50);
-  --page-border-accent: var(--brown-300);
-}
+/* {{attributes-css}} */
 
-body.page-att_groups {
-  --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--brown-900);
-  --page-accent-light:  var(--brown-50);
-  --page-border-accent: var(--brown-300);
-}
+/* {{ideas-css}} */
 
-body.page-ideas {
-  --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--green-500);
-  --page-accent-light:  var(--green-50);
-  --page-border-accent: var(--green-300);
-}
+/* {{portfolio-items-css}} */
 
-body.page-criteria,
-body.page-criteria-ratings,
-body.page-attribute-ratings {
-  --page-primary:       var(--brown-700);
-  --page-primary-hover: var(--green-500);
-  --page-accent-light:  var(--green-50);
-  --page-border-accent: var(--green-300);
-}
-
-body.page-portfolio-items,
-body.page-portfolio-item-ideas {
-  --page-primary:       var(--green-700);
-  --page-primary-hover: var(--green-900);
-  --page-accent-light:  var(--green-50);
-  --page-border-accent: var(--green-300);
-}
-
-body.page-milestones,
-body.page-milestone-deps,
-body.page-tasks {
-  --page-primary:       var(--blue-500);
-  --page-primary-hover: var(--blue-700);
-  --page-accent-light:  var(--blue-50);
-  --page-border-accent: var(--blue-300);
-}
+/* {{milestones-css}} */
 
 body {
   margin: 0;
@@ -112,7 +82,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   color: #888;
   padding: 0.3rem 0.75rem;
   border-radius: 5px;
@@ -177,13 +147,13 @@ header {
 
 .item-row__name {
   font-weight: 500;
-  font-size: 1rem;
+  font-size: var(--step-0);
   color: #1a1a1a;
   line-height: 1.2;
 }
 
 .item-row__category {
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   color: #aaa;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -199,7 +169,7 @@ header {
 }
 
 .item-row__score {
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   font-weight: 600;
   color: var(--page-primary);
   background: var(--page-accent-light);
@@ -228,7 +198,7 @@ header {
 }
 
 .item-card__category {
-  font-size: 0.78rem;
+  font-size: var(--step--1);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
@@ -239,7 +209,7 @@ header {
   border: none;
   color: #555;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   padding: 0.25rem 0.5rem;
 }
 
@@ -247,7 +217,7 @@ header {
 
 .item-card--detail h2 {
   margin: 0 0 0.5rem;
-  font-size: 1.4rem;
+  font-size: var(--step-2);
 }
 
 .item-card__desc {
@@ -264,14 +234,14 @@ header {
 }
 
 .item-card__price {
-  font-size: 1.25rem;
+  font-size: var(--step-1);
   font-weight: 700;
 }
 
 /* ── Shared stock badges ──────────────────────── */
 
 .in-stock {
-  font-size: 0.78rem;
+  font-size: var(--step--1);
   background: #e6f4ea;
   color: #2d7a3a;
   border-radius: 4px;
@@ -279,7 +249,7 @@ header {
 }
 
 .out-stock {
-  font-size: 0.78rem;
+  font-size: var(--step--1);
   background: #fdecea;
   color: #b71c1c;
   border-radius: 4px;
@@ -294,7 +264,7 @@ header {
   border: none;
   border-radius: 5px;
   padding: 0.5rem 1.2rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -307,7 +277,7 @@ header {
   border: 1px solid #b71c1c;
   border-radius: 5px;
   padding: 0.5rem 1.2rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
@@ -323,7 +293,7 @@ header {
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
@@ -373,7 +343,7 @@ header {
 }
 
 .add-form__field label {
-  font-size: 0.78rem;
+  font-size: var(--step--1);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
@@ -385,7 +355,7 @@ header {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   padding: 0.45rem 0.6rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
@@ -409,7 +379,7 @@ header {
   cursor: pointer;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   color: #333;
 }
 
@@ -437,7 +407,7 @@ header {
 }
 
 .item-card__section-label {
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
@@ -445,7 +415,7 @@ header {
 }
 
 .item-card__empty {
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   color: #bbb;
   margin: 0.25rem 0;
 }
@@ -471,7 +441,7 @@ header {
 }
 
 .editable-field__label {
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
@@ -483,7 +453,7 @@ header {
 
 .editable-field__value {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
 }
 
 .edit-field-btn {
@@ -491,7 +461,7 @@ header {
   border: none;
   cursor: pointer;
   color: #ccc;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
   line-height: 1;
@@ -504,7 +474,7 @@ header {
   border: 1px solid #aaa;
   border-radius: 5px;
   padding: 0.4rem 0.6rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
@@ -523,7 +493,7 @@ header {
   border: none;
   border-radius: 4px;
   padding: 0.3rem 0.8rem;
-  font-size: 0.82rem;
+  font-size: var(--step--1);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -535,7 +505,7 @@ header {
   color: #555;
   border: none;
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: var(--step--1);
   padding: 0.3rem 0.5rem;
 }
 
@@ -546,7 +516,7 @@ header {
   border: 1px solid;
   border-radius: 4px;
   padding: 0.15rem 0.55rem;
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   cursor: pointer;
   background: none;
   white-space: nowrap;
@@ -565,7 +535,7 @@ header {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 0.25rem 0.75rem;
-  font-size: 0.78rem;
+  font-size: var(--step--1);
   color: #aaa;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -596,7 +566,7 @@ header {
 
 .auth-card h2 {
   margin: 0 0 1.5rem;
-  font-size: 1.4rem;
+  font-size: var(--step-2);
   font-weight: 700;
   text-align: center;
   color: #222;
@@ -616,7 +586,7 @@ header {
   background: none;
   border: none;
   padding: 0.5rem;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   cursor: pointer;
   color: #888;
   transition: background 0.15s, color 0.15s;
@@ -632,7 +602,7 @@ header {
 }
 
 .auth-form label {
-  font-size: 0.72rem;
+  font-size: var(--step--2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #888;
@@ -645,7 +615,7 @@ header {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   padding: 0.5rem 0.7rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s;
@@ -659,7 +629,7 @@ header {
   border: none;
   border-radius: 5px;
   padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  font-size: var(--step--1);
   cursor: pointer;
   width: 100%;
   margin-top: 0.25rem;
@@ -673,7 +643,7 @@ header {
   border: none;
   color: #555;
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: var(--step--1);
   text-align: center;
   width: 100%;
   padding: 0.25rem;
@@ -683,7 +653,7 @@ header {
 .auth-toggle:hover { color: #222; }
 
 .auth-error {
-  font-size: 0.82rem;
+  font-size: var(--step--1);
   color: #b71c1c;
   background: #fdecea;
   border-radius: 4px;
@@ -692,7 +662,7 @@ header {
 }
 
 .auth-message {
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   color: #2d7a3a;
   background: #e6f4ea;
   border-radius: 4px;
@@ -706,7 +676,7 @@ header {
   gap: 0.75rem;
   margin: 0.5rem 0;
   color: #bbb;
-  font-size: 0.78rem;
+  font-size: var(--step--1);
 }
 
 .auth-divider::before,
@@ -727,7 +697,7 @@ header {
   border: 1px solid #e0e0e0;
   border-radius: 5px;
   padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -744,7 +714,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: var(--step--1);
   color: #888;
   padding: 0.3rem 0.75rem;
   border-radius: 5px;
@@ -760,7 +730,7 @@ main section h1 {
   max-width: 720px;
   margin: 2rem auto 0.25rem;
   padding: 0 0 0.5rem;
-  font-size: 1.6rem;
+  font-size: var(--step-2);
   font-weight: 600;
   color: #222;
   border-bottom: 2px solid var(--page-border-accent);
@@ -783,7 +753,7 @@ main section h1 {
   padding: 0;
   max-width: unset;
   border-bottom: none;
-  font-size: 1.6rem;
+  font-size: var(--step-2);
   font-weight: 600;
   color: #222;
   letter-spacing: -0.02em;
@@ -820,7 +790,7 @@ main {
 
 .page-explain__text {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--step-1);
   line-height: 1.9;
   color: #444;
   font-style: italic;
@@ -839,7 +809,7 @@ main {
 
 .page-explain__hint {
   margin: 1.75rem 0 0;
-  font-size: 0.8rem;
+  font-size: var(--step--1);
   line-height: 1.65;
   color: #bbb;
   opacity: 0;
@@ -849,7 +819,7 @@ main {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: var(--step--2);
   font-family: inherit;
   color: #ccc;
   padding: 0;
@@ -877,7 +847,7 @@ main {
 }
 
 #home-explain .page-explain__text {
-  font-size: 1.2rem;
+  font-size: var(--step-1);
   line-height: 2;
   color: #2a2a2a;
   font-style: normal;
@@ -889,7 +859,7 @@ main {
   margin-top: 3rem;
   padding-top: 1.75rem;
   border-top: 1px solid #eee;
-  font-size: 0.88rem;
+  font-size: var(--step--1);
   line-height: 1.6;
   color: #bbb;
   font-style: italic;
@@ -919,14 +889,14 @@ main {
   }
 
   .page-explain__text {
-    font-size: 0.85rem;
+    font-size: var(--step--1);
     line-height: 1.6;
     font-style: normal;
   }
 
   .page-explain__hint {
     margin-top: 0.75rem;
-    font-size: 0.72rem;
+    font-size: var(--step--2);
   }
 
   main section > h1 {
@@ -950,7 +920,7 @@ main {
   .home-layout { padding: 3.5rem 1.5rem 2.5rem; }
 
   #home-explain .page-explain__text {
-    font-size: 1rem;
+    font-size: var(--step-0);
     line-height: 1.8;
   }
 }
@@ -995,20 +965,20 @@ main {
 }
 
 .cascade-dialog__title {
-  font-size: 1.1rem;
+  font-size: var(--step-1);
   font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0 0 0.75rem;
 }
 
 .cascade-dialog__warning {
-  font-size: 0.875rem;
+  font-size: var(--step--1);
   color: #555;
   margin: 0 0 0.5rem;
 }
 
 .cascade-dialog__list {
-  font-size: 0.875rem;
+  font-size: var(--step--1);
   color: #333;
   margin: 0 0 1.25rem;
   padding-left: 1.25rem;

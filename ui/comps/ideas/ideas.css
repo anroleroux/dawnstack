@@ -1,0 +1,15 @@
+body.page-ideas {
+  --page-primary:       var(--brown-700);
+  --page-primary-hover: var(--green-500);
+  --page-accent-light:  var(--green-50);
+  --page-border-accent: var(--green-300);
+}
+
+body.page-criteria,
+body.page-criteria-ratings,
+body.page-attribute-ratings {
+  --page-primary:       var(--brown-700);
+  --page-primary-hover: var(--green-500);
+  --page-accent-light:  var(--green-50);
+  --page-border-accent: var(--green-300);
+}

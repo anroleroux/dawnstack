@@ -5,6 +5,7 @@ define compose
 	@awk '\
 	BEGIN { \
 		while ((getline < "$(2)") > 0) { \
+			if ($$0 == "") continue ; \
 			split($$0, parts, ":") ; \
 			map[parts[1]] = parts[2] ; \
 		} ; \

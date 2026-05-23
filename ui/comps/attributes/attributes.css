@@ -1,0 +1,13 @@
+body.page-attributes {
+  --page-primary:       var(--brown-700);
+  --page-primary-hover: var(--brown-900);
+  --page-accent-light:  var(--brown-50);
+  --page-border-accent: var(--brown-300);
+}
+
+body.page-att_groups {
+  --page-primary:       var(--brown-700);
+  --page-primary-hover: var(--brown-900);
+  --page-accent-light:  var(--brown-50);
+  --page-border-accent: var(--brown-300);
+}

@@ -1,0 +1,7 @@
+body.page-portfolio-items,
+body.page-portfolio-item-ideas {
+  --page-primary:       var(--green-700);
+  --page-primary-hover: var(--green-900);
+  --page-accent-light:  var(--green-50);
+  --page-border-accent: var(--green-300);
+}

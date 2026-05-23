@@ -1,0 +1,8 @@
+body.page-milestones,
+body.page-milestone-deps,
+body.page-tasks {
+  --page-primary:       var(--blue-500);
+  --page-primary-hover: var(--blue-700);
+  --page-accent-light:  var(--blue-50);
+  --page-border-accent: var(--blue-300);
+}

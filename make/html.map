@@ -1,4 +1,0 @@
-{{layout-css}}:ui/dist/index.css
-{{attributes-html}}:ui/content/attributes.html
-{{att_groups-html}}:ui/content/att_groups.html
-{{layout-js}}:ui/dist/index.js
