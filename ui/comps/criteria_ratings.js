@@ -211,4 +211,5 @@ async function loadCriteriaRatings() {
     ensureCriteriaRatings();
     ideas._lv++;
     portfolioItems._lv++;
+    milestones._lv++;
 }

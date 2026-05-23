@@ -238,4 +238,5 @@ async function loadPortfolioItemIdeas() {
         ); //testing
     } //testing
     portfolioItems._lv++;
+    milestones._lv++;
 }

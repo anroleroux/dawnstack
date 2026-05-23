@@ -232,4 +232,5 @@ async function loadPortfolioItems() {
             {id:4, name:"Consulting",       type:"service", description:"Expert advice for small businesses on a project basis."} //testing
         ); //testing
     } //testing
+    milestones._lv++;
 }

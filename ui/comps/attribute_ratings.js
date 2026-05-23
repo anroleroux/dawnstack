@@ -202,4 +202,5 @@ async function loadAttributeRatings() {
     ensureAttributeRatings();
     ideas._lv++;
     portfolioItems._lv++;
+    milestones._lv++;
 }

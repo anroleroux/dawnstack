@@ -120,9 +120,9 @@ showPage('home');
 
 /* {{auth-js}} */
 
-/* {{attributes-js}} */
-
 /* {{att_groups-js}} */
+
+/* {{attributes-js}} */
 
 /* {{ideas-js}} */
 
