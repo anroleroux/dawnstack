@@ -42,8 +42,8 @@ const pageGroups = {
 
 var pageExplains = {
     home: {
-        main: "Hi. I'm Anro. If you're anything like me, you have a bunch of ideas flying around in your head. And if you only have two — that's a perfectly good place to start. This is just a tool to help you picture your plan, prioritize what matters, and move with intention. I hope it serves you as well as it has served me.",
-        hint: "\"All models are wrong, some are useful.\" — George E. P. Box"
+        main: "Hi, if you're anything like me, you have a bunch of ideas flying around in your head. If you only have two — that's a great place to start aswell. This is a tool to help you picture your plan, prioritize what matters, and move with intention. George E. P. Box said \"All models are wrong, some are useful.\" I hope this is also useful to you.",
+        hint: "Start by listing what is important to you. Then note down some ideas and rate them again criteria you defined. You can then build a portfoilo of deliverables and plan out their milestones. Move back and forth updating and improving your plan as you grow — the entire structure updates as you change it."
     },
     attributes: {
         main: "Here is where it all begins. Who are you, really? What do you do better than anyone? What have you overcome, built, earned? Map your strengths, claim your wins, and name what makes you irreplaceable. This is your foundation — everything else flows from here.",
