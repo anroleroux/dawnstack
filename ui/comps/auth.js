@@ -87,7 +87,7 @@ function scheduleRefresh(expiresAt) {
     setTimeout(() => refreshToken(authSession.refresh_token), ms);
 }
 
-async function refreshToken(token) {
+async function refreshToken(token, initial = false) {
     try {
         const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
             method: 'POST',
@@ -97,6 +97,7 @@ async function refreshToken(token) {
         if (!res.ok) throw new Error();
         setSession(await res.json());
         scheduleRefresh(authSession.expires_at);
+        if (initial) showApp();
     } catch {
         authSession = null;
         localStorage.removeItem('sb_session');
@@ -128,7 +129,7 @@ function initAuth() {
         if (saved && saved.access_token) {
             authSession = saved;
             if (saved.expires_at - Math.floor(Date.now() / 1000) < 60) {
-                refreshToken(saved.refresh_token);
+                refreshToken(saved.refresh_token, true);
             } else {
                 showApp();
             }
