@@ -147,6 +147,8 @@ showPage('home');
 
 /* {{tasks-js}} */
 
+/* {{data-io-js}} */
+
 //testing-start
 /* {{gantt-tests-js}} */
 //testing-end

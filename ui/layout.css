@@ -681,6 +681,28 @@ header {
 
 .sign-out-btn:hover { color: #b71c1c; background: #fdecea; }
 
+/* ── Data IO buttons ──────────────────────────── */
+
+.nav-io {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--size--3);
+}
+
+.io-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: var(--step--1);
+  color: #666;
+  padding: var(--size--3) var(--size--1);
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.io-btn:hover { color: #333; background: #f5f5f5; border-color: #bbb; }
+
 /* ── Page header ──────────────────────────────── */
 
 main section h1 {

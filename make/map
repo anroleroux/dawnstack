@@ -24,4 +24,5 @@
 {{milestones-js}}:ui/comps/milestones/milestones.js
 {{milestone-deps-js}}:ui/comps/milestones/milestone_deps.js
 {{tasks-js}}:ui/comps/milestones/tasks.js
+{{data-io-js}}:ui/comps/data_io.js
 {{gantt-tests-js}}:ui/comps/milestones/gantt_tests.js
