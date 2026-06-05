@@ -1,4 +1,5 @@
 const testing  = true; //testing
+const offline  = false;
 const supabase = false;
 const SUPABASE_URL      = '__SUPABASE_URL__';
 const SUPABASE_ANON_KEY = '__SUPABASE_PUBLISHABLE_KEY__';

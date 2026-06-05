@@ -33,3 +33,4 @@ go.work.sum
 # .vscode/
 
 ui/dist
+ui/dist-offline

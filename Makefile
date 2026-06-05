@@ -31,6 +31,17 @@ ui/dist/index.js: ui/layout.js ui/reactivity.js $(wildcard ui/comps/*.js) $(wild
 	$(call compose,ui/layout.js,make/map,ui/dist/index.js)
 	@echo "Built test version → ui/dist/index.js"
 
+offline: ui/layout.html ui/dist/index.css ui/dist/index.js
+	@mkdir -p ui/dist-offline
+	cp ui/dist/index.js ui/dist-offline/index.js
+	sed -i '/\/\/testing-start$$/,/\/\/testing-end$$/d' ui/dist-offline/index.js
+	sed -i '/\/\/testing$$/d' ui/dist-offline/index.js
+	sed -i '/\/\/offline-start$$/,/\/\/offline-end$$/d' ui/dist-offline/index.js
+	sed -i '/\/\/offline$$/d' ui/dist-offline/index.js
+	sed -i 's/const offline  = false/const offline  = true/' ui/dist-offline/index.js
+	$(call compose,ui/layout.html,make/offline.map,ui/dist-offline/index.html)
+	@echo "Built offline version → ui/dist-offline/index.html"
+
 run: fsdev
 	go run .
 
