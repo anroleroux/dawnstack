@@ -170,6 +170,13 @@ async function savePortfolioItem(e) {
         description: fd.get("description") || "",
     };
 
+    if (offline) {
+        portfolioItems.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/portfolio-items'), portfolioItems.list);
+        portfolioItems.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -199,6 +206,16 @@ async function savePortfolioItem(e) {
 async function loadPortfolioItems() {
     const list = document.getElementById("portfolio-items-list");
     list.innerHTML = "<li>Loading portfolio items...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/portfolio-items')) || '[]');
+        list.innerHTML = "";
+        portfolioItems.list = [];
+        portfolioItems.selected = null;
+        stored.forEach(p => portfolioItems.list.push(p));
+        milestones._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {

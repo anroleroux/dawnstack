@@ -199,6 +199,20 @@ async function saveRatingEdit(kind, refId, ideaId) {
     const api    = isCrit ? '/api/criteria-ratings' : '/api/attribute-ratings';
     const fkKey  = isCrit ? 'crit_id' : 'att_id';
 
+    if (offline) {
+        if (existing && existing.id) {
+            existing.score = score;
+        } else if (existing) {
+            existing.id = Date.now();
+            existing.score = score;
+        } else {
+            list.list.push({id: Date.now(), idea_id: ideaId, [fkKey]: refId, score});
+        }
+        lsFlush(lsKey(api), list.list);
+        ideas.editing_rating = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         if (!supabase) {
@@ -265,6 +279,14 @@ async function saveIdea(e) {
         description: fd.get("description") || "",
     };
 
+    if (offline) {
+        const saved = {...data, id: Date.now()};
+        ideas.list.push(saved);
+        lsFlush(lsKey('/api/ideas'), ideas.list);
+        ideas.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -299,6 +321,17 @@ async function saveIdea(e) {
 async function loadIdeas() {
     const list = document.getElementById("ideas-list");
     list.innerHTML = "<li>Loading ideas...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/ideas')) || '[]');
+        list.innerHTML = "";
+        ideas.list = [];
+        ideas.selected = null;
+        stored.forEach(p => ideas.list.push(p));
+        ensureAttributeRatings();
+        ensureCriteriaRatings();
+        return;
+    }
 
     if (!testing) {  //testing
     try {

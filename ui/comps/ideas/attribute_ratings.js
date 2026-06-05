@@ -94,6 +94,15 @@ function selectAttributeRating(rid) {
 }
 
 async function deleteAttributeRating(r) {
+    if (offline) {
+        const idx = attributeRatings.list.findIndex(item => item.id === r.id);
+        if (idx !== -1) attributeRatings.list.splice(idx, 1);
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        attributeRatings.editing_field = null;
+        attributeRatings.selected = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let response;
@@ -120,6 +129,12 @@ async function deleteAttributeRating(r) {
 }
 
 async function createAttributeRating(data) {
+    if (offline) {
+        attributeRatings.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        return;
+    }
+
     if (!testing) {  //testing
     let saved;
     if (!supabase) {
@@ -162,6 +177,19 @@ function ensureAttributeRatings() {
 async function loadAttributeRatings() {
     const list = document.getElementById("attribute-ratings-list");
     list.innerHTML = "<li>Loading attribute ratings...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/attribute-ratings')) || '[]');
+        list.innerHTML = "";
+        attributeRatings.list = [];
+        attributeRatings.selected = null;
+        stored.forEach(r => attributeRatings.list.push(r));
+        ensureAttributeRatings();
+        ideas._lv++;
+        portfolioItems._lv++;
+        milestones._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {

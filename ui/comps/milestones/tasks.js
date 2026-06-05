@@ -153,6 +153,13 @@ async function saveTask(e) {
         depends_on_id: depRaw ? parseInt(depRaw, 10) : null,
     };
 
+    if (offline) {
+        tasks.list.push({...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString(), started_at: null, completed_at: null});
+        lsFlush(lsKey('/api/tasks'), tasks.list);
+        tasks.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -202,10 +209,12 @@ function tasks_afterSave(fieldKey, val, apiPath) {
     } //testing
 
     for (const [k, v] of Object.entries(extra)) tasks.selected[k] = v;
+    if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
 }
 
 async function setTaskStatus(newStatus) {
     const apiPath = '/api/tasks';
+    if (!offline) {
     if (!testing) {  //testing
     if (!supabase) {
         const userId = getCurrentUserId();
@@ -218,8 +227,10 @@ async function setTaskStatus(newStatus) {
             .catch(() => alert("Could not save changes."));
     }
     } //testing
+    }
     tasks.selected.status = newStatus;
     tasks_afterSave('status', newStatus, apiPath);
+    if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
     if (_renders['milestones-list']) _renders['milestones-list']();
 }
 
@@ -244,12 +255,23 @@ async function advanceTaskStatus(taskId) {
     }
     } //testing
     for (const [k, v] of Object.entries(patch)) t[k] = v;
+    if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
     if (_renders['milestones-list']) _renders['milestones-list']();
 }
 
 async function loadTasks() {
     const list = document.getElementById("tasks-list");
     list.innerHTML = "<li>Loading tasks...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/tasks')) || '[]');
+        list.innerHTML = "";
+        tasks.list = [];
+        tasks.selected = null;
+        stored.forEach(t => tasks.list.push(t));
+        milestones._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {

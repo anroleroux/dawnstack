@@ -84,6 +84,15 @@ function selectCriteriaRating(rid) {
 }
 
 async function deleteCriteriaRating(r) {
+    if (offline) {
+        const idx = criteriaRatings.list.findIndex(item => item.id === r.id);
+        if (idx !== -1) criteriaRatings.list.splice(idx, 1);
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
+        criteriaRatings.editing_field = null;
+        criteriaRatings.selected = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let response;
@@ -110,6 +119,12 @@ async function deleteCriteriaRating(r) {
 }
 
 async function createCriteriaRating(data) {
+    if (offline) {
+        criteriaRatings.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
+        return;
+    }
+
     if (!testing) {  //testing
     let saved;
     if (!supabase) {
@@ -138,6 +153,13 @@ async function saveCriteriaRating(e) {
         crit_id: parseInt(fd.get("crit_id"), 10),
         score:   Math.min(10, Math.max(0, parseInt(fd.get("score"), 10) || 0)),
     };
+
+    if (offline) {
+        criteriaRatings.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
+        criteriaRatings.adding = false;
+        return;
+    }
 
     if (!testing) {  //testing
     try {
@@ -171,6 +193,19 @@ function ensureCriteriaRatings() {
 async function loadCriteriaRatings() {
     const list = document.getElementById("criteria-ratings-list");
     list.innerHTML = "<li>Loading criteria ratings...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/criteria-ratings')) || '[]');
+        list.innerHTML = "";
+        criteriaRatings.list = [];
+        criteriaRatings.selected = null;
+        stored.forEach(r => criteriaRatings.list.push(r));
+        ensureCriteriaRatings();
+        ideas._lv++;
+        portfolioItems._lv++;
+        milestones._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {
