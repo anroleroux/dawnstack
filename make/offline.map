@@ -1,5 +1,5 @@
 {{layout-css}}:ui/dist/index.css
-{{layout-js}}:ui/dist/index.js
+{{layout-js}}:ui/dist-offline/index.js
 {{attributes-html}}:ui/content/attributes.html
 {{att_groups-html}}:ui/content/att_groups.html
 

@@ -74,6 +74,7 @@ async function cascadeDeleteAttributeGroup(id) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
@@ -84,11 +85,17 @@ async function cascadeDeleteAttributeGroup(id) {
         return;
     }
     } //testing
+    }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
     for (const a of groupAttrs) removeFromStore(attrItems, a.id);
     removeFromStore(attributeGroups, id);
     attributeGroups.editing = null;
+    if (offline) {
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
+        lsFlush(lsKey('/api/attribute-groups'), attributeGroups.list);
+    }
 }
 
 async function cascadeDeleteAttribute(p) {
@@ -99,6 +106,7 @@ async function cascadeDeleteAttribute(p) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
@@ -108,11 +116,16 @@ async function cascadeDeleteAttribute(p) {
         return;
     }
     } //testing
+    }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
     removeFromStore(attrItems, p.id);
     attrItems.editing_field = null;
     attrItems.selected = null;
+    if (offline) {
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
+    }
 }
 
 async function cascadeDeleteIdea(p) {
@@ -127,6 +140,7 @@ async function cascadeDeleteIdea(p) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of attRatings) await apiDelete('/api/attribute-ratings', r.id);
@@ -138,6 +152,7 @@ async function cascadeDeleteIdea(p) {
         return;
     }
     } //testing
+    }
 
     for (const r of attRatings) removeFromStore(attributeRatings, r.id);
     for (const r of critRatings) removeFromStore(criteriaRatings, r.id);
@@ -146,6 +161,12 @@ async function cascadeDeleteIdea(p) {
     ideas.editing_field = null;
     ideas.editing_rating = null;
     ideas.selected = null;
+    if (offline) {
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        lsFlush(lsKey('/api/ideas'), ideas.list);
+    }
 }
 
 async function cascadeDeleteCriterion(id) {
@@ -158,6 +179,7 @@ async function cascadeDeleteCriterion(id) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of critRatings) await apiDelete('/api/criteria-ratings', r.id);
@@ -167,10 +189,15 @@ async function cascadeDeleteCriterion(id) {
         return;
     }
     } //testing
+    }
 
     for (const r of critRatings) removeFromStore(criteriaRatings, r.id);
     removeFromStore(criteria, id);
     criteria.editing = null;
+    if (offline) {
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
+        lsFlush(lsKey('/api/criteria'), criteria.list);
+    }
 }
 
 async function cascadeDeletePortfolioItem(p) {
@@ -191,6 +218,7 @@ async function cascadeDeletePortfolioItem(p) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const t of allTasks) await apiDelete('/api/tasks', t.id);
@@ -203,6 +231,7 @@ async function cascadeDeletePortfolioItem(p) {
         return;
     }
     } //testing
+    }
 
     for (const t of allTasks) removeFromStore(tasks, t.id);
     for (const d of msDeps) removeFromStore(milestoneDeps, d.id);
@@ -215,6 +244,13 @@ async function cascadeDeletePortfolioItem(p) {
     if (milestones.selected && msIds.has(milestones.selected.id)) milestones.selected = null;
     tasks.editing_field = null;
     if (tasks.selected && msTaskIds.has(tasks.selected.id)) tasks.selected = null;
+    if (offline) {
+        lsFlush(lsKey('/api/tasks'), tasks.list);
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        lsFlush(lsKey('/api/milestones'), milestones.list);
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        lsFlush(lsKey('/api/portfolio-items'), portfolioItems.list);
+    }
 }
 
 async function cascadeDeleteMilestone(p) {
@@ -230,6 +266,7 @@ async function cascadeDeleteMilestone(p) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const t of allTasks) await apiDelete('/api/tasks', t.id);
@@ -240,6 +277,7 @@ async function cascadeDeleteMilestone(p) {
         return;
     }
     } //testing
+    }
 
     for (const t of allTasks) removeFromStore(tasks, t.id);
     for (const d of msDeps) removeFromStore(milestoneDeps, d.id);
@@ -248,6 +286,11 @@ async function cascadeDeleteMilestone(p) {
     milestones.selected = null;
     tasks.editing_field = null;
     if (tasks.selected && msTaskIds.has(tasks.selected.id)) tasks.selected = null;
+    if (offline) {
+        lsFlush(lsKey('/api/tasks'), tasks.list);
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        lsFlush(lsKey('/api/milestones'), milestones.list);
+    }
 }
 
 async function cascadeDeleteTask(t) {
@@ -258,6 +301,7 @@ async function cascadeDeleteTask(t) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const dt of depTasks) await apiDelete('/api/tasks', dt.id);
@@ -267,9 +311,11 @@ async function cascadeDeleteTask(t) {
         return;
     }
     } //testing
+    }
 
     for (const dt of depTasks) removeFromStore(tasks, dt.id);
     removeFromStore(tasks, t.id);
     tasks.editing_field = null;
     tasks.selected = null;
+    if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
 }

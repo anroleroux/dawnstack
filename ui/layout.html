@@ -19,6 +19,10 @@
         <button class="nav-btn" id="nav-portfolio-items" onclick="showPage('portfolio-items')">Portfolio</button>
         <button class="nav-btn" id="nav-milestones" onclick="showPage('milestones')">Milestones</button>
         <button class="nav-btn" id="nav-settings" onclick="showPage('settings')">Settings</button>
+        <div class="nav-io" id="nav-io" hidden>
+          <button class="io-btn" type="button" onclick="exportData()">Export</button>
+          <label class="io-btn">Import<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+        </div>
         <button class="sign-out-btn" id="sign-out-btn" onclick="signOut()" hidden>Sign out</button>
       </nav>
     </header>

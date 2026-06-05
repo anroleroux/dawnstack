@@ -126,6 +126,14 @@ async function saveAttributeGroup(e) {
         weight:      parseFloat(fd.get("weight")) || 1,
     };
 
+    if (offline) {
+        const newItem = {...data, id: Date.now()};
+        attributeGroups.list.push(newItem);
+        lsFlush(lsKey('/api/attribute-groups'), attributeGroups.list);
+        attributeGroups.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -162,6 +170,14 @@ async function updateAttributeGroup(e) {
         weight:      parseFloat(fd.get("weight")) || 1,
     };
 
+    if (offline) {
+        const idx = attributeGroups.list.findIndex(c => c.id === updated.id);
+        if (idx !== -1) attributeGroups.list[idx] = updated;
+        lsFlush(lsKey('/api/attribute-groups'), attributeGroups.list);
+        attributeGroups.editing = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -194,6 +210,13 @@ async function updateAttributeGroup(e) {
 }
 
 async function loadAttributeGroups() {
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/attribute-groups')) || '[]');
+        attributeGroups.list = [];
+        stored.forEach(c => attributeGroups.list.push(c));
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let fetched;

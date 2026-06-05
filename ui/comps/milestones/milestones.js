@@ -444,6 +444,13 @@ async function saveMilestone(e) {
         date:              fd.get("date") || null,
     };
 
+    if (offline) {
+        milestones.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/milestones'), milestones.list);
+        milestones.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -475,6 +482,14 @@ async function addTaskToMilestone(e, milestoneId) {
     const description = new FormData(e.target).get("description");
     const data = {description, milestone_id: milestoneId, depends_on_id: null};
 
+    if (offline) {
+        const newTask = {...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString(), started_at: null, completed_at: null};
+        tasks.list.push(newTask);
+        lsFlush(lsKey('/api/tasks'), tasks.list);
+        milestones._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -504,6 +519,15 @@ async function addTaskToMilestone(e, milestoneId) {
 async function loadMilestones() {
     const list = document.getElementById("milestones-list");
     list.innerHTML = "<li>Loading milestones...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/milestones')) || '[]');
+        list.innerHTML = "";
+        milestones.list = [];
+        milestones.selected = null;
+        stored.forEach(p => milestones.list.push(p));
+        return;
+    }
 
     if (!testing) {  //testing
     try {

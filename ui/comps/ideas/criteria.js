@@ -126,6 +126,13 @@ async function saveCriterion(e) {
         weight:      parseFloat(fd.get("weight")) || 1,
     };
 
+    if (offline) {
+        criteria.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/criteria'), criteria.list);
+        criteria.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -162,6 +169,14 @@ async function updateCriterion(e) {
         weight:      parseFloat(fd.get("weight")) || 1,
     };
 
+    if (offline) {
+        const idx = criteria.list.findIndex(c => c.id === updated.id);
+        if (idx !== -1) criteria.list[idx] = updated;
+        lsFlush(lsKey('/api/criteria'), criteria.list);
+        criteria.editing = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -194,6 +209,14 @@ async function updateCriterion(e) {
 }
 
 async function loadCriteria() {
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/criteria')) || '[]');
+        criteria.list = [];
+        stored.forEach(c => criteria.list.push(c));
+        ensureCriteriaRatings();
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let fetched;

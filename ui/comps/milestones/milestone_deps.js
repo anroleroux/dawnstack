@@ -82,6 +82,16 @@ function selectMilestoneDep(did) {
 }
 
 async function deleteMilestoneDep(d) {
+    if (offline) {
+        const idx = milestoneDeps.list.findIndex(item => item.id === d.id);
+        if (idx !== -1) milestoneDeps.list.splice(idx, 1);
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        milestoneDeps.editing_field = null;
+        milestoneDeps.selected = null;
+        milestones._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let response;
@@ -116,6 +126,14 @@ async function saveMilestoneDep(e) {
         depends_on_id: parseInt(fd.get("depends_on_id"), 10),
     };
 
+    if (offline) {
+        milestoneDeps.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        milestoneDeps.adding = false;
+        milestones._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -149,6 +167,13 @@ async function addMilestoneDep(e, milestoneId) {
     if (!dependsOnId) return;
     const data = {milestone_id: milestoneId, depends_on_id: dependsOnId};
 
+    if (offline) {
+        milestoneDeps.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        milestones._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -179,6 +204,14 @@ async function removeMilestoneDep(milestoneId, dependsOnId) {
     const d = milestoneDeps.list.find(d => d.milestone_id === milestoneId && d.depends_on_id === dependsOnId);
     if (!d) return;
 
+    if (offline) {
+        const idx = milestoneDeps.list.findIndex(item => item.id === d.id);
+        if (idx !== -1) milestoneDeps.list.splice(idx, 1);
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
+        milestones._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let response;
@@ -206,6 +239,15 @@ async function removeMilestoneDep(milestoneId, dependsOnId) {
 async function loadMilestoneDeps() {
     const list = document.getElementById("milestone-deps-list");
     list.innerHTML = "<li>Loading dependencies...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/milestone-deps')) || '[]');
+        list.innerHTML = "";
+        milestoneDeps.list = [];
+        milestoneDeps.selected = null;
+        stored.forEach(d => milestoneDeps.list.push(d));
+        return;
+    }
 
     if (!testing) {  //testing
     try {

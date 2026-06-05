@@ -81,6 +81,15 @@ function selectPortfolioItemIdea(rid) {
 }
 
 async function deletePortfolioItemIdea(r) {
+    if (offline) {
+        const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id);
+        if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1);
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        portfolioItemIdeas.editing_field = null;
+        portfolioItemIdeas.selected = null;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let response;
@@ -112,6 +121,13 @@ async function addIdeaToPortfolioItem(e, portfolioItemId) {
     if (!ideaId) return;
     const data = {portfolio_item_id: portfolioItemId, idea_id: ideaId};
 
+    if (offline) {
+        portfolioItemIdeas.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        portfolioItems._lv++;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let link;
@@ -141,6 +157,14 @@ async function addIdeaToPortfolioItem(e, portfolioItemId) {
 async function removeIdeaFromPortfolioItem(portfolioItemId, ideaId) {
     const r = portfolioItemIdeas.list.find(r => r.portfolio_item_id === portfolioItemId && r.idea_id === ideaId);
     if (!r) return;
+
+    if (offline) {
+        const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id);
+        if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1);
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        portfolioItems._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {
@@ -174,6 +198,13 @@ async function savePortfolioItemIdea(e) {
         idea_id:           parseInt(fd.get("idea_id"),           10),
     };
 
+    if (offline) {
+        portfolioItemIdeas.list.push({...data, id: Date.now()});
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
+        portfolioItemIdeas.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -203,6 +234,17 @@ async function savePortfolioItemIdea(e) {
 async function loadPortfolioItemIdeas() {
     const list = document.getElementById("portfolio-item-ideas-list");
     list.innerHTML = "<li>Loading item idea links...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/portfolio-item-ideas')) || '[]');
+        list.innerHTML = "";
+        portfolioItemIdeas.list = [];
+        portfolioItemIdeas.selected = null;
+        stored.forEach(r => portfolioItemIdeas.list.push(r));
+        portfolioItems._lv++;
+        milestones._lv++;
+        return;
+    }
 
     if (!testing) {  //testing
     try {

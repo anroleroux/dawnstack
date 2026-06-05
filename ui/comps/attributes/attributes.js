@@ -123,6 +123,14 @@ async function saveAttribute(e) {
         weight:       parseFloat(fd.get("weight")) || 1,
     };
 
+    if (offline) {
+        const newItem = {...data, id: Date.now()};
+        attrItems.list.push(newItem);
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
+        attrItems.adding = false;
+        return;
+    }
+
     if (!testing) {  //testing
     try {
         let saved;
@@ -152,6 +160,16 @@ async function saveAttribute(e) {
 async function loadAttributes() {
     const list = document.getElementById("attributes-list");
     list.innerHTML = "<li>Loading attributes...</li>";
+
+    if (offline) {
+        const stored = JSON.parse(localStorage.getItem(lsKey('/api/attributes')) || '[]');
+        list.innerHTML = "";
+        attrItems.list = [];
+        attrItems.selected = null;
+        stored.forEach(p => attrItems.list.push(p));
+        ensureAttributeRatings();
+        return;
+    }
 
     if (!testing) {  //testing
     try {
