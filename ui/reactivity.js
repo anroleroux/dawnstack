@@ -13,6 +13,14 @@ function sbHeaders(write) {
     return h;
 }
 
+function lsKey(apiPath) {
+    return 'dawnstack_' + apiPath.replace('/api/', '').replace(/-/g, '_');
+}
+
+function lsFlush(key, list) {
+    localStorage.setItem(key, JSON.stringify(list.map(x => ({...x}))));
+}
+
 function reactive(obj, onChange) {
     return new Proxy(obj, {
         get(target, prop, receiver) {
@@ -148,6 +156,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
 
     mount.selected[fieldKey] = val;
     mount.editing_field = null;
+    if (offline) lsFlush(lsKey(apiPath), mount.list);
     if (typeof window[mountRef + '_afterSave'] === 'function') {
         window[mountRef + '_afterSave'](fieldKey, val, apiPath);
     }

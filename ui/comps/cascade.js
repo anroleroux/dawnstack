@@ -74,6 +74,7 @@ async function cascadeDeleteAttributeGroup(id) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
@@ -84,11 +85,17 @@ async function cascadeDeleteAttributeGroup(id) {
         return;
     }
     } //testing
+    }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
     for (const a of groupAttrs) removeFromStore(attrItems, a.id);
     removeFromStore(attributeGroups, id);
     attributeGroups.editing = null;
+    if (offline) {
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
+        lsFlush(lsKey('/api/attribute-groups'), attributeGroups.list);
+    }
 }
 
 async function cascadeDeleteAttribute(p) {
@@ -99,6 +106,7 @@ async function cascadeDeleteAttribute(p) {
     ]);
     if (!confirmed) return;
 
+    if (!offline) {
     if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
@@ -108,11 +116,16 @@ async function cascadeDeleteAttribute(p) {
         return;
     }
     } //testing
+    }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
     removeFromStore(attrItems, p.id);
     attrItems.editing_field = null;
     attrItems.selected = null;
+    if (offline) {
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
+    }
 }
 
 async function cascadeDeleteIdea(p) {
