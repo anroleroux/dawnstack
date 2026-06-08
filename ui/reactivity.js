@@ -139,6 +139,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
     if (inputType === 'date' || inputType === 'datetime-local') val = val || null;
 
     if (!testing) {  //testing
+    if (!offline) {
     if (!supabase) {
         fetch(`${apiPath}/${mount.selected.id}`, {
             method: "PATCH",
@@ -151,6 +152,7 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
             headers: sbHeaders(true),
             body: JSON.stringify({ [fieldKey]: val }),
         }).catch(() => alert("Could not save changes."));
+    }
     }
     } //testing
 

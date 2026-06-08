@@ -160,7 +160,7 @@ function loadAll() {
 }
 
 function maybeAuth() {
-    if (!supabase) { setCurrentUserId(1); showPage('home'); loadAll(); return; }
+    if (!supabase) { setCurrentUserId(1); document.getElementById('app-section').hidden = false; showPage('home'); loadAll(); return; }
     initAuth();
 }
 
