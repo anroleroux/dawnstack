@@ -54,6 +54,12 @@ jobs:
       - name: Build UI (dev)
         run: make uidev
 
+      - name: Build offline version
+        run: |
+          make offline
+          mkdir -p ui/dist/offline
+          cp ui/dist-offline/index.html ui/dist/offline/index.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ui/dist
