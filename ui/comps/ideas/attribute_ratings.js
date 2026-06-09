@@ -201,6 +201,7 @@ async function loadAttributeRatings() {
         attributeRatings.list = [];
         attributeRatings.selected = null;
         fetched.forEach(r => attributeRatings.list.push(r));
+        lsFlush(lsKey('/api/attribute-ratings'), attributeRatings.list);
         ensureAttributeRatings();
 
     } catch (error) {

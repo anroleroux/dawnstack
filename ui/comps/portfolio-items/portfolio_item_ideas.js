@@ -246,6 +246,7 @@ async function loadPortfolioItemIdeas() {
         portfolioItemIdeas.list = [];
         portfolioItemIdeas.selected = null;
         fetched.forEach(r => portfolioItemIdeas.list.push(r));
+        lsFlush(lsKey('/api/portfolio-item-ideas'), portfolioItemIdeas.list);
 
     } catch (error) {
         list.innerHTML = "<li>Could not load item idea links.</li>";

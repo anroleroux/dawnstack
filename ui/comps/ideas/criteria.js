@@ -217,6 +217,7 @@ async function loadCriteria() {
         }
         criteria.list = [];
         fetched.forEach(c => criteria.list.push(c));
+        lsFlush(lsKey('/api/criteria'), criteria.list);
         ensureCriteriaRatings();
     } catch (error) {
         document.getElementById("criteria-list").innerHTML = "<p>Could not load criteria.</p>";

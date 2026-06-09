@@ -274,6 +274,7 @@ async function loadTasks() {
         tasks.list = [];
         tasks.selected = null;
         fetched.forEach(t => tasks.list.push(t));
+        lsFlush(lsKey('/api/tasks'), tasks.list);
     } catch (error) {
         list.innerHTML = "<li>Could not load tasks.</li>";
     }

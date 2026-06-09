@@ -534,6 +534,7 @@ async function loadMilestones() {
         milestones.list = [];
         milestones.selected = null;
         fetched.forEach(p => milestones.list.push(p));
+        lsFlush(lsKey('/api/milestones'), milestones.list);
 
     } catch (error) {
         list.innerHTML = "<li>Could not load milestones.</li>";

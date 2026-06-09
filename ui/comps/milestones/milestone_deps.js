@@ -249,6 +249,7 @@ async function loadMilestoneDeps() {
         milestoneDeps.list = [];
         milestoneDeps.selected = null;
         fetched.forEach(d => milestoneDeps.list.push(d));
+        lsFlush(lsKey('/api/milestone-deps'), milestoneDeps.list);
 
     } catch (error) {
         list.innerHTML = "<li>Could not load dependencies.</li>";

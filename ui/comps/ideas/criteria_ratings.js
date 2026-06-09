@@ -212,6 +212,7 @@ async function loadCriteriaRatings() {
         criteriaRatings.list = [];
         criteriaRatings.selected = null;
         fetched.forEach(r => criteriaRatings.list.push(r));
+        lsFlush(lsKey('/api/criteria-ratings'), criteriaRatings.list);
         ensureCriteriaRatings();
 
     } catch (error) {

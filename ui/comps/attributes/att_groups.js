@@ -217,6 +217,7 @@ async function loadAttributeGroups() {
         }
         attributeGroups.list = [];
         fetched.forEach(c => attributeGroups.list.push(c));
+        lsFlush(lsKey('/api/attribute-groups'), attributeGroups.list);
     } catch (error) {
         document.getElementById("attribute-groups-list").innerHTML = "<p>Could not load attribute groups.</p>";
     }

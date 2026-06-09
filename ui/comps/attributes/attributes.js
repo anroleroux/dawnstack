@@ -180,6 +180,7 @@ async function loadAttributes() {
         attrItems.list = [];
         attrItems.selected = null;
         fetched.forEach(p => attrItems.list.push(p));
+        lsFlush(lsKey('/api/attributes'), attrItems.list);
         ensureAttributeRatings();
 
     } catch (error) {

@@ -328,6 +328,7 @@ async function loadIdeas() {
         ideas.list = [];
         ideas.selected = null;
         fetched.forEach(p => ideas.list.push(p));
+        lsFlush(lsKey('/api/ideas'), ideas.list);
         ensureAttributeRatings();
         ensureCriteriaRatings();
 
