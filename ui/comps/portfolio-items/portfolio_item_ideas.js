@@ -90,7 +90,6 @@ async function deletePortfolioItemIdea(r) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -107,10 +106,6 @@ async function deletePortfolioItemIdea(r) {
         alert("Could not delete item idea link.");
         return;
     }
-    } else { //testing
-        const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id); //testing
-        if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1); //testing
-    } //testing
     portfolioItemIdeas.editing_field = null;
     portfolioItemIdeas.selected = null;
 }
@@ -128,7 +123,6 @@ async function addIdeaToPortfolioItem(e, portfolioItemId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let link;
         if (!supabase) {
@@ -148,9 +142,6 @@ async function addIdeaToPortfolioItem(e, portfolioItemId) {
         alert("Could not add idea.");
         return;
     }
-    } else { //testing
-        portfolioItemIdeas.list.push({...data, id: Date.now()}); //testing
-    } //testing
     portfolioItems._lv++;
 }
 
@@ -166,7 +157,6 @@ async function removeIdeaFromPortfolioItem(portfolioItemId, ideaId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -183,10 +173,6 @@ async function removeIdeaFromPortfolioItem(portfolioItemId, ideaId) {
         alert("Could not remove idea.");
         return;
     }
-    } else { //testing
-        const idx = portfolioItemIdeas.list.findIndex(item => item.id === r.id); //testing
-        if (idx !== -1) portfolioItemIdeas.list.splice(idx, 1); //testing
-    } //testing
     portfolioItems._lv++;
 }
 
@@ -205,7 +191,6 @@ async function savePortfolioItemIdea(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -225,10 +210,6 @@ async function savePortfolioItemIdea(e) {
     } catch (err) {
         alert("Could not save item idea link.");
     }
-    } else { //testing
-        portfolioItemIdeas.list.push({...data, id: Date.now()}); //testing
-        portfolioItemIdeas.adding = false; //testing
-    } //testing
 }
 
 async function loadPortfolioItemIdeas() {
@@ -246,7 +227,6 @@ async function loadPortfolioItemIdeas() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -270,15 +250,6 @@ async function loadPortfolioItemIdeas() {
     } catch (error) {
         list.innerHTML = "<li>Could not load item idea links.</li>";
     }
-    } else { //testing
-        portfolioItemIdeas.list.push( //testing
-            {id:1, portfolio_item_id:1, idea_id:1}, //testing
-            {id:2, portfolio_item_id:1, idea_id:2}, //testing
-            {id:3, portfolio_item_id:2, idea_id:2}, //testing
-            {id:4, portfolio_item_id:3, idea_id:3}, //testing
-            {id:5, portfolio_item_id:4, idea_id:4}  //testing
-        ); //testing
-    } //testing
     portfolioItems._lv++;
     milestones._lv++;
 }

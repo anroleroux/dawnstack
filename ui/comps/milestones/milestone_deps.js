@@ -92,7 +92,6 @@ async function deleteMilestoneDep(d) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -109,10 +108,6 @@ async function deleteMilestoneDep(d) {
         alert("Could not delete dependency.");
         return;
     }
-    } else { //testing
-        const idx = milestoneDeps.list.findIndex(item => item.id === d.id); //testing
-        if (idx !== -1) milestoneDeps.list.splice(idx, 1); //testing
-    } //testing
     milestoneDeps.editing_field = null;
     milestoneDeps.selected = null;
     milestones._lv++;
@@ -134,7 +129,6 @@ async function saveMilestoneDep(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -154,10 +148,6 @@ async function saveMilestoneDep(e) {
     } catch (err) {
         alert("Could not save dependency.");
     }
-    } else { //testing
-        milestoneDeps.list.push({...data, id: Date.now()}); //testing
-        milestoneDeps.adding = false; //testing
-    } //testing
     milestones._lv++;
 }
 
@@ -174,7 +164,6 @@ async function addMilestoneDep(e, milestoneId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -194,9 +183,6 @@ async function addMilestoneDep(e, milestoneId) {
         alert("Could not add dependency.");
         return;
     }
-    } else { //testing
-        milestoneDeps.list.push({...data, id: Date.now()}); //testing
-    } //testing
     milestones._lv++;
 }
 
@@ -212,7 +198,6 @@ async function removeMilestoneDep(milestoneId, dependsOnId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -229,10 +214,6 @@ async function removeMilestoneDep(milestoneId, dependsOnId) {
         alert("Could not remove dependency.");
         return;
     }
-    } else { //testing
-        const idx = milestoneDeps.list.findIndex(item => item.id === d.id); //testing
-        if (idx !== -1) milestoneDeps.list.splice(idx, 1); //testing
-    } //testing
     milestones._lv++;
 }
 
@@ -249,7 +230,6 @@ async function loadMilestoneDeps() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -273,11 +253,4 @@ async function loadMilestoneDeps() {
     } catch (error) {
         list.innerHTML = "<li>Could not load dependencies.</li>";
     }
-    } else { //testing
-        milestoneDeps.list.push( //testing
-            {id:1, milestone_id:2, depends_on_id:1}, //testing
-            {id:2, milestone_id:5, depends_on_id:4}, //testing
-            {id:3, milestone_id:5, depends_on_id:1}  //testing
-        ); //testing
-    } //testing
 }

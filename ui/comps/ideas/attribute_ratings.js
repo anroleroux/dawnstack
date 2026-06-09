@@ -103,7 +103,6 @@ async function deleteAttributeRating(r) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -120,10 +119,6 @@ async function deleteAttributeRating(r) {
         alert("Could not delete attribute rating.");
         return;
     }
-    } else { //testing
-        const idx = attributeRatings.list.findIndex(item => item.id === r.id); //testing
-        if (idx !== -1) attributeRatings.list.splice(idx, 1); //testing
-    } //testing
     attributeRatings.editing_field = null;
     attributeRatings.selected = null;
 }
@@ -135,7 +130,6 @@ async function createAttributeRating(data) {
         return;
     }
 
-    if (!testing) {  //testing
     let saved;
     if (!supabase) {
         const userId = getCurrentUserId();
@@ -150,9 +144,6 @@ async function createAttributeRating(data) {
         saved = (await response.json())[0];
     }
     attributeRatings.list.push(saved);
-    } else { //testing
-        attributeRatings.list.push({...data, id: Date.now()}); //testing
-    } //testing
 }
 
 async function saveAttributeRating(e) {
@@ -191,7 +182,6 @@ async function loadAttributeRatings() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -216,17 +206,6 @@ async function loadAttributeRatings() {
     } catch (error) {
         list.innerHTML = "<li>Could not load attribute ratings.</li>";
     }
-    } else { //testing
-        attributeRatings.list = []; //testing
-        attributeRatings.list.push( //testing
-            {id:1, idea_id:1, att_id:1, score:7}, //testing
-            {id:2, idea_id:1, att_id:2, score:9}, //testing
-            {id:3, idea_id:2, att_id:1, score:8}, //testing
-            {id:4, idea_id:3, att_id:2, score:8}, //testing
-            {id:5, idea_id:4, att_id:1, score:6}, //testing
-            {id:6, idea_id:5, att_id:1, score:9}  //testing
-        ); //testing
-    } //testing
     ensureAttributeRatings();
     ideas._lv++;
     portfolioItems._lv++;

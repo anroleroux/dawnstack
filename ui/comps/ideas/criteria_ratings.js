@@ -93,7 +93,6 @@ async function deleteCriteriaRating(r) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -110,10 +109,6 @@ async function deleteCriteriaRating(r) {
         alert("Could not delete criteria rating.");
         return;
     }
-    } else { //testing
-        const idx = criteriaRatings.list.findIndex(item => item.id === r.id); //testing
-        if (idx !== -1) criteriaRatings.list.splice(idx, 1); //testing
-    } //testing
     criteriaRatings.editing_field = null;
     criteriaRatings.selected = null;
 }
@@ -125,7 +120,6 @@ async function createCriteriaRating(data) {
         return;
     }
 
-    if (!testing) {  //testing
     let saved;
     if (!supabase) {
         const userId = getCurrentUserId();
@@ -140,9 +134,6 @@ async function createCriteriaRating(data) {
         saved = (await response.json())[0];
     }
     criteriaRatings.list.push(saved);
-    } else { //testing
-        criteriaRatings.list.push({...data, id: Date.now()}); //testing
-    } //testing
 }
 
 async function saveCriteriaRating(e) {
@@ -161,7 +152,6 @@ async function saveCriteriaRating(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -181,10 +171,6 @@ async function saveCriteriaRating(e) {
     } catch (err) {
         alert("Could not save criteria rating.");
     }
-    } else { //testing
-        criteriaRatings.list.push({...data, id: Date.now()}); //testing
-        criteriaRatings.adding = false; //testing
-    } //testing
 }
 
 function ensureCriteriaRatings() {
@@ -207,7 +193,6 @@ async function loadCriteriaRatings() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -232,17 +217,6 @@ async function loadCriteriaRatings() {
     } catch (error) {
         list.innerHTML = "<li>Could not load criteria ratings.</li>";
     }
-    } else { //testing
-        criteriaRatings.list = []; //testing
-        criteriaRatings.list.push( //testing
-            {id:1, idea_id:1, crit_id:1, score:8}, //testing
-            {id:2, idea_id:1, crit_id:2, score:7}, //testing
-            {id:3, idea_id:1, crit_id:3, score:9}, //testing
-            {id:4, idea_id:2, crit_id:1, score:6}, //testing
-            {id:5, idea_id:3, crit_id:4, score:7}, //testing
-            {id:6, idea_id:4, crit_id:5, score:8}  //testing
-        ); //testing
-    } //testing
     ensureCriteriaRatings();
     ideas._lv++;
     portfolioItems._lv++;

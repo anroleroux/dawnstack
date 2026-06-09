@@ -1,9 +1,7 @@
-const testing  = true; //testing
 const offline  = false;
 const supabase = false;
 const SUPABASE_URL      = '__SUPABASE_URL__';
 const SUPABASE_ANON_KEY = '__SUPABASE_PUBLISHABLE_KEY__';
-const debug = false; //testing
 
 const USER_STORAGE_KEY = "currentUserId";
 
@@ -149,9 +147,7 @@ showPage('home');
 
 /* {{data-io-js}} */
 
-//testing-start
 /* {{gantt-tests-js}} */
-//testing-end
 
 function loadAll() {
     loadAttributeGroups(); loadAttributes(); loadIdeas(); loadAttributeRatings();
@@ -165,12 +161,5 @@ function maybeAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (testing) {  //testing-start
-        document.getElementById('app-section').hidden = false;
-        showPage('home');
-        loadAll();
-        runGanttTests();
-        return;
-    } //testing-end
     maybeAuth();
 });

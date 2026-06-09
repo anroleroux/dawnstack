@@ -124,7 +124,7 @@ function cancelEdit(mountRef) {
     window[mountRef].editing_field = null;
 }
 
-// Reads _draft, type-converts it based on inputType, PATCHes the API (non-testing),
+// Reads _draft, type-converts it based on inputType, PATCHes the API,
 // writes the value back to the selected item, and clears editing_field.
 // mountRef  — global variable name of the reactive mount object
 // fieldKey  — property name on the selected item being saved
@@ -138,7 +138,6 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
     if (inputType === 'select') { const n = parseInt(val, 10); val = isNaN(n) ? val : n; }
     if (inputType === 'date' || inputType === 'datetime-local') val = val || null;
 
-    if (!testing) {  //testing
     if (!offline) {
     if (!supabase) {
         fetch(`${apiPath}/${mount.selected.id}`, {
@@ -154,7 +153,6 @@ function saveField(mountRef, fieldKey, apiPath, inputType) {
         }).catch(() => alert("Could not save changes."));
     }
     }
-    } //testing
 
     mount.selected[fieldKey] = val;
     mount.editing_field = null;

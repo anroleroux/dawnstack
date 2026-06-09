@@ -94,7 +94,6 @@ function attributeGroupName(id) {
 }
 
 async function deleteAttributeGroup(id) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -111,10 +110,6 @@ async function deleteAttributeGroup(id) {
         alert("Could not delete attribute group.");
         return;
     }
-    } else { //testing
-        const idx = attributeGroups.list.findIndex(c => c.id === id); //testing
-        if (idx !== -1) attributeGroups.list.splice(idx, 1); //testing
-    } //testing
 }
 
 async function saveAttributeGroup(e) {
@@ -134,7 +129,6 @@ async function saveAttributeGroup(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -154,10 +148,6 @@ async function saveAttributeGroup(e) {
     } catch (err) {
         alert("Could not save attribute group.");
     }
-    } else { //testing
-        attributeGroups.list.push({...data, id: Date.now()}); //testing
-        attributeGroups.adding = false; //testing
-    } //testing
 }
 
 async function updateAttributeGroup(e) {
@@ -178,7 +168,6 @@ async function updateAttributeGroup(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -202,10 +191,6 @@ async function updateAttributeGroup(e) {
         alert("Could not update attribute group.");
         return;
     }
-    } else { //testing
-        const idx = attributeGroups.list.findIndex(c => c.id === updated.id); //testing
-        if (idx !== -1) attributeGroups.list[idx] = updated; //testing
-    } //testing
     attributeGroups.editing = null;
 }
 
@@ -217,7 +202,6 @@ async function loadAttributeGroups() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -236,11 +220,4 @@ async function loadAttributeGroups() {
     } catch (error) {
         document.getElementById("attribute-groups-list").innerHTML = "<p>Could not load attribute groups.</p>";
     }
-    } else { //testing
-        attributeGroups.list.push( //testing
-            {id:1, name:"Strengths",  description:"Things you are particularly good at.", weight:1}, //testing
-            {id:2, name:"Wins",       description:"Past successes and achievements.",      weight:1}, //testing
-            {id:3, name:"Weaknesses", description:"Areas you want to improve.",            weight:1} //testing
-        ); //testing
-    } //testing
 }

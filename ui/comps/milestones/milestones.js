@@ -410,7 +410,6 @@ function selectMilestone(pid) {
 }
 
 async function deleteMilestone(p) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -427,10 +426,6 @@ async function deleteMilestone(p) {
         alert("Could not delete milestone.");
         return;
     }
-    } else { //testing
-        const idx = milestones.list.findIndex(item => item.id === p.id); //testing
-        if (idx !== -1) milestones.list.splice(idx, 1); //testing
-    } //testing
     milestones.editing_field = null;
     milestones.selected = null;
 }
@@ -451,7 +446,6 @@ async function saveMilestone(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -471,10 +465,6 @@ async function saveMilestone(e) {
     } catch (err) {
         alert("Could not save milestone.");
     }
-    } else { //testing
-        milestones.list.push({...data, id: Date.now()}); //testing
-        milestones.adding = false; //testing
-    } //testing
 }
 
 async function addTaskToMilestone(e, milestoneId) {
@@ -490,7 +480,6 @@ async function addTaskToMilestone(e, milestoneId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -510,9 +499,6 @@ async function addTaskToMilestone(e, milestoneId) {
         alert("Could not add task.");
         return;
     }
-    } else { //testing
-        tasks.list.push({...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString(), started_at: null, completed_at: null}); //testing
-    } //testing
     milestones._lv++;
 }
 
@@ -529,7 +515,6 @@ async function loadMilestones() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -553,14 +538,4 @@ async function loadMilestones() {
     } catch (error) {
         list.innerHTML = "<li>Could not load milestones.</li>";
     }
-    } else { //testing
-        milestones.list.push( //testing
-            {id:1, portfolio_item_id:1, goal:"Launch MVP",        date:"2026-06-01"}, //testing
-            {id:2, portfolio_item_id:1, goal:"Publish 10 posts",  date:"2026-07-01"}, //testing
-            {id:3, portfolio_item_id:2, goal:"Import from CSV",   date:"2026-06-15"}, //testing
-            {id:4, portfolio_item_id:3, goal:"Record module 1",   date:"2026-07-15"}, //testing
-            {id:5, portfolio_item_id:3, goal:"Launch course",     date:"2026-09-01"}, //testing
-            {id:6, portfolio_item_id:4, goal:"First paid client", date:"2026-08-01"}  //testing
-        ); //testing
-    } //testing
 }

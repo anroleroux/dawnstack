@@ -118,7 +118,6 @@ function selectTask(tid) {
 }
 
 async function deleteTask(t) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -135,10 +134,6 @@ async function deleteTask(t) {
         alert("Could not delete task.");
         return;
     }
-    } else { //testing
-        const idx = tasks.list.findIndex(item => item.id === t.id); //testing
-        if (idx !== -1) tasks.list.splice(idx, 1); //testing
-    } //testing
     tasks.editing_field = null;
     tasks.selected = null;
 }
@@ -160,7 +155,6 @@ async function saveTask(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -180,10 +174,6 @@ async function saveTask(e) {
     } catch (err) {
         alert("Could not save task.");
     }
-    } else { //testing
-        tasks.list.push({...data, id: Date.now(), status: 'pending', created_at: new Date().toISOString(), started_at: null, completed_at: null}); //testing
-        tasks.adding = false; //testing
-    } //testing
 }
 
 function tasks_afterSave(fieldKey, val, apiPath) {
@@ -195,7 +185,6 @@ function tasks_afterSave(fieldKey, val, apiPath) {
     if (val === 'done' && !tasks.selected.completed_at) extra.completed_at = now;
     if (!Object.keys(extra).length) return;
 
-    if (!testing) {  //testing
     if (!supabase) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
@@ -206,7 +195,6 @@ function tasks_afterSave(fieldKey, val, apiPath) {
         fetch(`${sbUrl(apiPath)}?id=eq.${tasks.selected.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify(extra) })
             .catch(() => {});
     }
-    } //testing
 
     for (const [k, v] of Object.entries(extra)) tasks.selected[k] = v;
     if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
@@ -215,7 +203,6 @@ function tasks_afterSave(fieldKey, val, apiPath) {
 async function setTaskStatus(newStatus) {
     const apiPath = '/api/tasks';
     if (!offline) {
-    if (!testing) {  //testing
     if (!supabase) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
@@ -226,7 +213,6 @@ async function setTaskStatus(newStatus) {
         fetch(`${sbUrl(apiPath)}?id=eq.${tasks.selected.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify({status: newStatus}) })
             .catch(() => alert("Could not save changes."));
     }
-    } //testing
     }
     tasks.selected.status = newStatus;
     tasks_afterSave('status', newStatus, apiPath);
@@ -244,7 +230,6 @@ async function advanceTaskStatus(taskId) {
     if ((next === 'busy' || next === 'done') && !t.started_at)  patch.started_at  = now;
     if (next === 'done' && !t.completed_at)                     patch.completed_at = now;
     const apiPath = '/api/tasks';
-    if (!testing) {  //testing
     if (!supabase) {
         const userId = getCurrentUserId();
         const headers = { "Content-Type": "application/json" };
@@ -253,7 +238,6 @@ async function advanceTaskStatus(taskId) {
     } else {
         fetch(`${sbUrl(apiPath)}?id=eq.${t.id}`, { method: "PATCH", headers: sbHeaders(true), body: JSON.stringify(patch) }).catch(() => {});
     }
-    } //testing
     for (const [k, v] of Object.entries(patch)) t[k] = v;
     if (offline) lsFlush(lsKey('/api/tasks'), tasks.list);
     if (_renders['milestones-list']) _renders['milestones-list']();
@@ -273,7 +257,6 @@ async function loadTasks() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -294,15 +277,5 @@ async function loadTasks() {
     } catch (error) {
         list.innerHTML = "<li>Could not load tasks.</li>";
     }
-    } else { //testing
-        tasks.list.push( //testing
-            {id:1, milestone_id:1, description:"Set up hosting and domain",  depends_on_id:null, status:"done",    created_at:"2026-05-01T10:00:00Z", started_at:"2026-05-01T10:00:00Z", completed_at:"2026-05-03T14:00:00Z"}, //testing
-            {id:2, milestone_id:1, description:"Build landing page",          depends_on_id:1,    status:"busy",   created_at:"2026-05-03T09:00:00Z", started_at:"2026-05-03T14:00:00Z", completed_at:null}, //testing
-            {id:3, milestone_id:1, description:"Write first blog post",        depends_on_id:null, status:"pending",created_at:"2026-05-06T08:00:00Z", started_at:null,                  completed_at:null}, //testing
-            {id:4, milestone_id:2, description:"Draft post schedule",          depends_on_id:null, status:"pending",created_at:"2026-05-08T11:00:00Z", started_at:null,                  completed_at:null}, //testing
-            {id:5, milestone_id:3, description:"Build CSV import parser",      depends_on_id:null, status:"busy",   created_at:"2026-05-05T09:00:00Z", started_at:"2026-05-05T09:00:00Z",completed_at:null}, //testing
-            {id:6, milestone_id:4, description:"Write module 1 script",        depends_on_id:null, status:"pending",created_at:"2026-05-09T08:00:00Z", started_at:null,                  completed_at:null}  //testing
-        ); //testing
-    } //testing
     milestones._lv++;
 }

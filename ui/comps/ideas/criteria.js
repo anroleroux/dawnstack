@@ -94,7 +94,6 @@ function criterionName(id) {
 }
 
 async function deleteCriterion(id) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -111,10 +110,6 @@ async function deleteCriterion(id) {
         alert("Could not delete criterion.");
         return;
     }
-    } else { //testing
-        const idx = criteria.list.findIndex(c => c.id === id); //testing
-        if (idx !== -1) criteria.list.splice(idx, 1); //testing
-    } //testing
 }
 
 async function saveCriterion(e) {
@@ -133,7 +128,6 @@ async function saveCriterion(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -153,10 +147,6 @@ async function saveCriterion(e) {
     } catch (err) {
         alert("Could not save criterion.");
     }
-    } else { //testing
-        criteria.list.push({...data, id: Date.now()}); //testing
-        criteria.adding = false; //testing
-    } //testing
 }
 
 async function updateCriterion(e) {
@@ -177,7 +167,6 @@ async function updateCriterion(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -201,10 +190,6 @@ async function updateCriterion(e) {
         alert("Could not update criterion.");
         return;
     }
-    } else { //testing
-        const idx = criteria.list.findIndex(c => c.id === updated.id); //testing
-        if (idx !== -1) criteria.list[idx] = updated; //testing
-    } //testing
     criteria.editing = null;
 }
 
@@ -217,7 +202,6 @@ async function loadCriteria() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -237,14 +221,4 @@ async function loadCriteria() {
     } catch (error) {
         document.getElementById("criteria-list").innerHTML = "<p>Could not load criteria.</p>";
     }
-    } else { //testing
-        criteria.list.push( //testing
-            {id:1, name:"Impact",      description:"How significantly will this affect the target audience.", weight:1}, //testing
-            {id:2, name:"Confidence",  description:"How confident are we in our estimates.",                  weight:1}, //testing
-            {id:3, name:"Ease",        description:"How easy is it to implement.",                            weight:1}, //testing
-            {id:4, name:"Reach",       description:"How many people will this affect in a given period.",     weight:1}, //testing
-            {id:5, name:"Feasibility", description:"Technical and financial feasibility.",                    weight:1} //testing
-        ); //testing
-        ensureCriteriaRatings(); //testing
-    } //testing
 }

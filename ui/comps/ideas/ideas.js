@@ -157,7 +157,6 @@ function selectIdea(pid) {
 }
 
 async function deleteIdea(p) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -174,10 +173,6 @@ async function deleteIdea(p) {
         alert("Could not delete idea.");
         return;
     }
-    } else { //testing
-        const idx = ideas.list.findIndex(item => item.id === p.id); //testing
-        if (idx !== -1) ideas.list.splice(idx, 1); //testing
-    } //testing
     ideas.editing_field = null;
     ideas.editing_rating = null;
     ideas.selected = null;
@@ -213,7 +208,6 @@ async function saveRatingEdit(kind, refId, ideaId) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         if (!supabase) {
             const userId = getCurrentUserId();
@@ -257,16 +251,6 @@ async function saveRatingEdit(kind, refId, ideaId) {
         alert("Could not save rating.");
         return;
     }
-    } else { //testing
-        if (existing && existing.id) { //testing
-            existing.score = score; //testing
-        } else if (existing) { //testing
-            existing.id = Date.now(); //testing
-            existing.score = score; //testing
-        } else { //testing
-            list.list.push({id: Date.now(), idea_id: ideaId, [fkKey]: refId, score}); //testing
-        } //testing
-    } //testing
 
     ideas.editing_rating = null;
 }
@@ -287,7 +271,6 @@ async function saveIdea(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -309,13 +292,6 @@ async function saveIdea(e) {
     } catch (err) {
         alert("Could not save idea.");
     }
-    } else { //testing
-        const saved = {...data, id: Date.now()}; //testing
-        ideas.list.push(saved); //testing
-        ideas.adding = false; //testing
-        populateAttributeRatingsWithGemini(saved); //testing
-        populateCriteriaRatingsWithGemini(saved); //testing
-    } //testing
 }
 
 async function loadIdeas() {
@@ -333,7 +309,6 @@ async function loadIdeas() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -359,15 +334,4 @@ async function loadIdeas() {
     } catch (error) {
         list.innerHTML = "<li>Could not load ideas.</li>";
     }
-    } else { //testing
-        ideas.list.push( //testing
-            {id:1, name:"Launch a personal blog",     description:"Write about topics I'm passionate about to build an audience."}, //testing
-            {id:2, name:"Build a recipe organiser",   description:"A simple app to save and tag recipes from around the web."}, //testing
-            {id:3, name:"Create an online course",    description:"Package existing knowledge into a structured learning experience."}, //testing
-            {id:4, name:"Freelance consulting",       description:"Offer expertise to small businesses on a project basis."}, //testing
-            {id:5, name:"Open-source a side project", description:"Release internal tooling publicly to grow reputation."} //testing
-        ); //testing
-        ensureAttributeRatings(); //testing
-        ensureCriteriaRatings(); //testing
-    } //testing
 }

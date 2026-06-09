@@ -136,7 +136,6 @@ function selectPortfolioItem(pid) {
 }
 
 async function deletePortfolioItem(p) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -153,10 +152,6 @@ async function deletePortfolioItem(p) {
         alert("Could not delete portfolio item.");
         return;
     }
-    } else { //testing
-        const idx = portfolioItems.list.findIndex(item => item.id === p.id); //testing
-        if (idx !== -1) portfolioItems.list.splice(idx, 1); //testing
-    } //testing
     portfolioItems.editing_field = null;
     portfolioItems.selected = null;
 }
@@ -177,7 +172,6 @@ async function savePortfolioItem(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -197,10 +191,6 @@ async function savePortfolioItem(e) {
     } catch (err) {
         alert("Could not save portfolio item.");
     }
-    } else { //testing
-        portfolioItems.list.push({...data, id: Date.now()}); //testing
-        portfolioItems.adding = false; //testing
-    } //testing
 }
 
 async function loadPortfolioItems() {
@@ -217,7 +207,6 @@ async function loadPortfolioItems() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -241,13 +230,5 @@ async function loadPortfolioItems() {
     } catch (error) {
         list.innerHTML = "<li>Could not load portfolio items.</li>";
     }
-    } else { //testing
-        portfolioItems.list.push( //testing
-            {id:1, name:"Personal Blog",    type:"product", description:"A blog platform for sharing knowledge and building an audience."}, //testing
-            {id:2, name:"Recipe Organiser", type:"product", description:"A web app for saving and tagging recipes."}, //testing
-            {id:3, name:"Online Course",    type:"service", description:"A structured learning experience for a target audience."}, //testing
-            {id:4, name:"Consulting",       type:"service", description:"Expert advice for small businesses on a project basis."} //testing
-        ); //testing
-    } //testing
     milestones._lv++;
 }

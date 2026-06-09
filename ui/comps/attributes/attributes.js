@@ -88,7 +88,6 @@ function selectAttribute(pid) {
 }
 
 async function deleteAttribute(p) {
-    if (!testing) {  //testing
     try {
         let response;
         if (!supabase) {
@@ -105,10 +104,6 @@ async function deleteAttribute(p) {
         alert("Could not delete attribute.");
         return;
     }
-    } else { //testing
-        const idx = attrItems.list.findIndex(item => item.id === p.id); //testing
-        if (idx !== -1) attrItems.list.splice(idx, 1); //testing
-    } //testing
     attrItems.editing_field = null;
     attrItems.selected = null;
 }
@@ -131,7 +126,6 @@ async function saveAttribute(e) {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let saved;
         if (!supabase) {
@@ -151,10 +145,6 @@ async function saveAttribute(e) {
     } catch (err) {
         alert("Could not save attribute.");
     }
-    } else { //testing
-        attrItems.list.push({...data, id: Date.now()}); //testing
-        attrItems.adding = false; //testing
-    } //testing
 }
 
 async function loadAttributes() {
@@ -171,7 +161,6 @@ async function loadAttributes() {
         return;
     }
 
-    if (!testing) {  //testing
     try {
         let fetched;
         if (!supabase) {
@@ -196,15 +185,4 @@ async function loadAttributes() {
     } catch (error) {
         list.innerHTML = "<li>Could not load attributes.</li>";
     }
-    } else { //testing
-        attrItems.list.push( //testing
-            {id:1, name:"Problem solving",       att_group_id:1, description:"Ability to break down and work through complex problems.", weight:1}, //testing
-            {id:2, name:"Communication",         att_group_id:1, description:"Clear and effective written and verbal communication.",       weight:1}, //testing
-            {id:3, name:"Launched side project", att_group_id:2, description:"Built and shipped a web app independently.",                 weight:1}, //testing
-            {id:4, name:"Learned new framework", att_group_id:2, description:"Picked up a new frontend framework quickly.",                weight:1}, //testing
-            {id:5, name:"Time management",       att_group_id:3, description:"Struggles with prioritising competing tasks.",               weight:1}, //testing
-            {id:6, name:"Public speaking",       att_group_id:3, description:"Nervous when presenting to large audiences.",               weight:1} //testing
-        ); //testing
-        ensureAttributeRatings(); //testing
-    } //testing
 }

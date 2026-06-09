@@ -75,7 +75,6 @@ async function cascadeDeleteAttributeGroup(id) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
         for (const a of groupAttrs) await apiDelete('/api/attributes', a.id);
@@ -84,7 +83,6 @@ async function cascadeDeleteAttributeGroup(id) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
@@ -107,7 +105,6 @@ async function cascadeDeleteAttribute(p) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const r of attrRatings) await apiDelete('/api/attribute-ratings', r.id);
         await apiDelete('/api/attributes', p.id);
@@ -115,7 +112,6 @@ async function cascadeDeleteAttribute(p) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const r of attrRatings) removeFromStore(attributeRatings, r.id);
@@ -141,7 +137,6 @@ async function cascadeDeleteIdea(p) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const r of attRatings) await apiDelete('/api/attribute-ratings', r.id);
         for (const r of critRatings) await apiDelete('/api/criteria-ratings', r.id);
@@ -151,7 +146,6 @@ async function cascadeDeleteIdea(p) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const r of attRatings) removeFromStore(attributeRatings, r.id);
@@ -180,7 +174,6 @@ async function cascadeDeleteCriterion(id) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const r of critRatings) await apiDelete('/api/criteria-ratings', r.id);
         await apiDelete('/api/criteria', id);
@@ -188,7 +181,6 @@ async function cascadeDeleteCriterion(id) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const r of critRatings) removeFromStore(criteriaRatings, r.id);
@@ -219,7 +211,6 @@ async function cascadeDeletePortfolioItem(p) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const t of allTasks) await apiDelete('/api/tasks', t.id);
         for (const d of msDeps) await apiDelete('/api/milestone-deps', d.id);
@@ -230,7 +221,6 @@ async function cascadeDeletePortfolioItem(p) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const t of allTasks) removeFromStore(tasks, t.id);
@@ -267,7 +257,6 @@ async function cascadeDeleteMilestone(p) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const t of allTasks) await apiDelete('/api/tasks', t.id);
         for (const d of msDeps) await apiDelete('/api/milestone-deps', d.id);
@@ -276,7 +265,6 @@ async function cascadeDeleteMilestone(p) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const t of allTasks) removeFromStore(tasks, t.id);
@@ -302,7 +290,6 @@ async function cascadeDeleteTask(t) {
     if (!confirmed) return;
 
     if (!offline) {
-    if (!testing) {  //testing
     try {
         for (const dt of depTasks) await apiDelete('/api/tasks', dt.id);
         await apiDelete('/api/tasks', t.id);
@@ -310,7 +297,6 @@ async function cascadeDeleteTask(t) {
         alert("Could not complete deletion.");
         return;
     }
-    } //testing
     }
 
     for (const dt of depTasks) removeFromStore(tasks, dt.id);

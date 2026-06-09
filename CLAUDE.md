@@ -1,4 +1,4 @@
-# Dawnstack
+# Unlog
 
 A minimal flat-file web app with a custom Make-based template composition
 build system. It helps the user determine what to work on, how to prioritize it
@@ -84,13 +84,24 @@ TASKS
 
 ## Build
 
+Build modes form a 2D matrix of backend × environment:
+
+|                  | dev (source intact) | prod (offline blocks stripped) |
+|------------------|---------------------|--------------------------------|
+| **localStorage** | `make local`        | `make offline`                 |
+| **Go backend**   | `make go`           | _(not needed)_                 |
+| **Supabase**     | _(not needed)_      | `make build`                   |
+
 ```sh
-make uidev    # build with testing=true (local dev, mock data)
-make fsdev    # build with testing=false (production-like, real API)
+make local    # localStorage dev — sets offline=true, no stripping
+make go       # Go backend dev — defaults (offline=false, supabase=false)
+make build    # Supabase prod — sets supabase=true, injects env vars
+make offline  # localStorage prod — sets offline=true, strips //offline blocks
+make run      # make go + go run .
 make clean    # remove ui/dist/
 ```
 
-Output lands in `ui/dist/` (index.html, index.css, index.js). **Never edit dist files directly** — they are generated and will be overwritten on the next build.
+Output lands in `ui/dist/` (index.html, index.css, index.js) and `ui/dist-offline/` for the offline target. **Never edit dist files directly** — they are generated and will be overwritten on the next build.
 
 ## Source layout
 
@@ -118,7 +129,7 @@ Map files (e.g. `make/js.map`) define `{{placeholder}}:path/to/file` pairs. The 
 `main.go` at the project root. Uses stdlib `net/http` (Go 1.22+ method+path routing) and `database/sql` with `github.com/lib/pq`.
 
 ```sh
-make run          # builds ui/dist with testing=false, then go run .
+make run          # builds ui/dist (Go dev), then go run .
 go run .          # run server only (expects ui/dist already built)
 ```
 
@@ -199,8 +210,8 @@ To add a new model, three files need to be touched:
   );
   ```
 
-- **CRUD functions** — `select<Model>(pid)`, `delete<Model>(p)`, `save<Model>(e)`, each with `if (!testing) { ... } else { //testing stub }` blocks
-- **Load function** — `load<Model>s()` with a real fetch path and a testing block that pushes mock objects into `modelItems.list`
+- **CRUD functions** — `select<Model>(pid)`, `delete<Model>(p)`, `save<Model>(e)`, each with an `if (offline) { ... }` early-return for localStorage, then `if (!supabase) { ... } else { ... }` for Go vs Supabase
+- **Load function** — `load<Model>s()` with an `if (offline) { ... }` early-return that reads from localStorage, then a Go/Supabase fetch path
 
 **2. Add a line to `make/js.map`:**
 
@@ -216,21 +227,11 @@ To add a new model, three files need to be touched:
   /* {{model-name-js}} */
   ```
   
-- Call `load<Model>s()` inside the `DOMContentLoaded` listener
+- Call `load<Model>s()` inside `loadAll()` in `ui/layout.js`
 
-## Testing flag
+## Offline blocks
 
-`ui/layout.js` sets `const testing = true;` for local dev. `make fsdev` flips it to `false` via sed before composing. `make build` strips testing code from `ui/dist/index.js` in two passes:
-
-- **Per-line:** any line ending with `//testing` is deleted.
-- **Block:** a range from a line ending with `//testing-start` to a line ending with `//testing-end` (both inclusive) is deleted. Use this when only the boundary lines need to be marked:
-
-  ```js
-  } else { //testing-start
-      const mock = getMockData();
-      milestones.list.push(...mock);
-  } //testing-end
-  ```
+Code that should be omitted from the offline prod build (but kept in Go/Supabase builds) is marked with `//offline` inline or `//offline-start` / `//offline-end` block markers. The `make offline` target strips these via sed.
 
 ## Scheduling algorithm
 
