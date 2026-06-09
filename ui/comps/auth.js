@@ -3,7 +3,7 @@ var authSession = null;
 function authTemplate(state) {
     if (state.view === 'sent') return `
         <div class="auth-card">
-            <h2>Dawnstack</h2>
+            <h2>UnLog</h2>
             <div class="auth-message">Check your email for a sign-in link.</div>
         </div>
     `;
@@ -30,7 +30,7 @@ function authTemplate(state) {
 
     return `
         <div class="auth-card">
-            <h2>Dawnstack</h2>
+            <h2>UnLog</h2>
             <div class="auth-tabs">
                 <button class="auth-tab${state.tab === 'password' ? ' auth-tab--active' : ''}" type="button"
                     onclick="authMount.tab='password';authMount.error=null">Password</button>

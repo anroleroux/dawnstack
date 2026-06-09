@@ -1,4 +1,4 @@
-const SETTINGS_KEY = 'dawnstack_settings';
+const SETTINGS_KEY = 'unlog_settings';
 const SETTINGS_DEFAULTS = {milestoneWip: 2, taskWip: 1, geminiApiKey: '', populateAttributeRatings: false, populateCriteriaRatings: false};
 
 function getSettings() {

@@ -14,7 +14,7 @@ function sbHeaders(write) {
 }
 
 function lsKey(apiPath) {
-    return 'dawnstack_' + apiPath.replace('/api/', '').replace(/-/g, '_');
+    return 'unlog_' + apiPath.replace('/api/', '').replace(/-/g, '_');
 }
 
 function lsFlush(key, list) {

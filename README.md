@@ -1,4 +1,4 @@
-# Dawnstack
+# UnLog
 
 Determine what you should work on, how to prioritize it
 and how to plan it.
@@ -13,13 +13,13 @@ Test/dummy data, pre-injected into the UI is used.
 Run with
 
 ```bash
-    make uidev
+    make local
 ```
 
 or automatically run on file update with
 
 ```bash
-    ls ui/comps/*.* ui/layout.* | entr make uidev
+    ls ui/comps/*.* ui/layout.* | entr make local
 ```
 
 use a hot-reload web server like Live Server in VSCode
